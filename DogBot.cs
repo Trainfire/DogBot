@@ -1,6 +1,7 @@
-﻿using SteamKit2;
-using System;
-using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using SteamKit2;
 
 namespace DogBot
 {
@@ -9,17 +10,21 @@ namespace DogBot
         readonly Connection connection;
         readonly ConfigData config;
 
+        SteamID chatId;
+
+        public BotData Data { get; private set; }
+
         public DogBot()
         {
             config = Config.Load();
 
             connection = new Connection();
-            connection.LoggedOn += Connection_LoggedOn;
+            connection.LoggedOn += OnLoggedOn;
             connection.RecieveMessage += OnReceiveMessage;
             connection.Connect(config.User, config.Pass);
         }
 
-        void Connection_LoggedOn(object sender, EventArgs e)
+        void OnLoggedOn(object sender, EventArgs e)
         {
             Log("Logged on");
 
@@ -37,6 +42,7 @@ namespace DogBot
                 else
                 {
                     connection.Friends.JoinChat(chatRoomId);
+                    chatId = new SteamID(chatRoomId);
                 }
             }
             else
@@ -45,9 +51,19 @@ namespace DogBot
             }
         }
 
-        void OnReceiveMessage(object sender, SteamFriends.ChatMsgCallback e)
+        void OnReceiveMessage(object sender, SteamFriends.ChatMsgCallback callback)
         {
-            Console.WriteLine(e.Message);
+            // Process the received message and pass in the current Bot's data.
+            var handler = new MessageHandler(Data, callback);
+
+            // Echo the result if there is one.
+            if (handler.Result != null)
+                Say(chatId, handler.Result);
+        }
+
+        void Say(SteamID chatId, string message)
+        {
+            connection.Friends.SendChatRoomMessage(chatId, EChatEntryType.ChatMsg, message);
         }
 
         void Log(string message, params object[] args)
