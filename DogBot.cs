@@ -1,5 +1,6 @@
 ﻿using SteamKit2;
 using System;
+using System.Threading.Tasks;
 
 namespace DogBot
 {
@@ -18,17 +19,40 @@ namespace DogBot
             connection.Connect(config.User, config.Pass);
         }
 
-        private void Connection_LoggedOn(object sender, EventArgs e)
+        void Connection_LoggedOn(object sender, EventArgs e)
         {
-            Console.WriteLine("Logged on");
+            Log("Logged on");
 
             connection.Friends.SetPersonaName(config.SteamName);
-            connection.Friends.JoinChat(ulong.Parse("103582791454793610"));
+
+            if (!string.IsNullOrEmpty(config.ChatRoomId))
+            {
+                ulong chatRoomId = 0;
+                ulong.TryParse(config.ChatRoomId, out chatRoomId);
+
+                if (chatRoomId == 0)
+                {
+                    Log("{0} is an invalid chat room ID", config.ChatRoomId);
+                }
+                else
+                {
+                    connection.Friends.JoinChat(chatRoomId);
+                }
+            }
+            else
+            {
+                Log("Could not connect to chat room as the chat room ID is invalid.");
+            }
         }
 
-        private void OnReceiveMessage(object sender, SteamFriends.ChatMsgCallback e)
+        void OnReceiveMessage(object sender, SteamFriends.ChatMsgCallback e)
         {
             Console.WriteLine(e.Message);
+        }
+
+        void Log(string message, params object[] args)
+        {
+            Console.WriteLine("[DogBot] " + string.Format(message, args));
         }
     }
 }

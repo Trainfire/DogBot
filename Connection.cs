@@ -161,10 +161,10 @@ namespace DogBot
 
             Console.WriteLine("Successfully logged on!");
 
-            // Set status to Online automatically.
+            // Automatically set the bot online.
             Friends.SetPersonaState(EPersonaState.Online);
 
-            // Subscribe to all Friend related callbacks here. It seems like they need to be assigned *after* changing persona state to Online.
+            // Subscribe to all Friend related callbacks here.
             manager.Subscribe<SteamFriends.ChatMsgCallback>(OnMessage);
 
             LoggedOn?.Invoke(this, null);
