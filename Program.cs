@@ -1,15 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+using System.Security.Cryptography;
+using System.Threading;
+
+using SteamKit2;
 
 namespace DogBot
 {
     class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
+            new DogBot();
         }
     }
 }
