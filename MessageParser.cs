@@ -14,7 +14,7 @@ namespace DogBot
         public bool IsValid { get; private set; }
 
         // TODO: Move this into a config file.
-        const string COMMAND_TOKEN = "!";
+        
 
         public MessageParser(string message)
         {
@@ -27,7 +27,7 @@ namespace DogBot
             // Split input using space as delimiter
             var args = message.Split(' ').ToList();
 
-            if (args[0].StartsWith(COMMAND_TOKEN) && args[0].Length > 1)
+            if (args[0].StartsWith(CommandRegistry.COMMAND_TOKEN) && args[0].Length > 1)
             {
                 // Remove the initial "!" character token
                 Command = args[0].Substring(1);

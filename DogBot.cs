@@ -33,7 +33,7 @@ namespace DogBot
         void OnAnnounce(object sender, ElapsedEventArgs e)
         {
             // Post DoTD
-            HandleMessage(SID, CommandRegistry.DOTD);
+            HandleMessage(SID, CommandRegistry.Dotd);
         }
 
         void OnLoggedOn(object sender, EventArgs e)
