@@ -169,7 +169,8 @@ namespace DogBot
             // Subscribe to all Friend related callbacks here.
             manager.Subscribe<SteamFriends.ChatMsgCallback>(OnMessage);
 
-            LoggedOn?.Invoke(this, null);
+            if (LoggedOn != null)
+                LoggedOn(this, null);
         }
 
         void OnLoggedOff(SteamUser.LoggedOffCallback callback)
@@ -226,7 +227,8 @@ namespace DogBot
 
         void OnMessage(SteamFriends.ChatMsgCallback callback)
         {
-            RecieveMessage?.Invoke(this, callback);
+            if (RecieveMessage != null)
+                RecieveMessage(this, callback);
         }
     }
 }
