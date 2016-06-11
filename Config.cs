@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace DogBot
 {
@@ -41,5 +42,7 @@ namespace DogBot
         /// How often to make an announcement in seconds.
         /// </summary>
         public double AnnouncementInterval { get; set; }
+
+        public List<string> Admins { get; set; }
     }
 }

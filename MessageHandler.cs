@@ -39,14 +39,14 @@ namespace DogBot
                 {
                     if (command.AdminOnly)
                     {
-                        //if (IsOfficerOrModerator(callback.ChatterID))
-                        //{
-                        Result = command.Execute(bot, caller, message);
-                        //}
-                        //else
-                        //{
-                        //Result = Strings.NoPermission;
-                        //}
+                        if (bot.IsAdmin(caller))
+                        {
+                            Result = command.Execute(bot, caller, message);
+                        }
+                        else
+                        {
+                            Result = Strings.NoPermission;
+                        }
                     }
                     else
                     {

@@ -19,7 +19,15 @@ namespace DogBot
 
                     // Register commands here
                     commands.Add(new Command<GetDogOfTheDay>(DOTD));
-                    commands.Add(new Command<SetDogOfTheDay>(DOTDSET));
+                    commands.Add(new Command<SetDogOfTheDay>(DOTDSET)
+                    {
+                        AdminOnly = true,
+                        HelpArgs = new List<string>()
+                        {
+                            "URL",
+                            "Comment (Optional)"
+                        }
+                    });
                 }
                 return commands.ToList();
             }

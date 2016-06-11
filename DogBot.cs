@@ -93,9 +93,16 @@ namespace DogBot
             Console.WriteLine("[DogBot] " + string.Format(message, args));
         }
 
+        #region Helpers
         public string GetFriendName(SteamID id)
         {
             return connection.Friends.GetFriendPersonaName(id);
         }
+
+        public bool IsAdmin(SteamID id)
+        {
+            return config.Admins != null ? config.Admins.Contains(id.ToString()) : false;
+        }
+        #endregion
     }
 }
