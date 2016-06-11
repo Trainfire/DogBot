@@ -11,5 +11,7 @@ namespace DogBot
         public const string Help = "DogBot Commands: ";
         public const string StatsTotalAdded = "Dogs added to this day: ";
         public const string StatsHighestContributer = "Highest contributer: ";
+        public const string Muted = "*muted*";
+        public const string Unmuted = "*bark!*";
     }
 }

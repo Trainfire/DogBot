@@ -11,6 +11,7 @@ namespace DogBot
         readonly Timer announcer;
 
         SteamID chatId;
+        bool muted;
 
         public BotData Data { get; private set; }
         public SteamID SID { get { return connection.User.SteamID; } }
@@ -79,13 +80,14 @@ namespace DogBot
             var handler = new MessageHandler(this, caller, message);
 
             // Echo the result if there is one.
-            if (handler.Result != null)
+            if (!string.IsNullOrEmpty(handler.Result))
                 Say(chatId, handler.Result);
         }
 
         void Say(SteamID chatId, string message)
         {
-            connection.Friends.SendChatRoomMessage(chatId, EChatEntryType.ChatMsg, message);
+            if (!muted)
+                connection.Friends.SendChatRoomMessage(chatId, EChatEntryType.ChatMsg, message);
         }
 
         void Log(string message, params object[] args)
@@ -102,6 +104,18 @@ namespace DogBot
         public bool IsAdmin(SteamID id)
         {
             return config.Admins != null ? config.Admins.Contains(id.ToString()) : false;
+        }
+
+        public void Mute()
+        {
+            Say(chatId, Strings.Muted);
+            muted = true;
+        }
+
+        public void Unmute()
+        {
+            muted = false;
+            Say(chatId, Strings.Unmuted);
         }
         #endregion
     }

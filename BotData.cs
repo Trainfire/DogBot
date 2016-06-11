@@ -27,7 +27,7 @@ namespace DogBot
             {
                 URL = dog.URL,
                 SetterSteamID = dog.Setter.ToString(),
-                TimeStamp = DateTime.Now.ToShortDateString(),
+                TimeStamp = DateTime.UtcNow.ToBinary().ToString(),
             });
             history.Save();
         }

@@ -30,6 +30,14 @@ namespace DogBot
                     });
                     commands.Add(new Command<Help>(HELP));
                     commands.Add(new Command<Stats>(STATS));
+                    commands.Add(new Command<Mute>(MUTE)
+                    {
+                        AdminOnly = true,
+                    });
+                    commands.Add(new Command<Unmute>(UNMUTE)
+                    {
+                        AdminOnly = true,
+                    });
                 }
                 return commands.ToList();
             }
@@ -39,6 +47,8 @@ namespace DogBot
         const string DOTDSET = "dotdset";
         const string HELP = "dotdhelp";
         const string STATS = "dotdstats";
+        const string MUTE = "dotdmute";
+        const string UNMUTE = "dotdunmute";
 
         public const string COMMAND_TOKEN = "!";
 
