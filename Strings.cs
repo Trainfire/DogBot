@@ -9,5 +9,7 @@ namespace DogBot
         public const string NoPermission = "*bark!* You do not have permission to do that!";
         public const string Setter = "Dog of the Day was set by";
         public const string Help = "DogBot Commands: ";
+        public const string StatsTotalAdded = "Dogs added to this day: ";
+        public const string StatsHighestContributer = "Highest contributer: ";
     }
 }

@@ -29,6 +29,7 @@ namespace DogBot
                         }
                     });
                     commands.Add(new Command<Help>(HELP));
+                    commands.Add(new Command<Stats>(STATS));
                 }
                 return commands.ToList();
             }
@@ -37,6 +38,7 @@ namespace DogBot
         const string DOTD = "dotd";
         const string DOTDSET = "dotdset";
         const string HELP = "dotdhelp";
+        const string STATS = "dotdstats";
 
         public const string COMMAND_TOKEN = "!";
 

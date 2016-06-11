@@ -59,12 +59,14 @@
     <Compile Include="Command.cs" />
     <Compile Include="CommandRegistry.cs" />
     <Compile Include="Commands\GetDogOfTheDay.cs" />
+    <Compile Include="Commands\Stats.cs" />
     <Compile Include="Commands\Help.cs" />
     <Compile Include="Commands\SetDogOfTheDay.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Connection.cs" />
     <Compile Include="DogBot.cs" />
     <Compile Include="DogData.cs" />
+    <Compile Include="History.cs" />
     <Compile Include="MessageHandler.cs" />
     <Compile Include="MessageParser.cs" />
     <Compile Include="Program.cs" />
