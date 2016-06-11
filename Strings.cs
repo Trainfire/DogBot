@@ -8,5 +8,6 @@ namespace DogBot
         public const string UrlInvalid = "*whines* That URL is invalid...";
         public const string NoPermission = "*bark!* You do not have permission to do that!";
         public const string Setter = "Dog of the Day was set by";
+        public const string Help = "DogBot Commands: ";
     }
 }

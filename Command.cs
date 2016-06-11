@@ -24,6 +24,7 @@ namespace DogBot
         public Command(string alias)
         {
             Alias = alias;
+            HelpArgs = new List<string>();
         }
 
         public Command(string alias, params string[] args) : this(alias)
@@ -36,7 +37,10 @@ namespace DogBot
 
     public class Command<T> : Command where T : CommandAction
     {
-        public Command(string alias) : base(alias) { }
+        public Command(string alias) : base(alias)
+        {
+
+        }
 
         /// <summary>
         /// Executes the command. A string value may be returned.

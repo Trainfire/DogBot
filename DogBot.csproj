@@ -59,6 +59,7 @@
     <Compile Include="Command.cs" />
     <Compile Include="CommandRegistry.cs" />
     <Compile Include="Commands\GetDogOfTheDay.cs" />
+    <Compile Include="Commands\Help.cs" />
     <Compile Include="Commands\SetDogOfTheDay.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Connection.cs" />
