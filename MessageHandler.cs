@@ -14,7 +14,7 @@ namespace DogBot
         /// </summary>
         public string Result { get; private set; }
 
-        public MessageHandler(BotData bot, SteamFriends.ChatMsgCallback callback)
+        public MessageHandler(DogBot bot, SteamFriends.ChatMsgCallback callback)
         {
             var parser = new MessageParser(callback.Message);
 

@@ -31,7 +31,7 @@ namespace DogBot
             HelpArgs = args.ToList();
         }
 
-        public abstract string Execute(BotData botData, SteamID player, string message);
+        public abstract string Execute(DogBot bot, SteamID player, string message);
     }
 
     public class Command<T> : Command where T : CommandAction
@@ -44,10 +44,10 @@ namespace DogBot
         /// <summary>
         /// Executes the command. A string value may be returned.
         /// </summary>
-        public override string Execute(BotData botData, SteamID player, string message)
+        public override string Execute(DogBot bot, SteamID player, string message)
         {
             var action = Activator.CreateInstance<T>();
-            return action.Execute(botData, player, message);
+            return action.Execute(bot, player, message);
         }
     }
 
@@ -56,6 +56,6 @@ namespace DogBot
         /// <summary>
         /// Implement the action of a command here. Optionally, you can return a string to indicate a result.
         /// </summary>
-        public abstract string Execute(BotData botData, SteamID caller, string message);
+        public abstract string Execute(DogBot bot, SteamID caller, string message);
     }
 }

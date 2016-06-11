@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SteamKit2;
 
 namespace DogBot
 {
@@ -13,9 +10,14 @@ namespace DogBot
     {
         public DogData Dog { get; private set; }
 
-        public BotData()
+        public BotData(SteamFriends friends)
         {
-            Dog = new DogData(null);
+            Dog = new DogData();
+        }
+
+        public void SetDog(DogData dog)
+        {
+            Dog = dog;
         }
     }
 }

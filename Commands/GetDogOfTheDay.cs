@@ -9,9 +9,23 @@ namespace DogBot
 {
     class GetDogOfTheDay : CommandAction
     {
-        public override string Execute(BotData botData, SteamID caller, string message)
+        public override string Execute(DogBot bot, SteamID caller, string message)
         {
-            return "Get dog of the day here! *woof*";
+            if (!string.IsNullOrEmpty(bot.Data.Dog.URL))
+            {
+                if (!string.IsNullOrEmpty(bot.Data.Dog.Message))
+                {
+                    return string.Format("{0} // {1} // {2} said: '{3}'", Strings.DogOfTheDay, bot.Data.Dog.URL, bot.GetFriendName(bot.Data.Dog.Setter), bot.Data.Dog.Message);
+                }
+                else
+                {
+                    return string.Format("{0} // {1}", Strings.DogOfTheDay, bot.Data.Dog.URL);
+                }
+            }
+            else
+            {
+                return Strings.NoDog;
+            }
         }
     }
 }

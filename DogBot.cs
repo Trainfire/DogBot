@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using SteamKit2;
 
 namespace DogBot
 {
-    class DogBot
+    public class DogBot
     {
         readonly Connection connection;
         readonly ConfigData config;
@@ -27,6 +25,8 @@ namespace DogBot
         void OnLoggedOn(object sender, EventArgs e)
         {
             Log("Logged on");
+
+            Data = new BotData(connection.Friends);
 
             connection.Friends.SetPersonaName(config.SteamName);
 
@@ -54,7 +54,7 @@ namespace DogBot
         void OnReceiveMessage(object sender, SteamFriends.ChatMsgCallback callback)
         {
             // Process the received message and pass in the current Bot's data.
-            var handler = new MessageHandler(Data, callback);
+            var handler = new MessageHandler(this, callback);
 
             // Echo the result if there is one.
             if (handler.Result != null)
@@ -69,6 +69,11 @@ namespace DogBot
         void Log(string message, params object[] args)
         {
             Console.WriteLine("[DogBot] " + string.Format(message, args));
+        }
+
+        public string GetFriendName(SteamID id)
+        {
+            return connection.Friends.GetFriendPersonaName(id);
         }
     }
 }
