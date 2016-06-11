@@ -10,7 +10,7 @@ namespace DogBot
     {
         public DogData Dog { get; private set; }
 
-        public BotData(SteamFriends friends)
+        public BotData()
         {
             Dog = new DogData();
         }

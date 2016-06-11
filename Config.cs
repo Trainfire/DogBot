@@ -36,5 +36,10 @@ namespace DogBot
         public string Pass { get; set; }
         public string SteamName { get; set; }
         public string ChatRoomId { get; set; }
+
+        /// <summary>
+        /// How often to make an announcement in seconds.
+        /// </summary>
+        public double AnnouncementInterval { get; set; }
     }
 }

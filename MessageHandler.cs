@@ -9,6 +9,8 @@ namespace DogBot
     /// </summary>
     class MessageHandler
     {
+        readonly MessageParser parser;
+
         /// <summary>
         /// The result of the processed message. If a command is found and executed, this string may have a value. Otherwise it will be null.
         /// </summary>
@@ -16,8 +18,18 @@ namespace DogBot
 
         public MessageHandler(DogBot bot, SteamFriends.ChatMsgCallback callback)
         {
-            var parser = new MessageParser(callback.Message);
+            parser = new MessageParser(callback.Message);
+            Parse(bot, callback.ChatterID, callback.Message);
+        }
 
+        public MessageHandler(DogBot bot, SteamID sid, string message)
+        {
+            parser = new MessageParser(message);
+            Parse(bot, sid, message);
+        }
+
+        void Parse(DogBot bot, SteamID caller, string message)
+        {
             if (parser.IsValid)
             {
                 // Find a matching command using the parsed alias   
@@ -29,16 +41,16 @@ namespace DogBot
                     {
                         //if (IsOfficerOrModerator(callback.ChatterID))
                         //{
-                            Result = command.Execute(bot, callback.ChatterID, callback.Message);
+                        Result = command.Execute(bot, caller, message);
                         //}
                         //else
                         //{
-                            //Result = Strings.NoPermission;
+                        //Result = Strings.NoPermission;
                         //}
                     }
                     else
                     {
-                        Result = command.Execute(bot, callback.ChatterID, callback.Message);
+                        Result = command.Execute(bot, caller, message);
                     }
                 }
             }
