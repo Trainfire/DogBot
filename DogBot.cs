@@ -22,7 +22,6 @@ namespace DogBot
 
             announcer = new Timer(1000 * config.AnnouncementInterval);
             announcer.Elapsed += OnAnnounce;
-            announcer.Start();
 
             connection = new Connection();
             connection.LoggedOn += OnLoggedOn;
@@ -33,7 +32,8 @@ namespace DogBot
         void OnAnnounce(object sender, ElapsedEventArgs e)
         {
             // Post DoTD
-            HandleMessage(SID, CommandRegistry.Dotd);
+            if (Data.Dog.IsSet)
+                HandleMessage(SID, CommandRegistry.Dotd);
         }
 
         void OnLoggedOn(object sender, EventArgs e)
@@ -56,6 +56,9 @@ namespace DogBot
                 {
                     connection.Friends.JoinChat(chatRoomId);
                     chatId = new SteamID(chatRoomId);
+
+                    // Start the announcer timer upon joining chat.
+                    announcer.Start();
                 }
             }
             else

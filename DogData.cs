@@ -8,9 +8,15 @@ namespace DogBot
         public string URL { get; set; }
         public string Message { get; set; }
 
-        public DogData()
+        /// <summary>
+        /// Returns true if a dog has been set.
+        /// </summary>
+        public bool IsSet
         {
-            
+            get
+            {
+                return !string.IsNullOrEmpty(URL);
+            }
         }
     }
 }

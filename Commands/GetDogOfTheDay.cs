@@ -11,7 +11,7 @@ namespace DogBot
     {
         public override string Execute(DogBot bot, SteamID caller, string message)
         {
-            if (!string.IsNullOrEmpty(bot.Data.Dog.URL))
+            if (bot.Data.Dog.IsSet)
             {
                 if (!string.IsNullOrEmpty(bot.Data.Dog.Message))
                 {

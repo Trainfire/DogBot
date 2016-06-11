@@ -45,6 +45,7 @@ namespace DogBot
 
             manager.Subscribe<SteamUser.LoggedOnCallback>(OnLoggedOn);
             manager.Subscribe<SteamUser.LoggedOffCallback>(OnLoggedOff);
+            manager.Subscribe<SteamUser.LoginKeyCallback>(OnLoginKey);
 
             // this callback is triggered when the steam servers wish for the client to store the sentry file
             manager.Subscribe<SteamUser.UpdateMachineAuthCallback>(OnMachineAuth);
@@ -167,6 +168,11 @@ namespace DogBot
             // Subscribe to all Friend related callbacks here.
             manager.Subscribe<SteamFriends.ChatMsgCallback>(OnMessage);
 
+            //LoggedOn?.Invoke(this, null);
+        }
+
+        void OnLoginKey(SteamUser.LoginKeyCallback callback)
+        {
             LoggedOn?.Invoke(this, null);
         }
 
