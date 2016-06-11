@@ -18,7 +18,7 @@ namespace DogBot
         SteamClient steamClient;
         CallbackManager manager;
         bool isRunning;
-        string user, pass;
+        string user, pass, displayName;
         string authCode, twoFactorAuth;
 
         public SteamUser User { get; private set; }
@@ -45,13 +45,12 @@ namespace DogBot
 
             manager.Subscribe<SteamUser.LoggedOnCallback>(OnLoggedOn);
             manager.Subscribe<SteamUser.LoggedOffCallback>(OnLoggedOff);
-            manager.Subscribe<SteamUser.LoginKeyCallback>(OnLoginKey);
 
             // this callback is triggered when the steam servers wish for the client to store the sentry file
             manager.Subscribe<SteamUser.UpdateMachineAuthCallback>(OnMachineAuth);
         }
 
-        public void Connect(string user, string pass)
+        public void Connect(string user, string pass, string displayName)
         {
             if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(pass))
             {
@@ -62,6 +61,7 @@ namespace DogBot
             // save our logon details
             this.user = user;
             this.pass = pass;
+            this.displayName = displayName;
 
             isRunning = true;
 
@@ -163,16 +163,12 @@ namespace DogBot
             Console.WriteLine("Successfully logged on!");
 
             // Automatically set the bot online.
+            Friends.SetPersonaName(displayName);
             Friends.SetPersonaState(EPersonaState.Online);
 
             // Subscribe to all Friend related callbacks here.
             manager.Subscribe<SteamFriends.ChatMsgCallback>(OnMessage);
 
-            //LoggedOn?.Invoke(this, null);
-        }
-
-        void OnLoginKey(SteamUser.LoginKeyCallback callback)
-        {
             LoggedOn?.Invoke(this, null);
         }
 

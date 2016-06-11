@@ -26,7 +26,7 @@ namespace DogBot
             connection = new Connection();
             connection.LoggedOn += OnLoggedOn;
             connection.RecieveMessage += OnReceiveMessage;
-            connection.Connect(config.User, config.Pass);
+            connection.Connect(config.User, config.Pass, config.SteamName);
         }
 
         void OnAnnounce(object sender, ElapsedEventArgs e)
@@ -39,8 +39,6 @@ namespace DogBot
         void OnLoggedOn(object sender, EventArgs e)
         {
             Log("Logged on");
-
-            connection.Friends.SetPersonaName(config.SteamName);
 
             // Attempt to join chat.
             if (!string.IsNullOrEmpty(config.ChatRoomId))
