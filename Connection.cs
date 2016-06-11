@@ -176,7 +176,9 @@ namespace DogBot
         void OnLoggedOff(SteamUser.LoggedOffCallback callback)
         {
             Console.WriteLine("Logged off of Steam: {0}", callback.Result);
-            LoggedOff?.Invoke(this, null);
+
+            if (LoggedOff != null)
+                LoggedOff(this, null);
         }
 
         void OnMachineAuth(SteamUser.UpdateMachineAuthCallback callback)
