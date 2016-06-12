@@ -1,8 +1,12 @@
 ﻿using System;
 using System.IO;
 using SteamKit2;
+using SteamKit2.Internal;
 using System.Threading;
 using System.Security.Cryptography;
+using System.Net;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace DogBot
 {
@@ -15,6 +19,7 @@ namespace DogBot
         public event EventHandler LoggedOff;
         public event EventHandler<SteamFriends.ChatMsgCallback> RecieveMessage;
 
+        ServerCache serverCache;
         SteamClient steamClient;
         CallbackManager manager;
         bool isRunning;
@@ -26,8 +31,6 @@ namespace DogBot
 
         public Connection()
         {
-            SteamDirectory.Initialize().Wait();
-
             // create our steamclient instance
             steamClient = new SteamClient();
             // create the callback manager which will route callbacks to function calls
@@ -48,6 +51,11 @@ namespace DogBot
 
             // this callback is triggered when the steam servers wish for the client to store the sentry file
             manager.Subscribe<SteamUser.UpdateMachineAuthCallback>(OnMachineAuth);
+
+            // Create then load cached server data.
+            // NOTE: Currently, a server cache must be included in the bin directory because it's not possible to force SteamKit to refresh it's internal server list when running on Mono because reasons?
+            serverCache = new ServerCache();
+            serverCache.Load();
         }
 
         public void Connect(string user, string pass, string displayName)
@@ -55,6 +63,12 @@ namespace DogBot
             if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(pass))
             {
                 Console.WriteLine("[ERROR] Will not connect to Steam as User or Password is null or empty.");
+                return;
+            }
+
+            if (!serverCache.CacheExists)
+            {
+                Console.WriteLine("[ERROR] Cannot connect as the server cache failed to load! Make sure servers.bin exists in the root directory.");
                 return;
             }
 

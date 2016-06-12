@@ -18,6 +18,7 @@ namespace DogBot
 
         public DogBot()
         {
+            Log("Started");
             config = Config.Load();
             Data = new BotData();
 

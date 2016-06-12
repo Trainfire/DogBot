@@ -67,6 +67,8 @@
     <Compile Include="Commands\Unmute.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Connection.cs" />
+    <Compile Include="Converters\IPAddressConverter.cs" />
+    <Compile Include="Converters\IPEndPointConverter.cs" />
     <Compile Include="DogBot.cs" />
     <Compile Include="DogData.cs" />
     <Compile Include="History.cs" />
@@ -74,6 +76,8 @@
     <Compile Include="MessageParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServerCache.cs" />
+    <Compile Include="ServerData.cs" />
     <Compile Include="Strings.cs" />
   </ItemGroup>
   <ItemGroup>
