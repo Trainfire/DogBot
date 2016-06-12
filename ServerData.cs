@@ -19,6 +19,11 @@ namespace DogBot
             }
         }
 
-        public List<EndPoint> EndPoints { get; set; } = new List<EndPoint>();
+        public List<EndPoint> EndPoints { get; set; };
+
+        public ServerCacheData()
+        {
+            EndPoints = new List<EndPoint>();
+        }
     }
 }

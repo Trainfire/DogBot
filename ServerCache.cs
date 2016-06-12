@@ -25,7 +25,7 @@ namespace DogBot
                     CMClient.Servers.TryAdd(new IPEndPoint(x.Address, x.Port));
                 });
 
-                Console.WriteLine($"Loaded {CMClient.Servers.GetAllEndPoints().Length} servers from server list cache.");
+                Console.WriteLine("Loaded {0} servers from server list cache.", CMClient.Servers.GetAllEndPoints().Length);
 
                 CacheExists = true;
             }
