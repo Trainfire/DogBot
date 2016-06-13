@@ -32,7 +32,7 @@ namespace DogBot
             HelpArgs = args.ToList();
         }
 
-        public abstract string Execute(DogBot bot, SteamID player, string message);
+        public abstract CommandRecord Execute(DogBot bot, SteamID player, string message);
     }
 
     public class Command<T> : Command where T : CommandAction
@@ -45,10 +45,10 @@ namespace DogBot
         /// <summary>
         /// Executes the command. A string value may be returned.
         /// </summary>
-        public override string Execute(DogBot bot, SteamID player, string message)
+        public override CommandRecord Execute(DogBot bot, SteamID player, string message)
         {
             var action = Activator.CreateInstance<T>();
-            return action.Execute(bot, player, message);
+            return new CommandRecord(this, player, action.Execute(bot, player, message));
         }
     }
 
@@ -57,6 +57,73 @@ namespace DogBot
         /// <summary>
         /// Implement the action of a command here. Optionally, you can return a string to indicate a result.
         /// </summary>
-        public abstract string Execute(DogBot bot, SteamID caller, string message);
+        public abstract CommandResult Execute(DogBot bot, SteamID caller, string message);
+    }
+
+    /// <summary>
+    /// A record of who executed the command, the specified arguments, and the result of the command.
+    /// </summary>
+    public class CommandRecord
+    {
+        readonly Command command;
+
+        /// <summary>
+        /// The name of the command that was executed.
+        /// </summary>
+        public string Command
+        {
+            get
+            {
+                return command != null ? command.Alias : "Unknown";
+            }
+        }
+
+        /// <summary>
+        /// The Steam account that executed this command.
+        /// </summary>
+        public SteamID Executer { get; private set; }
+
+        /// <summary>
+        /// The result of executing this command.
+        /// </summary>
+        public CommandResult Result { get; private set; }
+
+        public CommandRecord(SteamID executer, CommandResult result)
+        {
+            Executer = executer;
+            Result = result;
+        }
+
+        public CommandRecord(Command command, SteamID execture, CommandResult result) : this(execture, result)
+        {
+            this.command = command;
+        }
+    }
+
+    /// <summary>
+    /// The result of an executed command, containing a message to be displayed in chat and a message to be logged.
+    /// </summary>
+    public class CommandResult
+    {
+        /// <summary>
+        /// The message to be displayed in chat.
+        /// </summary>
+        public string FeedbackMessage { get; set; }
+
+        /// <summary>
+        /// The message to be logged.
+        /// </summary>
+        public string LogMessage { get; set; }
+
+        public CommandResult()
+        {
+
+        }
+
+        public CommandResult(string feedback, string log = "")
+        {
+            FeedbackMessage = feedback;
+            LogMessage = log;
+        }
     }
 }

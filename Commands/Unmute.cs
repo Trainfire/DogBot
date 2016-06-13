@@ -5,10 +5,10 @@ namespace DogBot
 {
     class Unmute : CommandAction
     {
-        public override string Execute(DogBot bot, SteamID caller, string message)
+        public override CommandResult Execute(DogBot bot, SteamID caller, string message)
         {
             bot.Unmute();
-            return "";
+            return new CommandResult();
         }
     }
 }

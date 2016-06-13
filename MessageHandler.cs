@@ -14,7 +14,7 @@ namespace DogBot
         /// <summary>
         /// The result of the processed message. If a command is found and executed, this string may have a value. Otherwise it will be null.
         /// </summary>
-        public string Result { get; private set; }
+        public CommandRecord Record { get; private set; }
 
         public MessageHandler(DogBot bot, SteamFriends.ChatMsgCallback callback)
         {
@@ -41,16 +41,16 @@ namespace DogBot
                     {
                         if (bot.IsAdmin(caller))
                         {
-                            Result = command.Execute(bot, caller, message);
+                            Record = command.Execute(bot, caller, message);
                         }
                         else
                         {
-                            Result = Strings.NoPermission;
+                            Record = new CommandRecord(null, caller, new CommandResult(Strings.NoPermission));
                         }
                     }
                     else
                     {
-                        Result = command.Execute(bot, caller, message);
+                        Record = command.Execute(bot, caller, message);
                     }
                 }
             }

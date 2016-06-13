@@ -5,10 +5,10 @@ namespace DogBot
 {
     class Help : CommandAction
     {
-        public override string Execute(DogBot bot, SteamID caller, string message)
+        public override CommandResult Execute(DogBot bot, SteamID caller, string message)
         {
             // Returns a list of each command and it's arguments if specified.
-            return Strings.Help + " " + string.Join(" // ", CommandRegistry.Commands.Select(x => x.Help).ToArray());
+            return new CommandResult(Strings.Help + " " + string.Join(" // ", CommandRegistry.Commands.Select(x => x.Help).ToArray()));
         }
     }
 }

@@ -5,7 +5,7 @@ namespace DogBot
 {
     class Stats : CommandAction
     {
-        public override string Execute(DogBot bot, SteamID caller, string message)
+        public override CommandResult Execute(DogBot bot, SteamID caller, string message)
         {
             var stats = new List<string>();
 
@@ -20,7 +20,7 @@ namespace DogBot
                 stats.Add(string.Format("{0}{1} ({2})", Strings.StatsHighestContributer, name, highestContributer.Contributions));
             }
 
-            return string.Join(" // ", stats.ToArray());
+            return new CommandResult(string.Join(" // ", stats.ToArray()));
         }
     }
 }

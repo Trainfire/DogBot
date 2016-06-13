@@ -5,7 +5,7 @@ namespace DogBot
 {
     public class SetDogOfTheDay : CommandAction
     {
-        public override string Execute(DogBot bot, SteamID caller, string message)
+        public override CommandResult Execute(DogBot bot, SteamID caller, string message)
         {
             var dog = new DogData();
             var parser = new MessageParser(message);
@@ -26,11 +26,11 @@ namespace DogBot
 
                 bot.Data.SetDog(dog);
 
-                return Strings.SetDogOfTheDay + dog.URL;
+                return new CommandResult(Strings.SetDogOfTheDay + dog.URL);
             }
             else
             {
-                return Strings.UrlInvalid;
+                return new CommandResult(Strings.UrlInvalid);
             }
         }
 

@@ -10,6 +10,9 @@ namespace DogBot
         readonly ConfigData config;
         readonly Timer announcer;
         readonly Timer inactivityTimer;
+        readonly Logger logger;
+
+        const string LOGPATH = "log.bin";
 
         SteamID chatId;
         bool muted;
@@ -19,8 +22,11 @@ namespace DogBot
 
         public DogBot()
         {
-            Log("Started");
             config = Config.Load();
+
+            logger = new Logger(LOGPATH, config.SteamName);
+            logger.Info("Started");
+
             Data = new BotData();
 
             announcer = new Timer(1000 * config.AnnouncementInterval);
@@ -37,6 +43,7 @@ namespace DogBot
 
         void OnNoActivity(object sender, ElapsedEventArgs e)
         {
+            logger.Info("Rejoining chat due to inactivity");
             connection.Friends.LeaveChat(chatId);
             connection.Friends.JoinChat(chatId);
         }
@@ -45,12 +52,15 @@ namespace DogBot
         {
             // Post DoTD
             if (Data.Dog.IsSet)
+            {
+                logger.Info("Posting announcement...");
                 HandleMessage(SID, CommandRegistry.Dotd);
+            }
         }
 
         void OnLoggedOn(object sender, EventArgs e)
         {
-            Log("Logged on");
+            logger.Info("Logged on");
 
             // Attempt to join chat.
             if (!string.IsNullOrEmpty(config.ChatRoomId))
@@ -60,7 +70,7 @@ namespace DogBot
 
                 if (chatRoomId == 0)
                 {
-                    Log("{0} is an invalid chat room ID", config.ChatRoomId);
+                    logger.Error("{0} is an invalid chat room ID", config.ChatRoomId);
                 }
                 else
                 {
@@ -76,7 +86,7 @@ namespace DogBot
             }
             else
             {
-                Log("Could not connect to chat room as the chat room ID is invalid.");
+                logger.Error("Could not connect to chat room as the chat room ID is invalid.");
             }
         }
 
@@ -95,20 +105,22 @@ namespace DogBot
             // Process the received message and pass in the current Bot's data.
             var handler = new MessageHandler(this, caller, message);
 
+            var steamName = connection.Friends.GetFriendPersonaName(handler.Record.Executer);
+            logger.Info("Command Execution: '{0}' by {1}", handler.Record.Command, steamName);
+
             // Echo the result if there is one.
-            if (!string.IsNullOrEmpty(handler.Result))
-                Say(chatId, handler.Result);
+            if (!string.IsNullOrEmpty(handler.Record.Result.FeedbackMessage))
+                Say(chatId, handler.Record.Result.FeedbackMessage);
+
+            // Log a log message if there is one.
+            if (!string.IsNullOrEmpty(handler.Record.Result.LogMessage))
+                logger.Info(handler.Record.Result.LogMessage);
         }
 
         void Say(SteamID chatId, string message)
         {
             if (!muted)
                 connection.Friends.SendChatRoomMessage(chatId, EChatEntryType.ChatMsg, message);
-        }
-
-        void Log(string message, params object[] args)
-        {
-            Console.WriteLine("[DogBot] " + string.Format(message, args));
         }
 
         #region Helpers
