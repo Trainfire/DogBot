@@ -124,7 +124,10 @@ namespace DogBot
         void Say(SteamID chatId, string message)
         {
             if (!muted)
+            {
                 connection.Friends.SendChatRoomMessage(chatId, EChatEntryType.ChatMsg, message);
+                logger.Info(message);
+            }
         }
 
         #region Helpers
