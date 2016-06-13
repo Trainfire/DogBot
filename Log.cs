@@ -42,14 +42,14 @@ namespace DogBot
             string str = "";
             if (!string.IsNullOrEmpty(prefix))
             {
-                str = prefix + " // " + string.Format(message, args);
+                str = prefix + " | " + string.Format(message, args);
             }
             else
             {
                 str = string.Format(message, args);
             }
 
-            str = DateTime.Now.TimeOfDay.ToString() + " // " + str;
+            str = DateTime.Now.ToString("d/M/y h:mm:ss tt") + " | " + str;
             Console.WriteLine(str);
 
             using (var fa = File.AppendText(path))

@@ -32,7 +32,7 @@ namespace DogBot
             HelpArgs = args.ToList();
         }
 
-        public abstract CommandRecord Execute(DogBot bot, SteamID player, string message);
+        public abstract CommandRecord Execute(DogBot bot, SteamID player, MessageParser parser);
     }
 
     public class Command<T> : Command where T : CommandAction
@@ -45,10 +45,10 @@ namespace DogBot
         /// <summary>
         /// Executes the command. A string value may be returned.
         /// </summary>
-        public override CommandRecord Execute(DogBot bot, SteamID player, string message)
+        public override CommandRecord Execute(DogBot bot, SteamID player, MessageParser parser)
         {
             var action = Activator.CreateInstance<T>();
-            return new CommandRecord(this, player, action.Execute(bot, player, message));
+            return new CommandRecord(this, player, action.Execute(bot, player, parser), parser);
         }
     }
 
@@ -57,7 +57,7 @@ namespace DogBot
         /// <summary>
         /// Implement the action of a command here. Optionally, you can return a string to indicate a result.
         /// </summary>
-        public abstract CommandResult Execute(DogBot bot, SteamID caller, string message);
+        public abstract CommandResult Execute(DogBot bot, SteamID caller, MessageParser parser);
     }
 
     /// <summary>
@@ -78,6 +78,14 @@ namespace DogBot
             }
         }
 
+        public string Args
+        {
+            get
+            {
+                return string.Join(" ", Parser.Args);
+            }
+        }
+
         /// <summary>
         /// The Steam account that executed this command.
         /// </summary>
@@ -88,13 +96,19 @@ namespace DogBot
         /// </summary>
         public CommandResult Result { get; private set; }
 
-        public CommandRecord(SteamID executer, CommandResult result)
+        /// <summary>
+        /// The parser used to process this command.
+        /// </summary>
+        public MessageParser Parser { get; private set; }
+
+        public CommandRecord(SteamID executer, CommandResult result, MessageParser parser)
         {
             Executer = executer;
             Result = result;
+            Parser = parser;
         }
 
-        public CommandRecord(Command command, SteamID execture, CommandResult result) : this(execture, result)
+        public CommandRecord(Command command, SteamID execture, CommandResult result, MessageParser parser) : this(execture, result, parser)
         {
             this.command = command;
         }

@@ -5,10 +5,10 @@ namespace DogBot
 {
     public class SetDogOfTheDay : CommandAction
     {
-        public override CommandResult Execute(DogBot bot, SteamID caller, string message)
+        public override CommandResult Execute(DogBot bot, SteamID caller, MessageParser parser)
         {
             var dog = new DogData();
-            var parser = new MessageParser(message);
+            //var parser = new MessageParser(message);
 
             // Arg 0 is URL, Arg 1 is an optional Message.
             // TODO: Probably want to make this more obvious somehow...

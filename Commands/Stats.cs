@@ -5,7 +5,7 @@ namespace DogBot
 {
     class Stats : CommandAction
     {
-        public override CommandResult Execute(DogBot bot, SteamID caller, string message)
+        public override CommandResult Execute(DogBot bot, SteamID caller, MessageParser parser)
         {
             var stats = new List<string>();
 

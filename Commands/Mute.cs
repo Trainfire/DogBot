@@ -5,7 +5,7 @@ namespace DogBot
 {
     class Mute : CommandAction
     {
-        public override CommandResult Execute(DogBot bot, SteamID caller, string message)
+        public override CommandResult Execute(DogBot bot, SteamID caller, MessageParser parser)
         {
             bot.Mute();
             return new CommandResult();

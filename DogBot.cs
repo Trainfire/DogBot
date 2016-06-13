@@ -105,8 +105,12 @@ namespace DogBot
             // Process the received message and pass in the current Bot's data.
             var handler = new MessageHandler(this, caller, message);
 
-            var steamName = connection.Friends.GetFriendPersonaName(handler.Record.Executer);
-            logger.Info("Command Execution: '{0}' by {1}", handler.Record.Command, steamName);
+            // Log info about the execution of the command.
+            if (handler.Record.Executer.IsValid)
+            {
+                var steamName = connection.Friends.GetFriendPersonaName(handler.Record.Executer);
+                logger.Info("Command Execution: '{0}' by {1}. Arguments: {2}", handler.Record.Command, steamName, handler.Record.Args);
+            }
 
             // Echo the result if there is one.
             if (!string.IsNullOrEmpty(handler.Record.Result.FeedbackMessage))

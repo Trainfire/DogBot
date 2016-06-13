@@ -41,16 +41,16 @@ namespace DogBot
                     {
                         if (bot.IsAdmin(caller))
                         {
-                            Record = command.Execute(bot, caller, message);
+                            Record = command.Execute(bot, caller, parser);
                         }
                         else
                         {
-                            Record = new CommandRecord(null, caller, new CommandResult(Strings.NoPermission));
+                            Record = new CommandRecord(null, caller, new CommandResult(Strings.NoPermission), parser);
                         }
                     }
                     else
                     {
-                        Record = command.Execute(bot, caller, message);
+                        Record = command.Execute(bot, caller, parser);
                     }
                 }
             }
