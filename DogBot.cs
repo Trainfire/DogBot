@@ -9,6 +9,7 @@ namespace DogBot
         readonly Connection connection;
         readonly ConfigData config;
         readonly Timer announcer;
+        readonly Timer inactivityTimer;
 
         SteamID chatId;
         bool muted;
@@ -25,10 +26,19 @@ namespace DogBot
             announcer = new Timer(1000 * config.AnnouncementInterval);
             announcer.Elapsed += OnAnnounce;
 
+            inactivityTimer = new Timer(1000 * config.RejoinInterval);
+            inactivityTimer.Elapsed += OnNoActivity;
+
             connection = new Connection();
             connection.LoggedOn += OnLoggedOn;
             connection.RecieveMessage += OnReceiveMessage;
             connection.Connect(config.User, config.Pass, config.SteamName);
+        }
+
+        void OnNoActivity(object sender, ElapsedEventArgs e)
+        {
+            connection.Friends.LeaveChat(chatId);
+            connection.Friends.JoinChat(chatId);
         }
 
         void OnAnnounce(object sender, ElapsedEventArgs e)
@@ -59,6 +69,9 @@ namespace DogBot
 
                     // Start the announcer timer upon joining chat.
                     announcer.Start();
+
+                    // Start the inactivity timer
+                    inactivityTimer.Start();
                 }
             }
             else
@@ -72,6 +85,8 @@ namespace DogBot
         /// </summary>
         void OnReceiveMessage(object sender, SteamFriends.ChatMsgCallback callback)
         {
+            inactivityTimer.Stop();
+            inactivityTimer.Start();
             HandleMessage(callback.ChatterID, callback.Message);
         }
 

@@ -43,6 +43,11 @@ namespace DogBot
         /// </summary>
         public double AnnouncementInterval { get; set; }
 
+        /// <summary>
+        /// How long to wait for no activity before automatically rejoining chat.
+        /// </summary>
+        public double RejoinInterval { get; set; }
+
         public List<string> Admins { get; set; }
     }
 }

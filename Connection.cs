@@ -92,6 +92,15 @@ namespace DogBot
             }
         }
 
+        public void Disconnect()
+        {
+            if (isRunning)
+            {
+                Console.WriteLine("Disconnected");
+                steamClient.Disconnect();
+            }
+        }
+
         void OnConnected(SteamClient.ConnectedCallback callback)
         {
             if (callback.Result != EResult.OK)
