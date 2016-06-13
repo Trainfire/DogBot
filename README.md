@@ -4,7 +4,7 @@ DogBot is a bot built using the SteamKit library that will join a chatroom and p
 
 When in the same chat as DogBot, you can issue the following commands:
 * **!dotd** - Shows the current Dog of the Day
-* **!dotdset** - [URL] [Comment] (Optional) - Sets the current Dog of the Day **(Admin Only)**
+* **!dotdset** - URL | Comment (Optional) - Sets the current Dog of the Day **(Admin Only)**
 * **!dotdhelp** - Displays available commands
 * **!dotdrnd** - Returns a random previously set DotD
 * **!dotdstats** - Displays the number of DoTDs set and the highest contributor
