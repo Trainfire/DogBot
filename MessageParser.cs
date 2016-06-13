@@ -35,7 +35,6 @@ namespace DogBot
             }
             else
             {
-                Console.WriteLine("Failed to parse command due to incorrect syntax");
                 IsValid = false;
                 return;
             }

@@ -59,12 +59,5 @@ namespace DogBot
                 }
             }
         }
-
-        bool IsOfficerOrModerator(SteamID id)
-        {
-            // TODO: Move to JSON
-            var users = new List<string>();
-            return users.Contains(id.ToString());
-        }
     }
 }
