@@ -60,6 +60,7 @@
     <Compile Include="Command.cs" />
     <Compile Include="CommandRegistry.cs" />
     <Compile Include="Commands\GetDogOfTheDay.cs" />
+    <Compile Include="Commands\GetRandomDog.cs" />
     <Compile Include="Commands\Mute.cs" />
     <Compile Include="Commands\Stats.cs" />
     <Compile Include="Commands\Help.cs" />

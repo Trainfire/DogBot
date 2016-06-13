@@ -77,6 +77,7 @@ namespace DogBot
         readonly HistoryData data;
 
         public int TotalRecords { get { return data.History.Count; } }
+
         public HistoryContributor HighestContributer
         {
             get
@@ -88,6 +89,23 @@ namespace DogBot
                     return new HistoryContributor(highest.SetterSteamID, contributions);
                 }
                 return null;
+            }
+        }
+
+        public List<DogData> Dogs
+        {
+            get
+            {
+                var dogs = new List<DogData>();
+                foreach (var dog in data.History)
+                {
+                    dogs.Add(new DogData()
+                    {
+                        Setter = new SteamKit2.SteamID(dog.SetterSteamID),
+                        URL = dog.URL,
+                    });
+                }
+                return dogs;
             }
         }
 

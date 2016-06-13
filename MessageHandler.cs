@@ -53,6 +53,10 @@ namespace DogBot
                         Record = command.Execute(bot, caller, parser);
                     }
                 }
+                else
+                {
+                    Record = new CommandRecord(null, caller, new CommandResult("Command does not exist"), parser);
+                }
             }
         }
 

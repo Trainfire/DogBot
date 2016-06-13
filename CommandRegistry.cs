@@ -38,6 +38,7 @@ namespace DogBot
                     {
                         AdminOnly = true,
                     });
+                    commands.Add(new Command<GetRandomDog>(RND));
                 }
                 return commands.ToList();
             }
@@ -49,6 +50,7 @@ namespace DogBot
         const string STATS = "dotdstats";
         const string MUTE = "dotdmute";
         const string UNMUTE = "dotdunmute";
+        const string RND = "dotdrnd";
 
         public const string COMMAND_TOKEN = "!";
 
