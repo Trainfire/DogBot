@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Timers;
 using SteamKit2;
 
@@ -80,8 +80,12 @@ namespace DogBot
                     // Start the announcer timer upon joining chat.
                     announcer.Start();
 
-                    // Start the inactivity timer
+                    // Start the inactivity timer.
                     inactivityTimer.Start();
+
+                    // Set default DoTD to the last one that was set.
+                    if (Data.HistoryStats.LatestDog != null)
+                        Data.SetDog(Data.HistoryStats.LatestDog);
                 }
             }
             else

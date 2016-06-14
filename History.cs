@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System.IO;
 using System.Collections.Generic;
 using System;
@@ -106,6 +106,26 @@ namespace DogBot
                     });
                 }
                 return dogs;
+            }
+        }
+
+        public DogData LatestDog
+        {
+            get
+            {
+                if (data.History != null && data.History.Count != 0)
+                {
+                    var record = data.History.Last();
+                    if (record != null)
+                    {
+                        return new DogData()
+                        {
+                            Setter = new SteamKit2.SteamID(record.SetterSteamID),
+                            URL = record.URL,
+                        };
+                    }
+                }
+                return null;
             }
         }
 
