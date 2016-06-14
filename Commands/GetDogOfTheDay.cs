@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,7 +19,7 @@ namespace DogBot
                 }
                 else
                 {
-                    return new CommandResult(string.Format("{0} // {1}", Strings.DogOfTheDay, bot.Data.Dog.URL));
+                    return new CommandResult(string.Format("{0} // {1} // Set by {2}", Strings.DogOfTheDay, bot.Data.Dog.URL, bot.GetFriendName(bot.Data.Dog.Setter)));
                 }
             }
             else
