@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using SteamKit2;
 using SteamKit2.Internal;
@@ -25,12 +25,15 @@ namespace DogBot
         bool isRunning;
         string user, pass, displayName;
         string authCode, twoFactorAuth;
+        readonly Logger logger;
 
         public SteamUser User { get; private set; }
         public SteamFriends Friends { get; private set; }
 
         public Connection()
         {
+            logger = new Logger(DogBot.LOGPATH, "SteamKit");
+
             // create our steamclient instance
             steamClient = new SteamClient();
             // create the callback manager which will route callbacks to function calls
@@ -62,13 +65,13 @@ namespace DogBot
         {
             if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(pass))
             {
-                Console.WriteLine("[ERROR] Will not connect to Steam as User or Password is null or empty.");
+                logger.Error("Will not connect to Steam as User or Password is null or empty.");
                 return;
             }
 
             if (!serverCache.CacheExists)
             {
-                Console.WriteLine("[ERROR] Cannot connect as the server cache failed to load! Make sure servers.bin exists in the root directory.");
+                logger.Error("Cannot connect as the server cache failed to load! Make sure servers.bin exists in the root directory.");
                 return;
             }
 
@@ -79,7 +82,7 @@ namespace DogBot
 
             isRunning = true;
 
-            Console.WriteLine("Connecting to Steam...");
+            logger.Info("Connecting to Steam...");
 
             // initiate the connection
             steamClient.Connect();
@@ -96,7 +99,7 @@ namespace DogBot
         {
             if (isRunning)
             {
-                Console.WriteLine("Disconnected");
+                logger.Info("Disconnected");
                 steamClient.Disconnect();
             }
         }
@@ -105,13 +108,13 @@ namespace DogBot
         {
             if (callback.Result != EResult.OK)
             {
-                Console.WriteLine("Unable to connect to Steam: {0}", callback.Result);
+                logger.Warning("Unable to connect to Steam: {0}", callback.Result);
 
                 isRunning = false;
                 return;
             }
 
-            Console.WriteLine("Connected to Steam! Logging in '{0}'...", user);
+            logger.Info("Connected to Steam! Logging in '{0}'...", user);
 
             byte[] sentryHash = null;
             if (File.Exists("sentry.bin"))
@@ -145,7 +148,7 @@ namespace DogBot
             // after recieving an AccountLogonDenied, we'll be disconnected from steam
             // so after we read an authcode from the user, we need to reconnect to begin the logon flow again
 
-            Console.WriteLine("Disconnected from Steam, reconnecting in 5...");
+            logger.Warning("Disconnected from Steam, reconnecting in 5...");
 
             Thread.Sleep(TimeSpan.FromSeconds(5));
 
@@ -159,16 +162,16 @@ namespace DogBot
 
             if (isSteamGuard || is2FA)
             {
-                Console.WriteLine("This account is SteamGuard protected!");
+                logger.Warning("This account is SteamGuard protected!");
 
                 if (is2FA)
                 {
-                    Console.Write("Please enter your 2 factor auth code from your authenticator app: ");
+                    logger.Info("Please enter your 2 factor auth code from your authenticator app: ");
                     twoFactorAuth = Console.ReadLine();
                 }
                 else
                 {
-                    Console.Write("Please enter the auth code sent to the email at {0}: ", callback.EmailDomain);
+                    logger.Info("Please enter the auth code sent to the email at {0}: ", callback.EmailDomain);
                     authCode = Console.ReadLine();
                 }
 
@@ -177,13 +180,13 @@ namespace DogBot
 
             if (callback.Result != EResult.OK)
             {
-                Console.WriteLine("Unable to logon to Steam: {0} / {1}", callback.Result, callback.ExtendedResult);
+                logger.Error("Unable to logon to Steam: {0} / {1}", callback.Result, callback.ExtendedResult);
 
                 isRunning = false;
                 return;
             }
 
-            Console.WriteLine("Successfully logged on!");
+            logger.Info("Successfully logged on!");
 
             // Automatically set the bot online.
             Friends.SetPersonaName(displayName);
@@ -198,7 +201,7 @@ namespace DogBot
 
         void OnLoggedOff(SteamUser.LoggedOffCallback callback)
         {
-            Console.WriteLine("Logged off of Steam: {0}", callback.Result);
+            logger.Info("Logged off of Steam: {0}", callback.Result);
 
             if (LoggedOff != null)
                 LoggedOff(this, null);
@@ -206,7 +209,7 @@ namespace DogBot
 
         void OnMachineAuth(SteamUser.UpdateMachineAuthCallback callback)
         {
-            Console.WriteLine("Updating sentryfile...");
+            logger.Info("Updating sentryfile...");
 
             // write out our sentry file
             // ideally we'd want to write to the filename specified in the callback
@@ -247,7 +250,7 @@ namespace DogBot
                 SentryFileHash = sentryHash,
             });
 
-            Console.WriteLine("Done!");
+            logger.Info("Done!");
         }
 
         void OnMessage(SteamFriends.ChatMsgCallback callback)

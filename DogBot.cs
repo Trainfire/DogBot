@@ -12,7 +12,7 @@ namespace DogBot
         readonly Timer inactivityTimer;
         readonly Logger logger;
 
-        const string LOGPATH = "log.bin";
+        public const string LOGPATH = "log.bin";
 
         SteamID chatId;
         bool muted;
