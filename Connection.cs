@@ -27,6 +27,8 @@ namespace DogBot
         string authCode, twoFactorAuth;
         readonly Logger logger;
 
+        const float reconnectDelay = 5f;
+
         public SteamUser User { get; private set; }
         public SteamFriends Friends { get; private set; }
 
@@ -104,13 +106,23 @@ namespace DogBot
             }
         }
 
+        void Reconnect(float time = reconnectDelay)
+        {
+            isRunning = false;
+
+            logger.Info("Reconnecting in " + time + " seconds...");
+
+            Thread.Sleep(TimeSpan.FromSeconds(time));
+
+            Connect(user, pass, displayName);
+        }
+
         void OnConnected(SteamClient.ConnectedCallback callback)
         {
             if (callback.Result != EResult.OK)
             {
                 logger.Warning("Unable to connect to Steam: {0}", callback.Result);
-
-                isRunning = false;
+                Reconnect();
                 return;
             }
 
@@ -147,12 +159,8 @@ namespace DogBot
         {
             // after recieving an AccountLogonDenied, we'll be disconnected from steam
             // so after we read an authcode from the user, we need to reconnect to begin the logon flow again
-
-            logger.Warning("Disconnected from Steam, reconnecting in 5...");
-
-            Thread.Sleep(TimeSpan.FromSeconds(5));
-
-            steamClient.Connect();
+            logger.Warning("Disconnected from Steam...");
+            Reconnect();
         }
 
         void OnLoggedOn(SteamUser.LoggedOnCallback callback)
@@ -181,8 +189,7 @@ namespace DogBot
             if (callback.Result != EResult.OK)
             {
                 logger.Error("Unable to logon to Steam: {0} / {1}", callback.Result, callback.ExtendedResult);
-
-                isRunning = false;
+                Reconnect();
                 return;
             }
 
