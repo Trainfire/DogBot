@@ -9,7 +9,7 @@ namespace DogBot
         public event EventHandler AllAnnounced;
 
         readonly int totalAnnouncements;
-        readonly float timeBetweenAnnouncements;
+        readonly double timeBetweenAnnouncements;
         Timer timer;
 
         int announcementsMade = 0;
