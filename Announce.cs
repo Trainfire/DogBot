@@ -17,6 +17,7 @@ namespace DogBot
         public Announcer(double timeBetweenAnnouncements, int totalAnnouncements)
         {
             this.totalAnnouncements = totalAnnouncements;
+            this.timeBetweenAnnouncements = timeBetweenAnnouncements;
         }
 
         public void Start()
