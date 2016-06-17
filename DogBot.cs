@@ -20,6 +20,12 @@ namespace DogBot
         public BotData Data { get; private set; }
         public SteamID SID { get { return connection.User.SteamID; } }
 
+        public enum MessageContext
+        {
+            Chat,
+            Friend,
+        }
+
         public DogBot()
         {
             config = Config.Load();
@@ -37,7 +43,8 @@ namespace DogBot
 
             connection = new Connection();
             connection.LoggedOn += OnLoggedOn;
-            connection.RecieveMessage += OnReceiveMessage;
+            connection.ReceiveChatMessage += OnReceiveChatMessage;
+            connection.ReceiveFriendMessage += OnReceiveFriendMessage;
             connection.Connect(config.ConnectionInfo);
         }
 
@@ -54,7 +61,7 @@ namespace DogBot
             if (Data.Dog.IsSet)
             {
                 logger.Info("Posting announcement...");
-                HandleMessage(SID, CommandRegistry.Dotd);
+                HandleMessage(MessageContext.Chat, SID, CommandRegistry.Dotd);
             }
         }
 
@@ -94,17 +101,19 @@ namespace DogBot
             }
         }
 
-        /// <summary>
-        /// Called when a message is receieved in chat.
-        /// </summary>
-        void OnReceiveMessage(object sender, SteamFriends.ChatMsgCallback callback)
+        void OnReceiveChatMessage(object sender, SteamFriends.ChatMsgCallback callback)
         {
             inactivityTimer.Stop();
             inactivityTimer.Start();
-            HandleMessage(callback.ChatterID, callback.Message);
+            HandleMessage(MessageContext.Chat, callback.ChatterID, callback.Message);
         }
 
-        void HandleMessage(SteamID caller, string message)
+        void OnReceiveFriendMessage(object sender, SteamFriends.FriendMsgCallback callback)
+        {
+            HandleMessage(MessageContext.Friend, callback.Sender, callback.Message);
+        }
+
+        void HandleMessage(MessageContext context, SteamID caller, string message)
         {
             // Process the received message and pass in the current Bot's data.
             var handler = new MessageHandler(this, caller, message);
@@ -115,12 +124,21 @@ namespace DogBot
                 if (handler.Record.Executer.IsValid)
                 {
                     var steamName = connection.Friends.GetFriendPersonaName(handler.Record.Executer);
-                    logger.Info("Command Execution: '{0}' by {1}. Arguments: {2}", handler.Record.Command, steamName, handler.Record.Args);
+                    logger.Info("Command Execution: '{0}' by {1}. Arguments: {2}. Context: {3}", handler.Record.Command, steamName, handler.Record.Args, context.ToString());
                 }
 
                 // Echo the result if there is one.
                 if (!string.IsNullOrEmpty(handler.Record.Result.FeedbackMessage))
-                    Say(chatId, handler.Record.Result.FeedbackMessage);
+                {
+                    if (context == MessageContext.Chat)
+                    {
+                        SayToChat(chatId, handler.Record.Result.FeedbackMessage);
+                    }
+                    else
+                    {
+                        SayToFriend(caller, handler.Record.Result.FeedbackMessage);
+                    }
+                }
 
                 // Log a log message if there is one.
                 if (!string.IsNullOrEmpty(handler.Record.Result.LogMessage))
@@ -128,13 +146,19 @@ namespace DogBot
             }
         }
 
-        void Say(SteamID chatId, string message)
+        void SayToChat(SteamID chatId, string message)
         {
             if (!muted)
             {
                 connection.Friends.SendChatRoomMessage(chatId, EChatEntryType.ChatMsg, message);
-                logger.Info(message);
+                logger.Info("@Chat: {0}", message);
             }
+        }
+
+        void SayToFriend(SteamID friend, string message)
+        {
+            connection.Friends.SendChatMessage(friend, EChatEntryType.ChatMsg, message);
+            logger.Info("@{0}: {1}", connection.Friends.GetFriendPersonaName(friend), message);
         }
 
         #region Helpers
@@ -150,14 +174,14 @@ namespace DogBot
 
         public void Mute()
         {
-            Say(chatId, Strings.Muted);
+            SayToChat(chatId, Strings.Muted);
             muted = true;
         }
 
         public void Unmute()
         {
             muted = false;
-            Say(chatId, Strings.Unmuted);
+            SayToChat(chatId, Strings.Unmuted);
         }
         #endregion
     }

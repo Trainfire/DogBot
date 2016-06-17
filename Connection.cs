@@ -17,7 +17,8 @@ namespace DogBot
     {
         public event EventHandler LoggedOn;
         public event EventHandler LoggedOff;
-        public event EventHandler<SteamFriends.ChatMsgCallback> RecieveMessage;
+        public event EventHandler<SteamFriends.ChatMsgCallback> ReceiveChatMessage;
+        public event EventHandler<SteamFriends.FriendMsgCallback> ReceiveFriendMessage;
 
         ServerCache serverCache;
         SteamClient steamClient;
@@ -212,7 +213,8 @@ namespace DogBot
             Friends.SetPersonaState(EPersonaState.Online);
 
             // Subscribe to all Friend related callbacks here.
-            manager.Subscribe<SteamFriends.ChatMsgCallback>(OnMessage);
+            manager.Subscribe<SteamFriends.ChatMsgCallback>(OnChatMessage);
+            manager.Subscribe<SteamFriends.FriendMsgCallback>(OnFriendMessage);
 
             if (LoggedOn != null)
                 LoggedOn(this, null);
@@ -272,10 +274,16 @@ namespace DogBot
             logger.Info("Done!");
         }
 
-        void OnMessage(SteamFriends.ChatMsgCallback callback)
+        void OnChatMessage(SteamFriends.ChatMsgCallback callback)
         {
-            if (RecieveMessage != null)
-                RecieveMessage(this, callback);
+            if (ReceiveChatMessage != null)
+                ReceiveChatMessage(this, callback);
+        }
+
+        void OnFriendMessage(SteamFriends.FriendMsgCallback callback)
+        {
+            if (ReceiveFriendMessage != null)
+                ReceiveFriendMessage(this, callback);
         }
     }
 }
