@@ -3,12 +3,22 @@ using SteamKit2;
 
 namespace DogBot
 {
-    class SubmitDogOfTheDay : SetDogOfTheDay
+    class SubmitDogOfTheDay : CommandAction
     {
-        protected override CommandResult OnCreateDog(DogBot bot, DogData dog)
+        public override CommandResult Execute(DogBot bot, SteamID caller, MessageParser parser)
         {
-            bot.Data.AddDog(dog);
-            return new CommandResult(Strings.SetDogOfTheDay + dog.URL);
+            var dotdParser = new DotdSetParser(caller, parser.Message);
+
+            if (dotdParser.IsValid)
+            {
+                if (dotdParser.Dog != null)
+                    bot.Data.AddDog(dotdParser.Dog);
+                return new CommandResult(Strings.SubmitDogOfTheDay);
+            }
+            else
+            {
+                return new CommandResult(dotdParser.WhyInvalid);
+            }
         }
     }
 }

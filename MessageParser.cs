@@ -9,15 +9,15 @@ namespace DogBot
     /// </summary>
     public class MessageParser
     {
+        public string Message { get; private set; }
         public string Command { get; private set; }
         public List<string> Args { get; private set; }
         public bool IsValid { get; private set; }
-
-        // TODO: Move this into a config file.
-        
+        public string WhyInvalid { get; private set; }
 
         public MessageParser(string message)
         {
+            Message = message;
             IsValid = true;
             Args = new List<string>();
 
@@ -35,7 +35,7 @@ namespace DogBot
             }
             else
             {
-                IsValid = false;
+                Invalidate("Command does not start with '" + CommandRegistry.COMMAND_TOKEN + "' token");
                 return;
             }
 
@@ -44,6 +44,12 @@ namespace DogBot
             {
                 Args.Add(args[i]);
             }
+        }
+
+        protected void Invalidate(string reason)
+        {
+            IsValid = false;
+            WhyInvalid = reason;
         }
 
         public virtual void OnParse() { }

@@ -7,27 +7,17 @@ namespace DogBot
     {
         public override CommandResult Execute(DogBot bot, SteamID caller, MessageParser parser)
         {
-            // Arg 0 is URL, Arg 1 is an optional Message.
-            // TODO: Probably want to make this more obvious somehow...
-            if (parser.Args.Count > 0 && IsURL(parser.Args[0]))
+            var dotdParser = new DotdSetParser(caller, parser.Message);
+
+            if (dotdParser.IsValid)
             {
-                var dog = new DogData();
-
-                dog.Setter = caller;
-                dog.URL = parser.Args[0];
-
-                // Any other arguments are considered to be a comment.
-                if (parser.Args.Count > 0)
-                {
-                    var comment = parser.Args.Skip(1).ToList();
-                    dog.Message = string.Join(" ", comment);
-                }
-
-                return OnCreateDog(bot, dog);
+                if (dotdParser.Dog != null)
+                    bot.Data.SetDog(dotdParser.Dog);
+                return new CommandResult(Strings.SetDogOfTheDay + dotdParser.Dog.URL);
             }
             else
             {
-                return new CommandResult(Strings.UrlInvalid);
+                return new CommandResult(dotdParser.WhyInvalid);
             }
         }
 
@@ -35,12 +25,6 @@ namespace DogBot
         {
             bot.Data.SetDog(dog);
             return new CommandResult(Strings.SetDogOfTheDay + dog.URL);
-        }
-
-        bool IsURL(string message)
-        {
-            // TODO: Rubbish validation
-            return message.StartsWith("http://") || message.StartsWith("https://") || message.StartsWith("www.");
         }
     }
 }
