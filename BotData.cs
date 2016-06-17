@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using SteamKit2;
 
 namespace DogBot
@@ -23,13 +23,17 @@ namespace DogBot
         public void SetDog(DogData dog)
         {
             Dog = dog;
+            Dog.TimeStamp = DateTime.UtcNow.ToBinary().ToString();
             history.Write(new HistoryRecord()
             {
-                URL = dog.URL,
-                SetterSteamID = dog.Setter.ToString(),
-                TimeStamp = DateTime.UtcNow.ToBinary().ToString(),
+                Dog = dog,
             });
             history.Save();
+        }
+
+        public void AddDog(DogData dog)
+        {
+            // TODO.
         }
     }
 }

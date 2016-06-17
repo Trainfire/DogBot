@@ -62,6 +62,7 @@ namespace DogBot
             {
                 logger.Info("Posting announcement...");
                 HandleMessage(MessageContext.Chat, SID, CommandRegistry.Dotd);
+                Data.Dog.Shown = true;
             }
         }
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,6 +19,15 @@ namespace DogBot
 
                     // Register commands here
                     commands.Add(new Command<GetDogOfTheDay>(DOTD));
+                    commands.Add(new Command<SubmitDogOfTheDay>(DOTDSUBMIT)
+                    {
+                        AdminOnly = true,
+                        HelpArgs = new List<string>()
+                        {
+                            "URL",
+                            "Comment (Optional)"
+                        }
+                    });
                     commands.Add(new Command<SetDogOfTheDay>(DOTDSET)
                     {
                         AdminOnly = true,
@@ -47,6 +56,7 @@ namespace DogBot
 
         const string DOTD = "dotd";
         const string DOTDSET = "dotdset";
+        const string DOTDSUBMIT = "dotdsubmit";
         const string HELP = "dotdhelp";
         const string STATS = "dotdstats";
         const string MUTE = "dotdmute";

@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using SteamKit2;
 
 namespace DogBot
@@ -7,13 +7,12 @@ namespace DogBot
     {
         public override CommandResult Execute(DogBot bot, SteamID caller, MessageParser parser)
         {
-            var dog = new DogData();
-            //var parser = new MessageParser(message);
-
             // Arg 0 is URL, Arg 1 is an optional Message.
             // TODO: Probably want to make this more obvious somehow...
             if (parser.Args.Count > 0 && IsURL(parser.Args[0]))
             {
+                var dog = new DogData();
+
                 dog.Setter = caller;
                 dog.URL = parser.Args[0];
 
@@ -24,14 +23,18 @@ namespace DogBot
                     dog.Message = string.Join(" ", comment);
                 }
 
-                bot.Data.SetDog(dog);
-
-                return new CommandResult(Strings.SetDogOfTheDay + dog.URL);
+                return OnCreateDog(bot, dog);
             }
             else
             {
                 return new CommandResult(Strings.UrlInvalid);
             }
+        }
+
+        protected virtual CommandResult OnCreateDog(DogBot bot, DogData dog)
+        {
+            bot.Data.SetDog(dog);
+            return new CommandResult(Strings.SetDogOfTheDay + dog.URL);
         }
 
         bool IsURL(string message)

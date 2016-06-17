@@ -67,9 +67,7 @@ namespace DogBot
 
     public class HistoryRecord
     {
-        public string TimeStamp { get; set; }
-        public string URL { get; set; }
-        public string SetterSteamID { get; set; }
+        public DogData Dog { get; set; }
     }
 
     public class HistoryStats
@@ -82,11 +80,11 @@ namespace DogBot
         {
             get
             {
-                var highest = data.History.OrderBy(x => x.SetterSteamID).FirstOrDefault();
+                var highest = data.History.OrderBy(x => x.Dog.Setter.ToString()).FirstOrDefault();
                 if (highest != null)
                 {
-                    var contributions = data.History.Where(x => x.SetterSteamID == highest.SetterSteamID).ToList().Count;
-                    return new HistoryContributor(highest.SetterSteamID, contributions);
+                    var contributions = data.History.Where(x => x.Dog.Setter == highest.Dog.Setter).ToList().Count;
+                    return new HistoryContributor(highest.Dog.Setter.ToString(), contributions);
                 }
                 return null;
             }
@@ -96,16 +94,7 @@ namespace DogBot
         {
             get
             {
-                var dogs = new List<DogData>();
-                foreach (var dog in data.History)
-                {
-                    dogs.Add(new DogData()
-                    {
-                        Setter = new SteamKit2.SteamID(dog.SetterSteamID),
-                        URL = dog.URL,
-                    });
-                }
-                return dogs;
+                return data.History.Select(x => x.Dog).ToList();
             }
         }
 
@@ -117,15 +106,25 @@ namespace DogBot
                 {
                     var record = data.History.Last();
                     if (record != null)
-                    {
-                        return new DogData()
-                        {
-                            Setter = new SteamKit2.SteamID(record.SetterSteamID),
-                            URL = record.URL,
-                        };
-                    }
+                        return record.Dog;
                 }
                 return null;
+            }
+        }
+
+        public DogData NextDog
+        {
+            get
+            {
+                var record = data.History.FirstOrDefault(x => !x.Dog.Shown);
+                if (record != null)
+                {
+                    return record.Dog;
+                }
+                else
+                {
+                    return data.History.Last().Dog;
+                }
             }
         }
 

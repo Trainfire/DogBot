@@ -66,6 +66,7 @@
     <Compile Include="Commands\Stats.cs" />
     <Compile Include="Commands\Help.cs" />
     <Compile Include="Commands\SetDogOfTheDay.cs" />
+    <Compile Include="Commands\SubmitDogOfTheDay.cs" />
     <Compile Include="Commands\Unmute.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Connection.cs" />
