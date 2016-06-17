@@ -103,6 +103,8 @@ namespace DogBot
                     // Set default DoTD to the last one that was set.
                     if (Data.HistoryStats.LatestDog != null)
                         Data.SetDog(Data.HistoryStats.LatestDog);
+
+                    UpdateDisplayName();
                 }
             }
             else
@@ -169,6 +171,20 @@ namespace DogBot
         {
             connection.Friends.SendChatMessage(friend, EChatEntryType.ChatMsg, message);
             logger.Info("@{0}: {1}", connection.Friends.GetFriendPersonaName(friend), message);
+        }
+
+        void UpdateDisplayName()
+        {
+            var unshown = Data.HistoryStats.Unshown;
+
+            if (unshown != 0)
+            {
+                connection.Friends.SetPersonaName(string.Format("{0} ({1})", config.ConnectionInfo.DisplayName, Data.HistoryStats.Unshown));
+            }
+            else
+            {
+                connection.Friends.SetPersonaName(config.ConnectionInfo.DisplayName);
+            }
         }
 
         #region Helpers

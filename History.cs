@@ -112,6 +112,14 @@ namespace DogBot
             }
         }
 
+        public int Unshown
+        {
+            get
+            {
+                return data.History.Select(x => !x.Dog.Shown).ToList().Count;
+            }
+        }
+
         /// <summary>
         /// Returns the next dog in the list that hasn't been shown. Otherwise, returns the last shown dog.
         /// </summary>
