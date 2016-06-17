@@ -23,17 +23,23 @@ namespace DogBot
         public void SetDog(DogData dog)
         {
             Dog = dog;
-            Dog.TimeStamp = DateTime.UtcNow.ToBinary().ToString();
+            WriteToHistory(dog);
+        }
+
+        public void AddDog(DogData dog)
+        {
+            // Append the Dog to history but do not set it!
+            WriteToHistory(dog);
+        }
+
+        void WriteToHistory(DogData dog)
+        {
+            dog.TimeStamp = DateTime.UtcNow.ToBinary().ToString();
             history.Write(new HistoryRecord()
             {
                 Dog = dog,
             });
             history.Save();
-        }
-
-        public void AddDog(DogData dog)
-        {
-            // TODO.
         }
     }
 }

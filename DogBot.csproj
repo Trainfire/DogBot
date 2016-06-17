@@ -56,6 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Announce.cs" />
     <Compile Include="BotData.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="CommandRegistry.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="Logger.cs" />
     <Compile Include="MessageHandler.cs" />
     <Compile Include="MessageParser.cs" />
+    <Compile Include="Parsers\DogSetParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerCache.cs" />

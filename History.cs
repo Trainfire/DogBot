@@ -112,6 +112,9 @@ namespace DogBot
             }
         }
 
+        /// <summary>
+        /// Returns the next dog in the list that hasn't been shown. Otherwise, returns the last shown dog.
+        /// </summary>
         public DogData NextDog
         {
             get

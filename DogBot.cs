@@ -8,8 +8,8 @@ namespace DogBot
     {
         readonly Connection connection;
         readonly ConfigData config;
-        readonly Timer announcer;
         readonly Timer inactivityTimer;
+        readonly Announcer announcer;
         readonly Logger logger;
 
         public const string LOGPATH = "log.bin";
@@ -35,8 +35,9 @@ namespace DogBot
 
             Data = new BotData();
 
-            announcer = new Timer(1000 * config.AnnouncementInterval);
-            announcer.Elapsed += OnAnnounce;
+            announcer = new Announcer(config.AnnouncementInterval, config.AnnouncementAmount);
+            announcer.Announce += OnAnnounce;
+            announcer.AllAnnounced += OnAllAnnounced;
 
             inactivityTimer = new Timer(1000 * config.RejoinInterval);
             inactivityTimer.Elapsed += OnNoActivity;
@@ -55,7 +56,7 @@ namespace DogBot
             connection.Friends.JoinChat(chatId);
         }
 
-        void OnAnnounce(object sender, ElapsedEventArgs e)
+        void OnAnnounce(object sender, EventArgs e)
         {
             // Post DoTD
             if (Data.Dog.IsSet)
@@ -64,6 +65,14 @@ namespace DogBot
                 HandleMessage(MessageContext.Chat, SID, CommandRegistry.Dotd);
                 Data.Dog.Shown = true;
             }
+        }
+
+        void OnAllAnnounced(object sender, EventArgs e)
+        {
+            logger.Info("All announced. Setting dog to the next unshown...");
+
+            // Set the DoTD to the next unshown doggo.
+            Data.SetDog(Data.HistoryStats.NextDog);
         }
 
         void OnLoggedOn(object sender, EventArgs e)
