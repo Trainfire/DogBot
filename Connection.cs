@@ -23,14 +23,29 @@ namespace DogBot
         SteamClient steamClient;
         CallbackManager manager;
         bool isRunning;
-        string user, pass, displayName;
+        ConnectionInfo connectionInfo;
+        //string user, pass, displayName;
         string authCode, twoFactorAuth;
         readonly Logger logger;
 
-        const float reconnectDelay = 5f;
-
         public SteamUser User { get; private set; }
         public SteamFriends Friends { get; private set; }
+
+        public class ConnectionInfo
+        {
+            public string User { get; set; }
+            public string Pass { get; set; }
+            public string DisplayName { get; set; }
+            public float ReconnectInterval { get; set; }
+
+            public ConnectionInfo()
+            {
+                User = "User";
+                Pass = "Pass";
+                DisplayName = "Unnamed";
+                ReconnectInterval = 300;
+            }
+        }
 
         public Connection()
         {
@@ -63,9 +78,11 @@ namespace DogBot
             serverCache.Load();
         }
 
-        public void Connect(string user, string pass, string displayName)
+        public void Connect(ConnectionInfo connectionInfo)
         {
-            if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(pass))
+            this.connectionInfo = connectionInfo;
+
+            if (string.IsNullOrEmpty(connectionInfo.User) || string.IsNullOrEmpty(connectionInfo.Pass))
             {
                 logger.Error("Will not connect to Steam as User or Password is null or empty.");
                 return;
@@ -76,11 +93,6 @@ namespace DogBot
                 logger.Error("Cannot connect as the server cache failed to load! Make sure servers.bin exists in the root directory.");
                 return;
             }
-
-            // save our logon details
-            this.user = user;
-            this.pass = pass;
-            this.displayName = displayName;
 
             isRunning = true;
 
@@ -106,7 +118,7 @@ namespace DogBot
             }
         }
 
-        void Reconnect(float time = reconnectDelay)
+        void Reconnect(float time = 30f)
         {
             isRunning = false;
 
@@ -114,7 +126,7 @@ namespace DogBot
 
             Thread.Sleep(TimeSpan.FromSeconds(time));
 
-            Connect(user, pass, displayName);
+            Connect(connectionInfo);
         }
 
         void OnConnected(SteamClient.ConnectedCallback callback)
@@ -126,7 +138,7 @@ namespace DogBot
                 return;
             }
 
-            logger.Info("Connected to Steam! Logging in '{0}'...", user);
+            logger.Info("Connected to Steam! Logging in '{0}'...", connectionInfo.User);
 
             byte[] sentryHash = null;
             if (File.Exists("sentry.bin"))
@@ -138,8 +150,8 @@ namespace DogBot
 
             User.LogOn(new SteamUser.LogOnDetails
             {
-                Username = user,
-                Password = pass,
+                Username = connectionInfo.User,
+                Password = connectionInfo.Pass,
 
                 // in this sample, we pass in an additional authcode
                 // this value will be null (which is the default) for our first logon attempt
@@ -196,7 +208,7 @@ namespace DogBot
             logger.Info("Successfully logged on!");
 
             // Automatically set the bot online.
-            Friends.SetPersonaName(displayName);
+            Friends.SetPersonaName(connectionInfo.DisplayName);
             Friends.SetPersonaState(EPersonaState.Online);
 
             // Subscribe to all Friend related callbacks here.

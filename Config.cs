@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -33,9 +33,11 @@ namespace DogBot
 
     public class ConfigData
     {
-        public string User { get; set; }
-        public string Pass { get; set; }
-        public string SteamName { get; set; }
+        public Connection.ConnectionInfo ConnectionInfo { get; set; }
+
+        /// <summary>
+        /// Which chat room to connect to.
+        /// </summary>
         public string ChatRoomId { get; set; }
 
         /// <summary>

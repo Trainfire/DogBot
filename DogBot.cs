@@ -24,7 +24,7 @@ namespace DogBot
         {
             config = Config.Load();
 
-            logger = new Logger(LOGPATH, config.SteamName);
+            logger = new Logger(LOGPATH, config.ConnectionInfo.DisplayName);
             logger.Info("Started");
 
             Data = new BotData();
@@ -38,7 +38,7 @@ namespace DogBot
             connection = new Connection();
             connection.LoggedOn += OnLoggedOn;
             connection.RecieveMessage += OnReceiveMessage;
-            connection.Connect(config.User, config.Pass, config.SteamName);
+            connection.Connect(config.ConnectionInfo);
         }
 
         void OnNoActivity(object sender, ElapsedEventArgs e)
