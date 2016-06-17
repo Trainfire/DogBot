@@ -124,7 +124,7 @@ namespace DogBot
                 if (handler.Record.Executer.IsValid)
                 {
                     var steamName = connection.Friends.GetFriendPersonaName(handler.Record.Executer);
-                    logger.Info("Command Execution: '{0}' by {1}. Arguments: {2}. Context: {3}", handler.Record.Command, steamName, handler.Record.Args, context.ToString());
+                    logger.Info("Command Execution: From {0}: '{1}' by {2}. Arguments: {3}", context.ToString(), handler.Record.Command, steamName, handler.Record.Args);
                 }
 
                 // Echo the result if there is one.
