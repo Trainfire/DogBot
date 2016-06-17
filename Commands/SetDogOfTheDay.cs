@@ -20,11 +20,5 @@ namespace DogBot
                 return new CommandResult(dotdParser.WhyInvalid);
             }
         }
-
-        protected virtual CommandResult OnCreateDog(DogBot bot, DogData dog)
-        {
-            bot.Data.SetDog(dog);
-            return new CommandResult(Strings.SetDogOfTheDay + dog.URL);
-        }
     }
 }
