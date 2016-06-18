@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SteamKit2;
 
 namespace DogBot
 {
@@ -52,12 +53,18 @@ namespace DogBot
         {
             get
             {
-                var highest = data.History.OrderBy(x => x.Dog.Setter.ToString()).FirstOrDefault();
+                var highest = data.History
+                    .GroupBy(x => x.Dog.Setter)
+                    .OrderByDescending(x => x.Count())
+                    .Select(x => x.Key)
+                    .FirstOrDefault();
+
                 if (highest != null)
                 {
-                    var contributions = data.History.Where(x => x.Dog.Setter == highest.Dog.Setter).ToList().Count;
-                    return new HistoryContributor(highest.Dog.Setter.ToString(), contributions);
+                    var contributions = data.History.Where(x => x.Dog.Setter == highest).ToList().Count;
+                    return new HistoryContributor(highest, contributions);
                 }
+
                 return null;
             }
         }
@@ -91,10 +98,10 @@ namespace DogBot
 
         public class HistoryContributor
         {
-            public string SteamID { get; private set; }
+            public SteamID SteamID { get; private set; }
             public int Contributions { get; private set; }
 
-            public HistoryContributor(string steamID, int contributions)
+            public HistoryContributor(SteamID steamID, int contributions)
             {
                 SteamID = steamID;
                 Contributions = contributions;
