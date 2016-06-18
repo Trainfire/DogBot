@@ -34,7 +34,6 @@ namespace DogBot
             logger.Info("Started");
 
             Data = new BotData();
-            Data.DogSubmitted += OnDogSubmitted;
 
             announcer = new Announcer(config.AnnouncementInterval, config.AnnouncementAmount);
             announcer.Announce += OnAnnounce;
@@ -74,8 +73,6 @@ namespace DogBot
 
                     // Start the inactivity timer.
                     inactivityTimer.Start();
-
-                    UpdateDisplayName();
                 }
             }
             else
@@ -110,17 +107,11 @@ namespace DogBot
             if (Data.HasDog)
             {
                 logger.Info("Moving to next dog in queue...");
-                UpdateDisplayName();
             }
             else
             {
                 logger.Info("Nothing to announce.");
             }
-        }
-
-        void OnDogSubmitted(object sender, DogData e)
-        {
-            UpdateDisplayName();
         }
 
         void OnReceiveChatMessage(object sender, SteamFriends.ChatMsgCallback callback)
@@ -181,20 +172,6 @@ namespace DogBot
         {
             connection.Friends.SendChatMessage(friend, EChatEntryType.ChatMsg, message);
             logger.Info("@{0}: {1}", connection.Friends.GetFriendPersonaName(friend), message);
-        }
-
-        void UpdateDisplayName()
-        {
-            var dogsLeft = Data.QueueCount;
-
-            if (dogsLeft != 0)
-            {
-                connection.Friends.SetPersonaName(string.Format("{0} ({1})", config.ConnectionInfo.DisplayName, dogsLeft));
-            }
-            else
-            {
-                connection.Friends.SetPersonaName(config.ConnectionInfo.DisplayName);
-            }
         }
 
         #region Helpers
