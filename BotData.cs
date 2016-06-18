@@ -32,6 +32,8 @@ namespace DogBot
             queue.Enqueue(dog);
             queue.Save();
 
+            WriteToHistory(dog);
+
             if (DogSubmitted != null)
                 DogSubmitted(this, dog);
         }
