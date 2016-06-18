@@ -6,50 +6,25 @@ using System.Linq;
 
 namespace DogBot
 {
-    public class History
+    public class History : FileLogger<HistoryData>
     {
-        HistoryData data;
-
-        const string FILENAME = "history.json";
-
         public HistoryStats Stats { get; private set; }
-
-        string Path
-        {
-            get
-            {
-                return AppDomain.CurrentDomain.BaseDirectory;
-            }
-        }
 
         public History()
         {
-            data = Load();
-            Stats = new HistoryStats(data);
+            Stats = new HistoryStats(Data);
         }
 
         public void Write(HistoryRecord record)
         {
-            data.History.Add(record);
+            Data.History.Add(record);
         }
 
-        public void Save()
+        public override string Filename
         {
-            var sw = File.CreateText(Path + FILENAME);
-            sw.Write(JsonConvert.SerializeObject(data, Formatting.Indented));
-            sw.Close();
-        }
-
-        public HistoryData Load()
-        {
-            if (File.Exists(Path + FILENAME))
+            get
             {
-                var file = File.ReadAllText(Path + FILENAME);
-                return JsonConvert.DeserializeObject<HistoryData>(file);
-            }
-            else
-            {
-                return new HistoryData();
+                return "history.json";
             }
         }
     }
@@ -109,33 +84,6 @@ namespace DogBot
                         return record.Dog;
                 }
                 return null;
-            }
-        }
-
-        public int Unshown
-        {
-            get
-            {
-                return data.History.Select(x => !x.Dog.Shown).ToList().Count;
-            }
-        }
-
-        /// <summary>
-        /// Returns the next dog in the list that hasn't been shown. Otherwise, returns the last shown dog.
-        /// </summary>
-        public DogData NextDog
-        {
-            get
-            {
-                var record = data.History.FirstOrDefault(x => !x.Dog.Shown);
-                if (record != null)
-                {
-                    return record.Dog;
-                }
-                else
-                {
-                    return data.History.Last().Dog;
-                }
             }
         }
 

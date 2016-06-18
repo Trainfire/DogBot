@@ -1,5 +1,6 @@
 using System;
 using SteamKit2;
+using System.Linq;
 
 namespace DogBot
 {
@@ -8,28 +9,43 @@ namespace DogBot
     /// </summary>
     public class BotData
     {
-        readonly History history;
+        public event EventHandler<DogData> DogSubmitted;
 
-        public DogData Dog { get; private set; }
+        readonly History history;
+        DogData dog;
+        DotdQueue queue;
+
         public HistoryStats HistoryStats { get { return history.Stats; } }
+        public DogData CurrentDog { get { return queue.Data.Queue.Count != 0 ? queue.Data.Queue.Peek() : null; } }
+        public bool HasDog { get { return CurrentDog != null; } }
+        public int QueueCount { get { return queue.Data.Queue.Count; } }
 
         public BotData()
         {
-            Dog = new DogData();
             history = new History();
+            queue = new DotdQueue();
             history.Load();
         }
 
-        public void SetDog(DogData dog)
+        public void EnqueueDog(DogData dog)
         {
-            Dog = dog;
-            WriteToHistory(dog);
+            queue.Enqueue(dog);
+            queue.Save();
+
+            if (DogSubmitted != null)
+                DogSubmitted(this, dog);
         }
 
-        public void AddDog(DogData dog)
+        /// <summary>
+        /// Gets the next Dog in the queue, if there is one, and removes it from the queue file.
+        /// </summary>
+        public void MoveToNextDog()
         {
-            // Append the Dog to history but do not set it!
-            WriteToHistory(dog);
+            if (queue.Data.Queue.Count != 0)
+            {
+                dog = queue.Data.Queue.Dequeue();
+                queue.Save();
+            }
         }
 
         void WriteToHistory(DogData dog)

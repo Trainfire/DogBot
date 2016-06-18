@@ -12,7 +12,7 @@ namespace DogBot
             if (dotdParser.IsValid)
             {
                 if (dotdParser.Dog != null)
-                    bot.Data.AddDog(dotdParser.Dog);
+                    bot.Data.EnqueueDog(dotdParser.Dog);
                 return new CommandResult(Strings.SubmitDogOfTheDay);
             }
             else

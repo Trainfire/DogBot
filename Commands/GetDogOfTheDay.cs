@@ -11,15 +11,15 @@ namespace DogBot
     {
         public override CommandResult Execute(DogBot bot, SteamID caller, MessageParser parser)
         {
-            if (bot.Data.Dog.IsSet)
+            if (bot.Data.HasDog)
             {
-                if (!string.IsNullOrEmpty(bot.Data.Dog.Message))
+                if (!string.IsNullOrEmpty(bot.Data.CurrentDog.Message))
                 {
-                    return new CommandResult(string.Format("{0} // {1} // {2} said: '{3}'", Strings.DogOfTheDay, bot.Data.Dog.URL, bot.GetFriendName(bot.Data.Dog.Setter), bot.Data.Dog.Message));
+                    return new CommandResult(string.Format("{0} // {1} // {2} said: '{3}'", Strings.DogOfTheDay, bot.Data.CurrentDog.URL, bot.GetFriendName(bot.Data.CurrentDog.Setter), bot.Data.CurrentDog.Message));
                 }
                 else
                 {
-                    return new CommandResult(string.Format("{0} // {1} // Set by {2}", Strings.DogOfTheDay, bot.Data.Dog.URL, bot.GetFriendName(bot.Data.Dog.Setter)));
+                    return new CommandResult(string.Format("{0} // {1} // Set by {2}", Strings.DogOfTheDay, bot.Data.CurrentDog.URL, bot.GetFriendName(bot.Data.CurrentDog.Setter)));
                 }
             }
             else

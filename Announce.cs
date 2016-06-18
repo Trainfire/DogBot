@@ -24,6 +24,7 @@ namespace DogBot
         {
             timer = new Timer(1000 * timeBetweenAnnouncements);
             timer.Elapsed += MakeAnnouncement;
+            timer.Start();
         }
 
         void MakeAnnouncement(object sender, ElapsedEventArgs e)

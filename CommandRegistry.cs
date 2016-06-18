@@ -28,15 +28,6 @@ namespace DogBot
                             "Comment (Optional)"
                         }
                     });
-                    commands.Add(new Command<SetDogOfTheDay>(DOTDSET)
-                    {
-                        AdminOnly = true,
-                        HelpArgs = new List<string>()
-                        {
-                            "URL",
-                            "Comment (Optional)"
-                        }
-                    });
                     commands.Add(new Command<Help>(HELP));
                     commands.Add(new Command<Stats>(STATS));
                     commands.Add(new Command<Mute>(MUTE)
@@ -55,7 +46,6 @@ namespace DogBot
         }
 
         const string DOTD = "dotd";
-        const string DOTDSET = "dotdset";
         const string DOTDSUBMIT = "dotdsubmit";
         const string HELP = "dotdhelp";
         const string STATS = "dotdstats";
@@ -68,9 +58,9 @@ namespace DogBot
 
         public static string Dotd { get { return Format(DOTD); } }
 
-        public static string DotdSet(string url, string comment)
+        public static string DotdSubmit(string url, string comment)
         {
-            return string.Format("{0} {1} {2}", Format(DOTDSET), url, comment);
+            return string.Format("{0} {1} {2}", Format(DOTDSUBMIT), url, comment);
         }
 
         static string Format(string command)

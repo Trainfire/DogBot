@@ -66,7 +66,6 @@
     <Compile Include="Commands\Mute.cs" />
     <Compile Include="Commands\Stats.cs" />
     <Compile Include="Commands\Help.cs" />
-    <Compile Include="Commands\SetDogOfTheDay.cs" />
     <Compile Include="Commands\SubmitDogOfTheDay.cs" />
     <Compile Include="Commands\Unmute.cs" />
     <Compile Include="Config.cs" />
@@ -75,6 +74,8 @@
     <Compile Include="Converters\IPEndPointConverter.cs" />
     <Compile Include="DogBot.cs" />
     <Compile Include="DogData.cs" />
+    <Compile Include="DotdQueue.cs" />
+    <Compile Include="FileLogger.cs" />
     <Compile Include="History.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="MessageHandler.cs" />

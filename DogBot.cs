@@ -34,10 +34,11 @@ namespace DogBot
             logger.Info("Started");
 
             Data = new BotData();
+            Data.DogSubmitted += OnDogSubmitted;
 
             announcer = new Announcer(config.AnnouncementInterval, config.AnnouncementAmount);
             announcer.Announce += OnAnnounce;
-            announcer.AllAnnounced += OnAllAnnounced;
+            announcer.AllAnnounced += OnAllAnnouncements;
 
             inactivityTimer = new Timer(1000 * config.RejoinInterval);
             inactivityTimer.Elapsed += OnNoActivity;
@@ -47,32 +48,6 @@ namespace DogBot
             connection.ReceiveChatMessage += OnReceiveChatMessage;
             connection.ReceiveFriendMessage += OnReceiveFriendMessage;
             connection.Connect(config.ConnectionInfo);
-        }
-
-        void OnNoActivity(object sender, ElapsedEventArgs e)
-        {
-            logger.Info("Rejoining chat due to inactivity");
-            connection.Friends.LeaveChat(chatId);
-            connection.Friends.JoinChat(chatId);
-        }
-
-        void OnAnnounce(object sender, EventArgs e)
-        {
-            // Post DoTD
-            if (Data.Dog.IsSet)
-            {
-                logger.Info("Posting announcement...");
-                HandleMessage(MessageContext.Chat, SID, CommandRegistry.Dotd);
-                Data.Dog.Shown = true;
-            }
-        }
-
-        void OnAllAnnounced(object sender, EventArgs e)
-        {
-            logger.Info("All announced. Setting dog to the next unshown...");
-
-            // Set the DoTD to the next unshown doggo.
-            Data.SetDog(Data.HistoryStats.NextDog);
         }
 
         void OnLoggedOn(object sender, EventArgs e)
@@ -100,10 +75,6 @@ namespace DogBot
                     // Start the inactivity timer.
                     inactivityTimer.Start();
 
-                    // Set default DoTD to the last one that was set.
-                    if (Data.HistoryStats.LatestDog != null)
-                        Data.SetDog(Data.HistoryStats.LatestDog);
-
                     UpdateDisplayName();
                 }
             }
@@ -111,6 +82,45 @@ namespace DogBot
             {
                 logger.Error("Could not connect to chat room as the chat room ID is invalid.");
             }
+        }
+
+        void OnNoActivity(object sender, ElapsedEventArgs e)
+        {
+            logger.Info("Rejoining chat due to inactivity");
+            connection.Friends.LeaveChat(chatId);
+            connection.Friends.JoinChat(chatId);
+        }
+
+        void OnAnnounce(object sender, EventArgs e)
+        {
+            // Post DoTD
+            if (Data.HasDog)
+            {
+                logger.Info("Posting announcement...");
+                HandleMessage(MessageContext.Chat, SID, CommandRegistry.Dotd);
+            }
+        }
+
+        void OnAllAnnouncements(object sender, EventArgs e)
+        {
+            logger.Info("All announcements for current dog shown.");
+
+            Data.MoveToNextDog();
+
+            if (Data.HasDog)
+            {
+                logger.Info("Moving to next dog in queue...");
+                UpdateDisplayName();
+            }
+            else
+            {
+                logger.Info("Nothing to announce.");
+            }
+        }
+
+        void OnDogSubmitted(object sender, DogData e)
+        {
+            UpdateDisplayName();
         }
 
         void OnReceiveChatMessage(object sender, SteamFriends.ChatMsgCallback callback)
@@ -175,11 +185,11 @@ namespace DogBot
 
         void UpdateDisplayName()
         {
-            var unshown = Data.HistoryStats.Unshown;
+            var dogsLeft = Data.QueueCount;
 
-            if (unshown != 0)
+            if (dogsLeft != 0)
             {
-                connection.Friends.SetPersonaName(string.Format("{0} ({1})", config.ConnectionInfo.DisplayName, Data.HistoryStats.Unshown));
+                connection.Friends.SetPersonaName(string.Format("{0} ({1})", config.ConnectionInfo.DisplayName, dogsLeft));
             }
             else
             {
