@@ -15,17 +15,22 @@ namespace DogBot
             {
                 if (!string.IsNullOrEmpty(bot.Data.CurrentDog.Message))
                 {
-                    return new CommandResult(string.Format("{0} // {1} // {2} said: '{3}'", Strings.DogOfTheDay, bot.Data.CurrentDog.URL, bot.GetFriendName(bot.Data.CurrentDog.Setter), bot.Data.CurrentDog.Message));
+                    return new CommandResult(string.Format("{0} // {1} said: '{2}'", GetDoTDInfo(bot.Data.CurrentDog), bot.GetFriendName(bot.Data.CurrentDog.Setter), bot.Data.CurrentDog.Message));
                 }
                 else
                 {
-                    return new CommandResult(string.Format("{0} // {1} // Set by {2}", Strings.DogOfTheDay, bot.Data.CurrentDog.URL, bot.GetFriendName(bot.Data.CurrentDog.Setter)));
+                    return new CommandResult(string.Format("{0} // Courtesy of {1}", GetDoTDInfo(bot.Data.CurrentDog), bot.GetFriendName(bot.Data.CurrentDog.Setter)));
                 }
             }
             else
             {
                 return new CommandResult(Strings.NoDog);
             }
+        }
+
+        string GetDoTDInfo(DogData dog)
+        {
+            return string.Format("{0}'s {1} // {2}", DateTime.Now.DayOfWeek.ToString(), Strings.DogOfTheDay, dog.URL);
         }
     }
 }
