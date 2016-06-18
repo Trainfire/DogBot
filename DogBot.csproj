@@ -60,6 +60,7 @@
     <Compile Include="BotData.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="CommandRegistry.cs" />
+    <Compile Include="Commands\GetDogOfTheDayCount.cs" />
     <Compile Include="Commands\ShowRepo.cs" />
     <Compile Include="Commands\GetDogOfTheDay.cs" />
     <Compile Include="Commands\GetRandomDog.cs" />

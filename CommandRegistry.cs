@@ -40,6 +40,7 @@ namespace DogBot
                     });
                     commands.Add(new Command<GetRandomDog>(RND));
                     commands.Add(new Command<ShowRepo>(REPO));
+                    commands.Add(new Command<GetDogOfTheDayCount>(COUNT));
                 }
                 return commands.ToList();
             }
@@ -53,6 +54,7 @@ namespace DogBot
         const string UNMUTE = "dotdunmute";
         const string RND = "dotdrnd";
         const string REPO = "dotdrepo";
+        const string COUNT = "dotdcount";
 
         public const string COMMAND_TOKEN = "!";
 

@@ -15,5 +15,6 @@ namespace DogBot
         public const string Muted = "*muted*";
         public const string Unmuted = "*bark!*";
         public const string Repo = "https://github.com/Trainfire/DogBot";
+        public const string TotalMessages = "Dog of the Day // Messages remaining: ";
     }
 }
