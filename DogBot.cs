@@ -35,7 +35,8 @@ namespace DogBot
 
             Data = new BotData();
 
-            announcer = new Announcer(config.AnnouncementInterval, config.AnnouncementAmount);
+            // Create the announcer
+            announcer = new Announcer(config.AnnouncementInterval);
             announcer.Announce += OnAnnounce;
             announcer.AllAnnounced += OnAllAnnouncements;
 

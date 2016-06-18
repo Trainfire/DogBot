@@ -56,7 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Announce.cs" />
+    <Compile Include="Announcer.cs" />
     <Compile Include="BotData.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="CommandRegistry.cs" />

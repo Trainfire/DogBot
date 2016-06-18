@@ -1,7 +1,4 @@
-using Newtonsoft.Json;
-using System.IO;
 using System.Collections.Generic;
-using System;
 using System.Linq;
 
 namespace DogBot
@@ -63,6 +60,11 @@ namespace DogBot
                 }
                 return null;
             }
+        }
+
+        public List<DogData> GetUserContributions(SteamKit2.SteamID steamID)
+        {
+            return data.History.Where(x => x.Dog.Setter == steamID).Select(x => x.Dog).ToList();
         }
 
         public List<DogData> Dogs
