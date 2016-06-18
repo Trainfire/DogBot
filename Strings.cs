@@ -11,7 +11,7 @@ namespace DogBot
         public const string Setter = "Dog of the Day was set by";
         public const string Help = "Commands: ";
         public const string StatsTotalAdded = "Dogs added to this day: ";
-        public const string StatsHighestContributer = "Highest contributer: ";
+        public const string StatsHighestContributer = "Highest contributor: ";
         public const string Muted = "*muted*";
         public const string Unmuted = "*bark!*";
         public const string Repo = "https://github.com/Trainfire/DogBot";
