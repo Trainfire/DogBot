@@ -35,9 +35,7 @@ namespace DogBot
         {
             AnnouncementsRemaining = 24 - DateTime.Now.Hour;
 
-            Console.WriteLine("Remaining announcements for this day:"  + AnnouncementsRemaining);
-
-            timer = new Timer(1000 * timeBetweenAnnouncements);
+            timer = new Timer(GetMillisecondsToHour());
             timer.Elapsed += MakeAnnouncement;
             timer.Start();
         }
@@ -49,6 +47,8 @@ namespace DogBot
 
             AnnouncementsRemaining--;
 
+            timer.Interval = GetMillisecondsToHour();
+
             if (AnnouncementsRemaining == 0)
             {
                 if (AllAnnounced != null)
@@ -56,6 +56,21 @@ namespace DogBot
 
                 AnnouncementsRemaining = 24;
             }
+        }
+
+        int GetMillisecondsToHour()
+        {
+            int interval;
+
+            int minutesRemaining = 59 - DateTime.Now.Minute;
+            int secondsRemaining = 59 - DateTime.Now.Second;
+
+            interval = ((minutesRemaining * 60) + secondsRemaining) * 1000;
+
+            if (interval == 0)
+                interval = 60 * 60 * 1000;
+
+            return interval;
         }
     }
 }

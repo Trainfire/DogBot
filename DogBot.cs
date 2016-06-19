@@ -72,6 +72,8 @@ namespace DogBot
                     // Start the announcer timer upon joining chat.
                     announcer.Start();
 
+                    logger.Info("Announcements remaining for {0}: {1}", DateTime.Now.Day.ToString(), announcer.AnnouncementsRemaining);
+
                     // Start the inactivity timer.
                     inactivityTimer.Start();
                 }
