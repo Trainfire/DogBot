@@ -22,14 +22,9 @@ namespace DogBot
         Timer timer;
 
         /// <summary>
-        /// The number of announcements that have been made over the current day.
-        /// </summary>
-        public int AnnouncementsMade { get; private set; }
-
-        /// <summary>
         /// How many announcements remain over a 24 hour period. One announcement is made every hour.
         /// </summary>
-        public int AnnouncementsRemaining { get { return 24 - DateTime.Now.Hour; } }
+        public int AnnouncementsRemaining { get; private set; }
 
         public Announcer(double timeBetweenAnnouncements)
         {
@@ -38,6 +33,10 @@ namespace DogBot
 
         public void Start()
         {
+            AnnouncementsRemaining = 24 - DateTime.Now.Hour;
+
+            Console.WriteLine("Remaining announcements for this day:"  + AnnouncementsRemaining);
+
             timer = new Timer(1000 * timeBetweenAnnouncements);
             timer.Elapsed += MakeAnnouncement;
             timer.Start();
@@ -48,14 +47,14 @@ namespace DogBot
             if (Announce != null)
                 Announce(this, null);
 
-            AnnouncementsMade++;
+            AnnouncementsRemaining--;
 
-            if (AnnouncementsMade == AnnouncementsRemaining)
+            if (AnnouncementsRemaining == 0)
             {
                 if (AllAnnounced != null)
                     AllAnnounced(this, null);
 
-                AnnouncementsMade = 0;
+                AnnouncementsRemaining = 24;
             }
         }
     }
