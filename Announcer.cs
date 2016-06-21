@@ -35,7 +35,8 @@ namespace DogBot
         {
             AnnouncementsRemaining = 24 - DateTime.Now.Hour;
 
-            timer = new Timer(GetMillisecondsToHour());
+            //timer = new Timer(GetMillisecondsToHour());
+            timer = new Timer(timeBetweenAnnouncements);
             timer.Elapsed += MakeAnnouncement;
             timer.Start();
         }
@@ -47,7 +48,7 @@ namespace DogBot
 
             AnnouncementsRemaining--;
 
-            timer.Interval = GetMillisecondsToHour();
+            timer.Interval = timeBetweenAnnouncements;
 
             if (AnnouncementsRemaining == 0)
             {

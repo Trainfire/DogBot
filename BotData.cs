@@ -1,6 +1,7 @@
 using System;
 using SteamKit2;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace DogBot
 {
@@ -16,7 +17,7 @@ namespace DogBot
         DotdQueue queue;
 
         public HistoryStats HistoryStats { get { return history.Stats; } }
-        public DogData CurrentDog { get { return queue.Data.Queue.Count != 0 ? queue.Data.Queue.Peek() : null; } }
+        public DogData CurrentDog { get { return queue.Peek(); } }
         public bool HasDog { get { return CurrentDog != null; } }
         public int QueueCount { get { return queue.Data.Queue.Count; } }
 
@@ -45,7 +46,7 @@ namespace DogBot
         {
             if (queue.Data.Queue.Count != 0)
             {
-                dog = queue.Data.Queue.Dequeue();
+                dog = queue.Dequeue();
                 queue.Save();
             }
         }
