@@ -31,7 +31,6 @@ namespace DogBot
         public void EnqueueDog(DogData dog)
         {
             queue.Enqueue(dog);
-            queue.Save();
 
             WriteToHistory(dog);
 
@@ -47,7 +46,6 @@ namespace DogBot
             if (queue.Data.Queue.Count != 0)
             {
                 dog = queue.Dequeue();
-                queue.Save();
             }
         }
 
@@ -58,7 +56,6 @@ namespace DogBot
             {
                 Dog = dog,
             });
-            history.Save();
         }
     }
 }

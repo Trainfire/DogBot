@@ -16,6 +16,7 @@ namespace DogBot
         public void Write(HistoryRecord record)
         {
             Data.History.Add(record);
+            Save();
         }
 
         public override string Filename
