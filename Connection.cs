@@ -119,13 +119,13 @@ namespace DogBot
             }
         }
 
-        void Reconnect(float time = 30f)
+        void Reconnect()
         {
             isRunning = false;
 
-            logger.Info("Reconnecting in " + time + " seconds...");
+            logger.Info("Reconnecting in " + connectionInfo.ReconnectInterval + " seconds...");
 
-            Thread.Sleep(TimeSpan.FromSeconds(time));
+            Thread.Sleep(TimeSpan.FromSeconds(connectionInfo.ReconnectInterval));
 
             Connect(connectionInfo);
         }
