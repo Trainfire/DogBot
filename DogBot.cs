@@ -192,9 +192,7 @@ namespace DogBot
             var name = connection.Friends.GetFriendPersonaName(id);
 
             if (name != "[unknown]")
-            {   
                 nameCache.Store(id, name);
-            }
 
             return nameCache.Retrieve(id);
         }
