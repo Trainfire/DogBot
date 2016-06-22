@@ -32,11 +32,11 @@ namespace DogBot
                     commands.Add(new Command<Stats>(STATS));
                     commands.Add(new Command<Mute>(MUTE)
                     {
-                        UsersOnly = true,
+                        AdminOnly = true,
                     });
                     commands.Add(new Command<Unmute>(UNMUTE)
                     {
-                        UsersOnly = true,
+                        AdminOnly = true,
                     });
                     commands.Add(new Command<GetRandomDog>(RND));
                     commands.Add(new Command<ShowRepo>(REPO));
