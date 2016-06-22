@@ -7,6 +7,7 @@ namespace DogBot
 {
     public abstract class Command
     {
+        public bool UsersOnly { get; set; }
         public bool AdminOnly { get; set; }
         public string Alias { get; private set; }
         public List<string> HelpArgs { get; set; }

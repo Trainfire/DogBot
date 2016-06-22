@@ -56,5 +56,6 @@ namespace DogBot
         public double RejoinInterval { get; set; }
 
         public List<string> Admins { get; set; }
+        public List<string> Users { get; set; }
     }
 }

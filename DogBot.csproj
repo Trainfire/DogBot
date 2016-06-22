@@ -61,6 +61,7 @@
     <Compile Include="Command.cs" />
     <Compile Include="CommandRegistry.cs" />
     <Compile Include="Commands\GetDogOfTheDayCount.cs" />
+    <Compile Include="Commands\PopulateNameCache.cs" />
     <Compile Include="Commands\ShowPermissions.cs" />
     <Compile Include="Commands\ShowRepo.cs" />
     <Compile Include="Commands\GetDogOfTheDay.cs" />
@@ -82,6 +83,7 @@
     <Compile Include="Logger.cs" />
     <Compile Include="MessageHandler.cs" />
     <Compile Include="MessageParser.cs" />
+    <Compile Include="NameCache.cs" />
     <Compile Include="Parsers\DogSetParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -7,7 +7,7 @@ namespace DogBot
     {
         public override CommandResult Execute(DogBot bot, SteamID caller, MessageParser parser)
         {
-            string hasAdmin = bot.IsAdmin(caller) ? "Aye" : "Nay";
+            string hasAdmin = bot.IsUser(caller) ? "Aye" : "Nay";
             return new CommandResult(string.Format("Does {0} have admin? {1}", bot.GetFriendName(caller), hasAdmin));
         }
     }

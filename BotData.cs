@@ -13,13 +13,19 @@ namespace DogBot
         public event EventHandler<DogData> DogSubmitted;
 
         readonly History history;
+
         DogData dog;
         DotdQueue queue;
 
         public HistoryStats HistoryStats { get { return history.Stats; } }
         public DogData CurrentDog { get { return queue.Peek(); } }
         public bool HasDog { get { return CurrentDog != null; } }
-        public int QueueCount { get { return queue.Data.Queue.Count; } }
+        public int QueueCount { get { return Queue.Count; } }
+
+        /// <summary>
+        /// Returns a copy of the Queue.
+        /// </summary>
+        public List<DogData> Queue { get { return queue.Data.Queue.ToList(); } }
 
         public BotData()
         {

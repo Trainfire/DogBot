@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using SteamKit2;
 
@@ -37,9 +37,9 @@ namespace DogBot
 
                 if (command != null)
                 {
-                    if (command.AdminOnly)
+                    if (command.UsersOnly)
                     {
-                        if (bot.IsAdmin(caller))
+                        if (bot.IsUser(caller))
                         {
                             Record = command.Execute(bot, caller, parser);
                         }

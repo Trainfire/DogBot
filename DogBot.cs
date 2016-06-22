@@ -11,6 +11,7 @@ namespace DogBot
         readonly Timer inactivityTimer;
         readonly Announcer announcer;
         readonly Logger logger;
+        readonly NameCache nameCache;
 
         public const string LOGPATH = "log.bin";
 
@@ -34,6 +35,9 @@ namespace DogBot
             logger.Info("Started");
 
             Data = new BotData();
+
+            nameCache = new NameCache();
+            nameCache.Load();
 
             // Create the announcer
             announcer = new Announcer(config.AnnouncementInterval);
@@ -178,14 +182,26 @@ namespace DogBot
         }
 
         #region Helpers
-        public string GetFriendName(SteamID id)
+        public void PopulateNameCache()
         {
-            return connection.Friends.GetFriendPersonaName(id);
+            Data.Queue.ForEach(x => GetFriendName(x.Setter));
         }
 
-        public bool IsAdmin(SteamID id)
+        public string GetFriendName(SteamID id)
         {
-            return config.Admins != null ? config.Admins.Contains(id.ToString()) : false;
+            var name = connection.Friends.GetFriendPersonaName(id);
+
+            if (name != "[unknown]")
+            {   
+                nameCache.Store(id, name);
+            }
+
+            return nameCache.Retrieve(id);
+        }
+
+        public bool IsUser(SteamID id)
+        {
+            return config.Users != null ? config.Users.Contains(id.ToString()) : false;
         }
 
         public void Mute()

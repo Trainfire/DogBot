@@ -21,7 +21,7 @@ namespace DogBot
                     commands.Add(new Command<GetDogOfTheDay>(DOTD));
                     commands.Add(new Command<SubmitDogOfTheDay>(DOTDSUBMIT)
                     {
-                        AdminOnly = true,
+                        UsersOnly = true,
                         HelpArgs = new List<string>()
                         {
                             "URL",
@@ -32,16 +32,20 @@ namespace DogBot
                     commands.Add(new Command<Stats>(STATS));
                     commands.Add(new Command<Mute>(MUTE)
                     {
-                        AdminOnly = true,
+                        UsersOnly = true,
                     });
                     commands.Add(new Command<Unmute>(UNMUTE)
                     {
-                        AdminOnly = true,
+                        UsersOnly = true,
                     });
                     commands.Add(new Command<GetRandomDog>(RND));
                     commands.Add(new Command<ShowRepo>(REPO));
                     commands.Add(new Command<GetDogOfTheDayCount>(COUNT));
                     commands.Add(new Command<ShowPermissions>(PERMISSION));
+                    commands.Add(new Command<PopulateNameCache>(POPULATENAMECACHE)
+                    {
+                        AdminOnly = true,
+                    });
                 }
                 return commands.ToList();
             }
@@ -57,6 +61,7 @@ namespace DogBot
         const string REPO = "dotdrepo";
         const string COUNT = "dotdcount";
         const string PERMISSION = "dotdpermission";
+        const string POPULATENAMECACHE = "dotdpopulatenamecache";
 
         public const string COMMAND_TOKEN = "!";
 
