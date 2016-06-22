@@ -37,9 +37,9 @@ namespace DogBot
 
                 if (command != null)
                 {
-                    if (command.UsersOnly)
+                    if (command.UsersOnly || command.AdminOnly)
                     {
-                        if (bot.IsUser(caller))
+                        if (command.UsersOnly && bot.IsUser(caller) || command.AdminOnly && bot.IsAdmin(caller))
                         {
                             Record = command.Execute(bot, caller, parser);
                         }

@@ -197,6 +197,11 @@ namespace DogBot
             return nameCache.Retrieve(id);
         }
 
+        public bool IsAdmin(SteamID id)
+        {
+            return config.Admins != null ? config.Admins.Contains(id.ToString()) : false;
+        }
+
         public bool IsUser(SteamID id)
         {
             return config.Users != null ? config.Users.Contains(id.ToString()) : false;
