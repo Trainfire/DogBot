@@ -1,6 +1,7 @@
 using System;
 using SteamKit2;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace DogBot
 {
@@ -12,13 +13,19 @@ namespace DogBot
         public event EventHandler<DogData> DogSubmitted;
 
         readonly History history;
+
         DogData dog;
         DotdQueue queue;
 
         public HistoryStats HistoryStats { get { return history.Stats; } }
-        public DogData CurrentDog { get { return queue.Data.Queue.Count != 0 ? queue.Data.Queue.Peek() : null; } }
+        public DogData CurrentDog { get { return queue.Peek(); } }
         public bool HasDog { get { return CurrentDog != null; } }
-        public int QueueCount { get { return queue.Data.Queue.Count; } }
+        public int QueueCount { get { return Queue.Count; } }
+
+        /// <summary>
+        /// Returns a copy of the Queue.
+        /// </summary>
+        public List<DogData> Queue { get { return queue.Data.Queue.ToList(); } }
 
         public BotData()
         {
@@ -30,7 +37,6 @@ namespace DogBot
         public void EnqueueDog(DogData dog)
         {
             queue.Enqueue(dog);
-            queue.Save();
 
             WriteToHistory(dog);
 
@@ -45,9 +51,7 @@ namespace DogBot
         {
             if (queue.Data.Queue.Count != 0)
             {
-
-                dog = queue.Data.Queue.Dequeue();
-                queue.Save();
+                dog = queue.Dequeue();
             }
         }
 
@@ -58,13 +62,6 @@ namespace DogBot
             {
                 Dog = dog,
             });
-            history.Save();
-        }
-
-        bool MoreThanOnePersonInQueue()
-        {
-            var sample = queue.Data.Queue.Peek().Setter;
-            return queue.Data.Queue.Any(x => x.Setter != sample);
         }
     }
 }
