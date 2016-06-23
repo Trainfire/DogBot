@@ -17,6 +17,7 @@ namespace DogBot
     {
         public event EventHandler LoggedOn;
         public event EventHandler LoggedOff;
+        public event EventHandler Disconnected;
         public event EventHandler<SteamFriends.ChatMsgCallback> ReceiveChatMessage;
         public event EventHandler<SteamFriends.FriendMsgCallback> ReceiveFriendMessage;
 
@@ -173,6 +174,10 @@ namespace DogBot
             // after recieving an AccountLogonDenied, we'll be disconnected from steam
             // so after we read an authcode from the user, we need to reconnect to begin the logon flow again
             logger.Warning("Disconnected from Steam...");
+
+            if (Disconnected != null)
+                Disconnected(this, null);
+
             Reconnect();
         }
 

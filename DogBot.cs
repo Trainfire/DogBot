@@ -49,9 +49,17 @@ namespace DogBot
 
             connection = new Connection();
             connection.LoggedOn += OnLoggedOn;
+            connection.Disconnected += OnDisconnected;
             connection.ReceiveChatMessage += OnReceiveChatMessage;
             connection.ReceiveFriendMessage += OnReceiveFriendMessage;
             connection.Connect(config.ConnectionInfo);
+        }
+
+        void OnDisconnected(object sender, EventArgs e)
+        {
+            logger.Warning("Disconnected from Steam.");
+            connection.Friends.LeaveChat(chatId);
+            announcer.Stop();
         }
 
         void OnLoggedOn(object sender, EventArgs e)

@@ -40,6 +40,18 @@ namespace DogBot
             timer.Start();
         }
 
+        /// <summary>
+        /// Stops the announcer from ticking.
+        /// </summary>
+        public void Stop()
+        {
+            if (timer != null)
+            {
+                timer.Elapsed -= MakeAnnouncement;
+                timer.Stop();
+            }
+        }
+
         void MakeAnnouncement(object sender, ElapsedEventArgs e)
         {
             if (Announce != null)
