@@ -35,6 +35,7 @@ namespace DogBot
                 var distinct = Data.Queue
                     .GroupBy(x => x.Setter)
                     .Select(x => x.First())
+                    .OrderBy(x => x.TimeStamp)
                     .ToList();
 
                 // Remove non-distinct entries
