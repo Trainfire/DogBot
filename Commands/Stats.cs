@@ -10,7 +10,10 @@ namespace DogBot
             var stats = new List<string>();
 
             // Total records
-            stats.Add(Strings.StatsTotalAdded + bot.Data.HistoryStats.TotalRecords);
+            stats.Add(Strings.StatsTotalAdded + bot.Data.TotalDogsAdded);
+
+            // Dogs Shown
+            stats.Add(Strings.StatsTotalShown + bot.Data.TotalDogsShown);
 
             // Highest contributer
             var highestContributer = bot.Data.HistoryStats.HighestContributer;

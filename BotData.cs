@@ -21,6 +21,8 @@ namespace DogBot
         public DogData CurrentDog { get { return queue.Peek(); } }
         public bool HasDog { get { return CurrentDog != null; } }
         public int QueueCount { get { return Queue.Count; } }
+        public int TotalDogsShown { get { return HistoryStats.Dogs.Count; } }
+        public int TotalDogsAdded { get { return HistoryStats.Dogs.Count + QueueCount} }
 
         /// <summary>
         /// Returns a copy of the Queue.
@@ -38,8 +40,6 @@ namespace DogBot
         {
             queue.Enqueue(dog);
 
-            WriteToHistory(dog);
-
             if (DogSubmitted != null)
                 DogSubmitted(this, dog);
         }
@@ -52,6 +52,7 @@ namespace DogBot
             if (queue.Data.Queue.Count != 0)
             {
                 dog = queue.Dequeue();
+                WriteToHistory(dog);
             }
         }
 
