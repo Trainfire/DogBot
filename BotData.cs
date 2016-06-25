@@ -22,7 +22,7 @@ namespace DogBot
         public bool HasDog { get { return CurrentDog != null; } }
         public int QueueCount { get { return Queue.Count; } }
         public int TotalDogsShown { get { return HistoryStats.Dogs.Count; } }
-        public int TotalDogsAdded { get { return HistoryStats.Dogs.Count + QueueCount} }
+        public int TotalDogsAdded { get { return HistoryStats.Dogs.Count + QueueCount; } }
 
         /// <summary>
         /// Returns a copy of the Queue.
