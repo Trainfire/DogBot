@@ -16,11 +16,11 @@ namespace DogBot
             stats.Add(Strings.StatsTotalShown + bot.Data.TotalDogsShown);
 
             // Highest contributer
-            var highestContributer = bot.Data.HistoryStats.HighestContributer;
-            if (highestContributer != null)
+            var highestContributor = bot.Data.HighestContributor;
+            if (highestContributor != null)
             {
-                var name = bot.GetFriendName(highestContributer.SteamID);
-                stats.Add(string.Format("{0}{1} ({2})", Strings.StatsHighestContributer, name, highestContributer.Contributions));
+                var name = bot.GetFriendName(highestContributor);
+                stats.Add(string.Format("{0}{1} ({2})", Strings.StatsHighestContributer, name, bot.Data.GetUserContributions(highestContributor).Count));
             }
 
             // Include caller's contributions if they have any.

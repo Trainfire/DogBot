@@ -64,6 +64,25 @@ namespace DogBot
             return fromHistory.Concat(fromQueue).ToList();
         }
 
+        public SteamID HighestContributor
+        {
+            get
+            {
+                var fromHistory = history.Stats.Dogs;
+                var fromQueue = queue.Data.Queue;
+
+                var list = fromHistory.Concat(queue.Data.Queue).ToList();
+
+                var highest = list
+                    .GroupBy(x => x.Setter)
+                    .OrderByDescending(x => x.Count())
+                    .Select(x => x.Key)
+                    .FirstOrDefault();
+
+                return highest;
+            }
+        }
+
         void WriteToHistory(DogData dog)
         {
             dog.TimeStamp = DateTime.UtcNow.ToBinary().ToString();
