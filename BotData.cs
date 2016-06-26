@@ -56,6 +56,14 @@ namespace DogBot
             }
         }
 
+        public List<DogData> GetUserContributions(SteamKit2.SteamID steamID)
+        {
+            var fromHistory = history.Stats.GetUserContributions(steamID);
+            var fromQueue = queue.GetUserContributions(steamID);
+
+            return fromHistory.Concat(fromQueue).ToList();
+        }
+
         void WriteToHistory(DogData dog)
         {
             dog.TimeStamp = DateTime.UtcNow.ToBinary().ToString();

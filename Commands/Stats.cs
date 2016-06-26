@@ -24,7 +24,7 @@ namespace DogBot
             }
 
             // Include caller's contributions if they have any.
-            var callerContributions = bot.Data.HistoryStats.GetUserContributions(caller);
+            var callerContributions = bot.Data.GetUserContributions(caller);
             if (callerContributions.Count != 0)
             {
                 var callerName = bot.GetFriendName(caller);
