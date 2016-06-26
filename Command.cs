@@ -130,6 +130,8 @@ namespace DogBot
         /// </summary>
         public string LogMessage { get; set; }
 
+        public string PrivateMessage { get; set; }
+
         public CommandResult()
         {
 

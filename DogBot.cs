@@ -168,6 +168,9 @@ namespace DogBot
                     }
                 }
 
+                if (!string.IsNullOrEmpty(handler.Record.Result.PrivateMessage))
+                    SayToFriend(caller, handler.Record.Result.PrivateMessage);
+
                 // Log a log message if there is one.
                 if (!string.IsNullOrEmpty(handler.Record.Result.LogMessage))
                     logger.Info(handler.Record.Result.LogMessage);

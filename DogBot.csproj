@@ -60,6 +60,9 @@
     <Compile Include="BotData.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="CommandRegistry.cs" />
+    <Compile Include="Commands\GetMaps.cs" />
+    <Compile Include="Commands\RemoveMap.cs" />
+    <Compile Include="Commands\AddMap.cs" />
     <Compile Include="Commands\GetDogOfTheDayCount.cs" />
     <Compile Include="Commands\PopulateNameCache.cs" />
     <Compile Include="Commands\ShowPermissions.cs" />
@@ -81,9 +84,11 @@
     <Compile Include="FileLogger.cs" />
     <Compile Include="History.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="Maps.cs" />
     <Compile Include="MessageHandler.cs" />
     <Compile Include="MessageParser.cs" />
     <Compile Include="NameCache.cs" />
+    <Compile Include="Parsers\AddMapParser.cs" />
     <Compile Include="Parsers\DogSetParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

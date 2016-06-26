@@ -46,6 +46,9 @@ namespace DogBot
                     {
                         AdminOnly = true,
                     });
+                    commands.Add(new Command<AddMap>(ADDMAP));
+                    commands.Add(new Command<GetMaps>(GETMAPS));
+                    commands.Add(new Command<RemoveMap>(REMOVEMAP));
                 }
                 return commands.ToList();
             }
@@ -62,6 +65,9 @@ namespace DogBot
         const string COUNT = "dotdcount";
         const string PERMISSION = "dotdpermission";
         const string POPULATENAMECACHE = "dotdpopulatenamecache";
+        public const string ADDMAP = "dotdaddmap";
+        public const string GETMAPS = "dotdmaps";
+        public const string REMOVEMAP = "dotdremovemap";
 
         public const string COMMAND_TOKEN = "!";
 

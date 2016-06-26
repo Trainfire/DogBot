@@ -17,6 +17,7 @@ namespace DogBot
         DogData dog;
         DotdQueue queue;
 
+        public Maps Maps { get; private set; }
         public HistoryStats HistoryStats { get { return history.Stats; } }
         public DogData CurrentDog { get { return queue.Peek(); } }
         public bool HasDog { get { return CurrentDog != null; } }
@@ -32,8 +33,10 @@ namespace DogBot
         public BotData()
         {
             history = new History();
+            Maps = new Maps();
             queue = new DotdQueue();
             history.Load();
+            Maps.Load();
         }
 
         public void EnqueueDog(DogData dog)
@@ -54,6 +57,14 @@ namespace DogBot
                 dog = queue.Dequeue();
                 WriteToHistory(dog);
             }
+        }
+
+        public List<DogData> GetUserContributions(SteamKit2.SteamID steamID)
+        {
+            var fromHistory = history.Stats.GetUserContributions(steamID);
+            var fromQueue = queue.GetUserContributions(steamID);
+
+            return fromHistory.Concat(fromQueue).ToList();
         }
 
         void WriteToHistory(DogData dog)
