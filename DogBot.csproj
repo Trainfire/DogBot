@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Announcer.cs" />
+    <Compile Include="Bot.cs" />
     <Compile Include="BotData.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="CommandRegistry.cs" />

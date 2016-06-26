@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +9,7 @@ namespace DogBot
 {
     class ShowRepo : CommandAction
     {
-        public override CommandResult Execute(DogBot bot, SteamID caller, MessageParser parser)
+        public override CommandResult Execute(Bot bot, SteamID caller, MessageParser parser)
         {
             return new CommandResult(Strings.Repo);
         }

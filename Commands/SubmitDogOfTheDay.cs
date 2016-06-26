@@ -5,11 +5,11 @@ namespace DogBot
 {
     class SubmitDogOfTheDay : CommandAction
     {
-        public override CommandResult Execute(DogBot bot, SteamID caller, MessageParser parser)
+        public override CommandResult Execute(Bot bot, SteamID caller, MessageParser parser)
         {
             var dotdParser = new DotdSetParser(caller, parser.Message);
 
-            if (dotdParser.IsValid)
+            if (dotdParser.IsValid && !bot.Data.Exists(dotdParser.Dog.URL))
             {
                 if (dotdParser.Dog != null)
                     bot.Data.EnqueueDog(dotdParser.Dog);

@@ -16,19 +16,19 @@ namespace DogBot
         /// </summary>
         public CommandRecord Record { get; private set; }
 
-        public MessageHandler(DogBot bot, SteamFriends.ChatMsgCallback callback)
+        public MessageHandler(Bot bot, SteamFriends.ChatMsgCallback callback)
         {
             parser = new MessageParser(callback.Message);
             Parse(bot, callback.ChatterID, callback.Message);
         }
 
-        public MessageHandler(DogBot bot, SteamID sid, string message)
+        public MessageHandler(Bot bot, SteamID sid, string message)
         {
             parser = new MessageParser(message);
             Parse(bot, sid, message);
         }
 
-        void Parse(DogBot bot, SteamID caller, string message)
+        void Parse(Bot bot, SteamID caller, string message)
         {
             if (parser.IsValid)
             {

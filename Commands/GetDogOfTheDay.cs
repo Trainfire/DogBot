@@ -9,7 +9,7 @@ namespace DogBot
 {
     class GetDogOfTheDay : CommandAction
     {
-        public override CommandResult Execute(DogBot bot, SteamID caller, MessageParser parser)
+        public override CommandResult Execute(Bot bot, SteamID caller, MessageParser parser)
         {
             if (bot.Data.HasDog)
             {

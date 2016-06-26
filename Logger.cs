@@ -7,7 +7,7 @@ using System.IO;
 
 namespace DogBot
 {
-    class Logger
+    public class Logger
     {
         readonly string path;
         readonly string prefix;
