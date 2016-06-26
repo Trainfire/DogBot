@@ -9,7 +9,7 @@ namespace DogBot
         {
             var dotdParser = new DotdSetParser(caller, parser.Message);
 
-            if (dotdParser.IsValid && !bot.Data.Exists(dotdParser.Dog.URL))
+            if (dotdParser.IsValid)
             {
                 if (dotdParser.Dog != null)
                     bot.Data.EnqueueDog(dotdParser.Dog);
