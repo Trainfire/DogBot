@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading;
@@ -12,6 +12,11 @@ namespace DogBot
         public static void Main(string[] args)
         {
             new DogBot();
+
+            while (true)
+            {
+                // TODO: Handle console input here.
+            }
         }
     }
 }

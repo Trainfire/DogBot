@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using SteamKit2;
 using SteamKit2.Internal;
-using System.Threading;
+using System.Timers;
 using System.Security.Cryptography;
 using System.Net;
 using System.Collections.Generic;
@@ -29,6 +29,8 @@ namespace DogBot
         //string user, pass, displayName;
         string authCode, twoFactorAuth;
         readonly Logger logger;
+        readonly Timer reconnectTimer;
+        readonly CallbackManagerTimer manageCallbackTimer;
 
         public SteamUser User { get; private set; }
         public SteamFriends Friends { get; private set; }
@@ -55,8 +57,10 @@ namespace DogBot
 
             // create our steamclient instance
             steamClient = new SteamClient();
+
             // create the callback manager which will route callbacks to function calls
             manager = new CallbackManager(steamClient);
+            manageCallbackTimer = new CallbackManagerTimer(100, manager);
 
             // get the steamuser handler, which is used for logging on after successfully connecting
             User = steamClient.GetHandler<SteamUser>();
@@ -78,11 +82,16 @@ namespace DogBot
             // NOTE: Currently, a server cache must be included in the bin directory because it's not possible to force SteamKit to refresh it's internal server list when running on Mono because reasons?
             serverCache = new ServerCache();
             serverCache.Load();
+
+            reconnectTimer = new Timer();
+            reconnectTimer.Elapsed += ReconnectTimer_Elapsed;
         }
 
         public void Connect(ConnectionInfo connectionInfo)
         {
             this.connectionInfo = connectionInfo;
+
+            reconnectTimer.Interval = connectionInfo.ReconnectInterval * 1000;
 
             if (string.IsNullOrEmpty(connectionInfo.User) || string.IsNullOrEmpty(connectionInfo.Pass))
             {
@@ -96,24 +105,17 @@ namespace DogBot
                 return;
             }
 
-            isRunning = true;
-
             logger.Info("Connecting to Steam...");
 
             // initiate the connection
             steamClient.Connect();
 
-            // create our callback handling loop
-            while (isRunning)
-            {
-                // in order for the callbacks to get routed, they need to be handled by the manager
-                manager.RunWaitCallbacks(TimeSpan.FromSeconds(1));
-            }
+            manageCallbackTimer.Start();
         }
 
         public void Disconnect()
         {
-            if (isRunning)
+            if (manageCallbackTimer.IsRunning)
             {
                 logger.Info("Disconnected");
                 steamClient.Disconnect();
@@ -122,12 +124,15 @@ namespace DogBot
 
         void Reconnect()
         {
-            isRunning = false;
-
+            manageCallbackTimer.Stop();
             logger.Info("Reconnecting in " + connectionInfo.ReconnectInterval + " seconds...");
+            reconnectTimer.Start();
+        }
 
-            Thread.Sleep(TimeSpan.FromSeconds(connectionInfo.ReconnectInterval));
-
+        void ReconnectTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            logger.Info("Reconnect timer timed out. Reconnecting...");
+            reconnectTimer.Stop();
             Connect(connectionInfo);
         }
 
@@ -289,6 +294,42 @@ namespace DogBot
         {
             if (ReceiveFriendMessage != null)
                 ReceiveFriendMessage(this, callback);
+        }
+    }
+
+    /// <summary>
+    /// Runs callbacks on every tick without blocking the thread.
+    /// </summary>
+    public class CallbackManagerTimer
+    {
+        public bool IsRunning { get; private set; }
+
+        readonly Timer timer;
+        readonly CallbackManager manager;
+
+        public CallbackManagerTimer(double interval, CallbackManager manager)
+        {
+            this.manager = manager;
+
+            timer = new Timer(interval);
+            timer.Elapsed += Timer_Elapsed;
+        }
+
+        void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            manager.RunCallbacks();
+        }
+
+        public void Start()
+        {
+            timer.Start();
+            IsRunning = true;
+        }
+
+        public void Stop()
+        {
+            timer.Stop();
+            IsRunning = false;
         }
     }
 }
