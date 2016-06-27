@@ -85,7 +85,6 @@ namespace DogBot
 
         void WriteToHistory(DogData dog)
         {
-            dog.TimeStamp = DateTime.UtcNow.ToBinary().ToString();
             history.Write(new HistoryRecord()
             {
                 Dog = dog,

@@ -1,4 +1,5 @@
 using SteamKit2;
+using System;
 using System.Linq;
 
 namespace DogBot
@@ -32,6 +33,7 @@ namespace DogBot
                 Dog.Setter = setter;
                 Dog.URL = url;
                 Dog.Message = !string.IsNullOrEmpty(comment) ? comment : "";
+                Dog.TimeStamp = DateTime.UtcNow.ToBinary().ToString();
             }
         }
 
