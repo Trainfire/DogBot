@@ -59,17 +59,43 @@ namespace Core
             connection.Connect(config.Data.ConnectionInfo);
         }
 
-        protected virtual Strings GetStrings()
-        {
-            return new Strings();
-        }
-
-        protected virtual void OnJoinChat() { }
-
         protected virtual void OnDisconnected(object sender, EventArgs e)
         {
             logger.Warning("Disconnected from Steam.");
             connection.Friends.LeaveChat(chatId);
+        }
+
+        protected void HandleMessage(MessageContext context, SteamID caller, string message)
+        {
+            // Process the received message and pass in the current Bot's data.
+            var handler = new MessageHandler(this, caller, message);
+
+            if (handler.Record != null)
+            {
+                // Log info about the execution of the command.
+                if (handler.Record.Executer.IsValid)
+                {
+                    var steamName = connection.Friends.GetFriendPersonaName(handler.Record.Executer);
+                    logger.Info("Command Execution: From {0}: '{1}' by {2}. Arguments: {3}", context.ToString(), handler.Record.Command, steamName, handler.Record.Args);
+                }
+
+                // Echo the result if there is one.
+                if (!string.IsNullOrEmpty(handler.Record.Result.FeedbackMessage))
+                {
+                    if (context == MessageContext.Chat)
+                    {
+                        SayToChat(chatId, handler.Record.Result.FeedbackMessage);
+                    }
+                    else
+                    {
+                        SayToFriend(caller, handler.Record.Result.FeedbackMessage);
+                    }
+                }
+
+                // Log a log message if there is one.
+                if (!string.IsNullOrEmpty(handler.Record.Result.LogMessage))
+                    logger.Info(handler.Record.Result.LogMessage);
+            }
         }
 
         void OnLoggedOn(object sender, EventArgs e)
@@ -122,39 +148,6 @@ namespace Core
             HandleMessage(MessageContext.Friend, callback.Sender, callback.Message);
         }
 
-        protected void HandleMessage(MessageContext context, SteamID caller, string message)
-        {
-            // Process the received message and pass in the current Bot's data.
-            var handler = new MessageHandler(this, caller, message);
-
-            if (handler.Record != null)
-            {
-                // Log info about the execution of the command.
-                if (handler.Record.Executer.IsValid)
-                {
-                    var steamName = connection.Friends.GetFriendPersonaName(handler.Record.Executer);
-                    logger.Info("Command Execution: From {0}: '{1}' by {2}. Arguments: {3}", context.ToString(), handler.Record.Command, steamName, handler.Record.Args);
-                }
-
-                // Echo the result if there is one.
-                if (!string.IsNullOrEmpty(handler.Record.Result.FeedbackMessage))
-                {
-                    if (context == MessageContext.Chat)
-                    {
-                        SayToChat(chatId, handler.Record.Result.FeedbackMessage);
-                    }
-                    else
-                    {
-                        SayToFriend(caller, handler.Record.Result.FeedbackMessage);
-                    }
-                }
-
-                // Log a log message if there is one.
-                if (!string.IsNullOrEmpty(handler.Record.Result.LogMessage))
-                    logger.Info(handler.Record.Result.LogMessage);
-            }
-        }
-
         void SayToChat(SteamID chatId, string message)
         {
             if (!muted)
@@ -170,16 +163,16 @@ namespace Core
             logger.Info("@{0}: {1}", connection.Friends.GetFriendPersonaName(friend), message);
         }
 
-        #region Helpers
-        [Obsolete]
-        public void PopulateNameCache()
-        {
-            // TODO.
-        }
-
         public virtual string NoPermission { get { return "*bark!* You do not have permission to do that!"; } }
         public virtual string Muted { get { return "*muted*"; } }
         public virtual string Unmuted { get { return "*bark!*"; } }
+
+        protected virtual Strings GetStrings() { return new Strings(); }
+        protected virtual void OnJoinChat() { }
+
+        #region Helpers
+        [Obsolete]
+        public void PopulateNameCache() { }
 
         public string GetFriendName(SteamID id)
         {

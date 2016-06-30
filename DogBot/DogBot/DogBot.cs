@@ -41,7 +41,6 @@ namespace BotDogBot
                         }
             });
             CommandRegistry.AddCommand(new Command<GetRandomDog>(RND));
-            CommandRegistry.AddCommand(new Command<ShowRepo>(REPO));
             CommandRegistry.AddCommand(new Command<GetDogOfTheDayCount>(COUNT));
         }
 

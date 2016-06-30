@@ -9,7 +9,7 @@ namespace BotDogBot
         {
             get
             {
-                return "dogbotconfig.json";
+                return GetType().Name.ToLower() + ".json";
             }
         }
     }

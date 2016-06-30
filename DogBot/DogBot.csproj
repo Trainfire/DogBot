@@ -34,14 +34,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>packages\Newtonsoft.Json.9.0.1-beta1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
-      <HintPath>packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="SteamKit2, Version=1.7.0.33680, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\SteamKit2.1.7.0\lib\net45\SteamKit2.dll</HintPath>
       <Private>True</Private>
@@ -56,49 +48,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\Announcer.cs" />
-    <Compile Include="Core\Bot.cs" />
     <Compile Include="DogBot\BotData.cs" />
-    <Compile Include="Core\Command.cs" />
-    <Compile Include="Core\CommandRegistry.cs" />
     <Compile Include="DogBot\Commands\GetDogOfTheDayCount.cs" />
-    <Compile Include="Core\Commands\PopulateNameCache.cs" />
-    <Compile Include="Core\Commands\ShowPermissions.cs" />
-    <Compile Include="Core\Commands\ShowRepo.cs" />
     <Compile Include="DogBot\Commands\GetDogOfTheDay.cs" />
     <Compile Include="DogBot\Commands\GetRandomDog.cs" />
-    <Compile Include="Core\Commands\Mute.cs" />
     <Compile Include="DogBot\Commands\Stats.cs" />
-    <Compile Include="Core\Commands\Help.cs" />
     <Compile Include="DogBot\Commands\SubmitDogOfTheDay.cs" />
-    <Compile Include="Core\Commands\Unmute.cs" />
-    <Compile Include="Core\Config.cs" />
-    <Compile Include="Core\Connection.cs" />
-    <Compile Include="Converters\IPAddressConverter.cs" />
-    <Compile Include="Converters\IPEndPointConverter.cs" />
     <Compile Include="DogBot\DogBot.cs" />
     <Compile Include="DogBot\DogBotCommandAction.cs" />
     <Compile Include="DogBot\DogBotConfig.cs" />
     <Compile Include="DogBot\DogData.cs" />
     <Compile Include="DogBot\DotdQueue.cs" />
-    <Compile Include="Core\FileStorage.cs" />
     <Compile Include="DogBot\History.cs" />
-    <Compile Include="Core\Logger.cs" />
-    <Compile Include="Core\MessageHandler.cs" />
-    <Compile Include="Core\MessageParser.cs" />
-    <Compile Include="Core\NameCache.cs" />
     <Compile Include="DogBot\Parsers\DogSetParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Core\ServerCache.cs" />
-    <Compile Include="Core\ServerData.cs" />
-    <Compile Include="Core\Strings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{42568dc9-4739-40d9-9fa3-808048e49d9d}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
