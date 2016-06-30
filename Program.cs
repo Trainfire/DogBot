@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading;
 
 using SteamKit2;
 
-namespace DogBot
+namespace BotDogBot
 {
     class Program
     {
