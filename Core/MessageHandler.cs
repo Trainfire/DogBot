@@ -37,6 +37,9 @@ namespace Core
 
                 if (command != null)
                 {
+                    // Cache the name of the caller.
+                    bot.CacheName(caller);
+
                     if (command.UsersOnly || command.AdminOnly)
                     {
                         if (command.UsersOnly && bot.IsUser(caller) || command.AdminOnly && bot.IsAdmin(caller))

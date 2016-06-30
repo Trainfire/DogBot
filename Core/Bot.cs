@@ -171,6 +171,7 @@ namespace Core
         }
 
         #region Helpers
+        [Obsolete]
         public void PopulateNameCache()
         {
             // TODO.
@@ -182,12 +183,16 @@ namespace Core
 
         public string GetFriendName(SteamID id)
         {
+            CacheName(id);
+            return nameCache.Retrieve(id);
+        }
+
+        public void CacheName(SteamID id)
+        {
             var name = connection.Friends.GetFriendPersonaName(id);
 
             if (name != "[unknown]")
                 nameCache.Store(id, name);
-
-            return nameCache.Retrieve(id);
         }
 
         public bool IsAdmin(SteamID id)

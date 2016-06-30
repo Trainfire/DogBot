@@ -87,13 +87,6 @@ namespace BotDogBot
             }
         }
 
-        #region Helpers
-        public void PopulateNameCache()
-        {
-            Data.Queue.ForEach(x => GetFriendName(x.Setter));
-        }
-        #endregion
-
         #region Commands
         public string Dotd { get { return CommandRegistry.Format(DOTD); } }
 
