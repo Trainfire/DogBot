@@ -7,8 +7,8 @@ namespace BotDogBot
 {
     public class DogBot : Bot
     {
-        readonly Announcer announcer;
-        readonly DogBotConfig dogBotConfig;
+        Announcer announcer;
+        DogBotConfig dogBotConfig;
 
         public BotData Data { get; private set; }
 
@@ -20,9 +20,13 @@ namespace BotDogBot
         const string DOTDSUBMIT = "dotdsubmit";
         #endregion
 
-        public DogBot()
+        protected override void Initialize()
         {
+            base.Initialize();
+
             dogBotConfig = new DogBotConfig();
+
+            Data = new BotData();
 
             // Create the announcer
             announcer = new Announcer(dogBotConfig.Data.AnnouncementInterval);

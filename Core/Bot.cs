@@ -14,7 +14,6 @@ namespace Core
         readonly Timer inactivityTimer;
         readonly Logger logger;
         readonly NameCache nameCache;
-        readonly CommandRegistry commandRegistry;
 
         Strings strings;
         SteamID chatId;
@@ -39,7 +38,7 @@ namespace Core
         {
             config = new Config();
 
-            commandRegistry = new CommandRegistry(config.Data.Token, config.Data.CommandPrefix);
+            CommandRegistry = new CommandRegistry(config.Data.Token, config.Data.CommandPrefix);
 
             logger = new Logger(LogPath, config.Data.ConnectionInfo.DisplayName);
             logger.Info("Started");
@@ -51,6 +50,8 @@ namespace Core
             inactivityTimer = new Timer(1000 * config.Data.RejoinInterval);
             inactivityTimer.Elapsed += OnNoActivity;
 
+            Initialize();
+
             connection = new Connection(LogPath);
             connection.LoggedOn += OnLoggedOn;
             connection.Disconnected += OnDisconnected;
@@ -58,6 +59,8 @@ namespace Core
             connection.ReceiveFriendMessage += OnReceiveFriendMessage;
             connection.Connect(config.Data.ConnectionInfo);
         }
+
+        protected virtual void Initialize() { }
 
         protected virtual void OnDisconnected(object sender, EventArgs e)
         {

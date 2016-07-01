@@ -37,5 +37,15 @@ namespace Core
 
         public List<string> Admins { get; set; }
         public List<string> Users { get; set; }
+
+        public ConfigData()
+        {
+            ConnectionInfo = new Connection.ConnectionInfo();
+            Admins = new List<string>();
+            Users = new List<string>();
+            RejoinInterval = 300;
+            Token = "";
+            CommandPrefix = "";
+        }
     }
 }

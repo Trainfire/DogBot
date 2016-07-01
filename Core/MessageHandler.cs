@@ -25,7 +25,7 @@ namespace Core
         public MessageHandler(Bot bot, SteamID sid, string message)
         {
             parser = new MessageParser(bot.Token, message);
-            Parse(bot, sid, message);
+         Parse(bot, sid, message);
         }
 
         void Parse(Bot bot, SteamID caller, string message)

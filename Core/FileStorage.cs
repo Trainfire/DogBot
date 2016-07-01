@@ -20,7 +20,7 @@ namespace Core
 
         public FileStorage()
         {
-            Data = Load();
+            Load();
         }
 
         public void Save()
@@ -30,16 +30,17 @@ namespace Core
             sw.Close();
         }
 
-        public T Load()
+        public void Load()
         {
             if (File.Exists(Path + Filename))
             {
                 var file = File.ReadAllText(Path + Filename);
-                return JsonConvert.DeserializeObject<T>(file);
+                Data = JsonConvert.DeserializeObject<T>(file);
             }
             else
             {
-                return Activator.CreateInstance<T>();
+                Data = Activator.CreateInstance<T>();
+                Save();
             }
         }
     }
