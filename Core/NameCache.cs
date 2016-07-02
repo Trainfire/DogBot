@@ -5,14 +5,6 @@ namespace Core
 {
     public class NameCache : FileStorage<NameCacheData>
     {
-        public override string Filename
-        {
-            get
-            {
-                return "names.json";
-            }
-        }
-
         public void Store(SteamID steamID, string name)
         {
             var account = steamID.ToString();

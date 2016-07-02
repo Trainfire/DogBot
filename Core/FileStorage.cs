@@ -8,7 +8,7 @@ namespace Core
     {
         public T Data { get; private set; }
 
-        public virtual string Filename { get { return GetType().FullName; } }
+        public virtual string Filename { get { return GetType().FullName.ToLower() + ".json"; } }
 
         string Path
         {
