@@ -183,7 +183,10 @@ namespace Core
 
             handler.OnDisconnect();
 
-            Reconnect();
+            isRunning = false;
+
+            if (!callback.UserInitiated)
+                Reconnect();
         }
 
         void OnLoggedOn(SteamUser.LoggedOnCallback callback)

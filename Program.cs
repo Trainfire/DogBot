@@ -1,3 +1,4 @@
+using System;
 using Core;
 using Modules.DogOfTheDay;
 
@@ -11,7 +12,14 @@ namespace DogBot
             bot.RegisterModule<DogOfTheDay>();
             bot.Start();
 
-            while (true) { }
+            while (true)
+            {
+                if (Console.ReadLine() == "stop")
+                    bot.Stop();
+
+                if (Console.ReadLine() == "start")
+                    bot.Start();
+            }
         }
     }
 }

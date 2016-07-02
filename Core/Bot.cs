@@ -2,6 +2,7 @@ using System;
 using System.Timers;
 using System.Collections.Generic;
 using SteamKit2;
+using System.Threading;
 
 namespace Core
 {
@@ -18,7 +19,7 @@ namespace Core
 
         readonly Connection connection;
         readonly Config config;
-        readonly Timer inactivityTimer;
+        readonly System.Timers.Timer inactivityTimer;
         readonly Logger logger;
         readonly NameCache nameCache;
         readonly CommandRegistry commandRegistry;
@@ -27,6 +28,7 @@ namespace Core
         Strings strings;
         SteamID chatId;
         bool muted;
+        Thread connectionThread;
 
         public SteamID SID { get { return connection.User.SteamID; } }
         public Logger Logger { get; private set; }
@@ -59,15 +61,19 @@ namespace Core
 
             strings = GetStrings();
 
-            inactivityTimer = new Timer(1000 * config.Data.RejoinInterval);
+            inactivityTimer = new System.Timers.Timer(1000 * config.Data.RejoinInterval);
             inactivityTimer.Elapsed += OnNoActivity;
 
             connection = new Connection(this, LogPath);
+
+            // Run the Steam connection in a separate thread.
+            connectionThread = new Thread(() => connection.Connect(config.Data.ConnectionInfo));
         }
 
         public void Start()
         {
-            connection.Connect(config.Data.ConnectionInfo);
+            logger.Info("Starting...");
+            connectionThread.Start();
         }
 
         public void RegisterModule<T>() where T : Module
@@ -89,6 +95,7 @@ namespace Core
 
         public void Stop()
         {
+            logger.Info("Stopping...");
             connection.Disconnect();
         }
 
