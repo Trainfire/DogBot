@@ -57,12 +57,12 @@ namespace Modules.DogOfTheDay
             }
         }
 
-        public override void OnDisconnect()
+        public override void OnDisconnect(SteamClient.DisconnectedCallback callback)
         {
             announcer.Stop();
         }
 
-        public override void OnJoinChat(SteamID chatroomID)
+        public override void OnJoinChat(SteamFriends.ChatEnterCallback callback)
         {
             // Start the announcer timer upon joining chat.
             announcer.Start();

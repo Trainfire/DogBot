@@ -78,6 +78,8 @@
     <Compile Include="Core\ServerCache.cs" />
     <Compile Include="Core\ServerData.cs" />
     <Compile Include="Core\Strings.cs" />
+    <Compile Include="Modules\ChatJoiner\ChatJoiner.cs" />
+    <Compile Include="Modules\ChatJoiner\Config.cs" />
     <Compile Include="Modules\DogOfTheDay\BotData.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\GetDogOfTheDay.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\GetDogOfTheDayCount.cs" />

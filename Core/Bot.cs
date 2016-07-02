@@ -6,27 +6,19 @@ using System.Threading;
 
 namespace Core
 {
-    public interface IBot : IConnectionHandler
-    {
-        void OnJoinChat(SteamID chatroomID);
-        void OnLeaveChat(SteamID chatroomID);
-        void OnNoActivity();
-    }
-
-    public sealed class Bot : IConnectionHandler
+    public sealed class Bot : ISteamKitCallbackHandler
     {
         public event EventHandler<bool> OnMute;
 
-        readonly Connection connection;
+        Connection connection;
         readonly Config config;
-        readonly System.Timers.Timer inactivityTimer;
         readonly Logger logger;
         readonly NameCache nameCache;
         readonly CommandRegistry commandRegistry;
 
         List<Module> modules;
         Strings strings;
-        SteamID chatId;
+        SteamID currentChatID;
         bool muted;
         Thread connectionThread;
 
@@ -48,7 +40,7 @@ namespace Core
         {
             config = new Config();
 
-            chatId = 0;
+            currentChatID = 0;
 
             commandRegistry = new CommandRegistry(config.Data.Token, config.Data.CommandPrefix);
 
@@ -60,19 +52,15 @@ namespace Core
             modules = new List<Module>();
 
             strings = GetStrings();
-
-            inactivityTimer = new System.Timers.Timer(1000 * config.Data.RejoinInterval);
-            inactivityTimer.Elapsed += OnNoActivity;
-
-            connection = new Connection(this, LogPath);
-
-            // Run the Steam connection in a separate thread.
-            connectionThread = new Thread(() => connection.Connect(config.Data.ConnectionInfo));
         }
 
         public void Start()
         {
             logger.Info("Starting...");
+
+            // Run the Steam connection in a separate thread.
+            connection = new Connection(this, LogPath);
+            connectionThread = new Thread(() => connection.Connect(config.Data.ConnectionInfo));
             connectionThread.Start();
         }
 
@@ -100,62 +88,48 @@ namespace Core
         }
 
         #region Connection Handlers
-        void IConnectionHandler.OnDisconnect()
+        void ISteamKitCallbackHandler.OnDisconnect(SteamClient.DisconnectedCallback callback)
         {
             logger.Warning("Disconnected from Steam.");
-
-            if (chatId != 0)
-                connection.Friends.LeaveChat(chatId);
-
-            modules.ForEach(x => x.OnDisconnect());
+            modules.ForEach(x => x.OnDisconnect(callback));
         }
 
-        void IConnectionHandler.OnLoggedIn()
+        void ISteamKitCallbackHandler.OnLoggedIn()
         {
             logger.Info("Logged on");
-
-            // Attempt to join chat.
-            if (!string.IsNullOrEmpty(config.Data.ChatRoomId))
-            {
-                ulong chatRoomId = 0;
-                ulong.TryParse(config.Data.ChatRoomId, out chatRoomId);
-
-                if (chatRoomId == 0)
-                {
-                    logger.Error("{0} is an invalid chat room ID", config.Data.ChatRoomId);
-                }
-                else
-                {
-                    connection.Friends.JoinChat(chatRoomId);
-                    chatId = new SteamID(chatRoomId);
-
-                    // Start the inactivity timer.
-                    inactivityTimer.Start();
-
-                    OnJoinChat(chatId);
-                }
-            }
-            else
-            {
-                logger.Error("Could not connect to chat room as the chat room ID is invalid.");
-            }
+            modules.ForEach(x => x.OnLoggedIn());
         }
 
-        void IConnectionHandler.OnLoggedOut()
+        void ISteamKitCallbackHandler.OnLoggedOut()
         {
             modules.ForEach(x => x.OnLoggedOut());
         }
 
-        void IConnectionHandler.OnReceiveChatMessage(SteamFriends.ChatMsgCallback callback)
+        void ISteamKitCallbackHandler.OnReceiveChatMessage(SteamFriends.ChatMsgCallback callback)
         {
-            inactivityTimer.Stop();
-            inactivityTimer.Start();
             HandleMessage(MessageContext.Chat, callback.ChatterID, callback.Message);
         }
 
-        void IConnectionHandler.OnReceiveFriendMessage(SteamFriends.FriendMsgCallback callback)
+        void ISteamKitCallbackHandler.OnReceiveFriendMessage(SteamFriends.FriendMsgCallback callback)
         {
             HandleMessage(MessageContext.Friend, callback.Sender, callback.Message);
+        }
+
+        void ISteamKitCallbackHandler.OnJoinChat(SteamFriends.ChatEnterCallback callback)
+        {
+            currentChatID = callback.ChatID;
+            modules.ForEach(x => x.OnJoinChat(callback));
+        }
+
+        void ISteamKitCallbackHandler.OnLeaveChat()
+        {
+            currentChatID = null;
+            modules.ForEach(x => x.OnLeaveChat());
+        }
+
+        void ISteamKitCallbackHandler.OnChatAction(SteamFriends.ChatActionResultCallback callback)
+        {
+            modules.ForEach(x => x.OnChatAction(callback));
         }
         #endregion
 
@@ -179,7 +153,7 @@ namespace Core
                 {
                     if (context == MessageContext.Chat)
                     {
-                        SayToChat(chatId, handler.Record.Result.FeedbackMessage);
+                        SayToChat(currentChatID, handler.Record.Result.FeedbackMessage);
                     }
                     else
                     {
@@ -193,23 +167,9 @@ namespace Core
             }
         }
 
-        void OnJoinChat(SteamID chatId)
-        {
-            modules.ForEach(x => x.OnJoinChat(chatId));
-        }
-
         void OnLeaveChat(SteamID chatroomID)
         {
-            modules.ForEach(x => x.OnLeaveChat(chatId));
-        }
-
-        void OnNoActivity(object sender, ElapsedEventArgs e)
-        {
-            logger.Info("Rejoining chat due to inactivity");
-            connection.Friends.LeaveChat(chatId);
-            connection.Friends.JoinChat(chatId);
-
-            modules.ForEach(x => x.OnNoActivity());
+            modules.ForEach(x => x.OnLeaveChat());
         }
 
         void SayToChat(SteamID chatId, string message)
@@ -237,6 +197,18 @@ namespace Core
         #region Helpers
         [Obsolete]
         public void PopulateNameCache() { }
+
+        public void JoinChat(SteamID chatId)
+        {
+            this.currentChatID = chatId;
+            connection.Friends.JoinChat(chatId);
+        }
+
+        public void LeaveChat(SteamID chatId)
+        {
+            this.currentChatID = 0;
+            connection.Friends.LeaveChat(chatId);
+        }
 
         public string GetFriendName(SteamID id)
         {

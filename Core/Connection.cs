@@ -10,13 +10,16 @@ using Newtonsoft.Json;
 
 namespace Core
 {
-    public interface IConnectionHandler
+    public interface ISteamKitCallbackHandler
     {
-        void OnDisconnect();
+        void OnDisconnect(SteamClient.DisconnectedCallback callback);
         void OnLoggedIn();
         void OnLoggedOut();
         void OnReceiveChatMessage(SteamFriends.ChatMsgCallback caller);
         void OnReceiveFriendMessage(SteamFriends.FriendMsgCallback caller);
+        void OnJoinChat(SteamFriends.ChatEnterCallback callback);
+        void OnLeaveChat();
+        void OnChatAction(SteamFriends.ChatActionResultCallback callback);
     }
 
     /// <summary>
@@ -29,7 +32,7 @@ namespace Core
         CallbackManager manager;
         bool isRunning;
         ConnectionInfo connectionInfo;
-        IConnectionHandler handler;
+        ISteamKitCallbackHandler handler;
         //string user, pass, displayName;
         string authCode, twoFactorAuth;
         readonly Logger logger;
@@ -53,7 +56,7 @@ namespace Core
             }
         }
 
-        public Connection(IConnectionHandler handler, string logPath)
+        public Connection(ISteamKitCallbackHandler handler, string logPath)
         {
             this.handler = handler;
 
@@ -79,6 +82,9 @@ namespace Core
 
             // this callback is triggered when the steam servers wish for the client to store the sentry file
             manager.Subscribe<SteamUser.UpdateMachineAuthCallback>(OnMachineAuth);
+
+            manager.Subscribe<SteamFriends.ChatEnterCallback>(OnJoinChat);
+            manager.Subscribe<SteamFriends.ChatActionResultCallback>(OnChatAction);
 
             // Create then load cached server data.
             // NOTE: Currently, a server cache must be included in the bin directory because it's not possible to force SteamKit to refresh it's internal server list when running on Mono because reasons?
@@ -115,6 +121,8 @@ namespace Core
                 // in order for the callbacks to get routed, they need to be handled by the manager
                 manager.RunWaitCallbacks(TimeSpan.FromSeconds(1));
             }
+
+            logger.Info("Connection terminated.");
         }
 
         public void Disconnect()
@@ -181,7 +189,7 @@ namespace Core
             // so after we read an authcode from the user, we need to reconnect to begin the logon flow again
             logger.Warning("Disconnected from Steam...");
 
-            handler.OnDisconnect();
+            handler.OnDisconnect(callback);
 
             isRunning = false;
 
@@ -292,6 +300,19 @@ namespace Core
         void OnFriendMessage(SteamFriends.FriendMsgCallback callback)
         {
             handler.OnReceiveFriendMessage(callback);
+        }
+
+        void OnJoinChat(SteamFriends.ChatEnterCallback callback)
+        {
+            handler.OnJoinChat(callback);
+        }
+
+        void OnChatAction(SteamFriends.ChatActionResultCallback callback)
+        {
+            if (callback.Action == EChatAction.CloseChat)
+                handler.OnLeaveChat();
+
+            handler.OnChatAction(callback);
         }
     }
 }

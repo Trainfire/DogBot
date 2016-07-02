@@ -1,6 +1,7 @@
 using System;
 using Core;
 using Modules.DogOfTheDay;
+using Modules.ChatJoiner;
 
 namespace DogBot
 {
@@ -10,6 +11,7 @@ namespace DogBot
         {
             var bot = new Bot();
             bot.RegisterModule<DogOfTheDay>();
+            bot.RegisterModule<ChatJoiner>();
             bot.Start();
 
             while (true)
