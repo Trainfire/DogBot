@@ -1,25 +1,20 @@
 using System;
 using System.IO;
 using SteamKit2;
-using SteamKit2.Internal;
 using System.Threading;
 using System.Security.Cryptography;
-using System.Net;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 
 namespace Core
 {
-    public interface ISteamKitCallbackHandler
+    public interface ILogOnCallbackHandler
     {
-        void OnDisconnect(SteamClient.DisconnectedCallback callback);
-        void OnLoggedIn();
-        void OnLoggedOut();
-        void OnReceiveChatMessage(SteamFriends.ChatMsgCallback caller);
-        void OnReceiveFriendMessage(SteamFriends.FriendMsgCallback caller);
-        void OnJoinChat(SteamFriends.ChatEnterCallback callback);
-        void OnLeaveChat();
-        void OnChatAction(SteamFriends.ChatActionResultCallback callback);
+        void OnLoggedOn();
+    }
+
+    public interface ILogOffCallbackHandler
+    {
+        void OnLoggedOff();
     }
 
     /// <summary>
@@ -29,16 +24,15 @@ namespace Core
     {
         ServerCache serverCache;
         SteamClient steamClient;
-        CallbackManager manager;
         bool isRunning;
         ConnectionInfo connectionInfo;
-        ISteamKitCallbackHandler handler;
-        //string user, pass, displayName;
         string authCode, twoFactorAuth;
+
         readonly Logger logger;
 
         public SteamUser User { get; private set; }
         public SteamFriends Friends { get; private set; }
+        public CallbackManager Manager { get; private set; }
 
         public class ConnectionInfo
         {
@@ -56,35 +50,29 @@ namespace Core
             }
         }
 
-        public Connection(ISteamKitCallbackHandler handler, string logPath)
+        public Connection(string logPath)
         {
-            this.handler = handler;
-
             logger = new Logger(logPath, "SteamKit");
 
-            // create our steamclient instance
             steamClient = new SteamClient();
+
             // create the callback manager which will route callbacks to function calls
-            manager = new CallbackManager(steamClient);
+            Manager = new CallbackManager(steamClient);
 
             // get the steamuser handler, which is used for logging on after successfully connecting
             User = steamClient.GetHandler<SteamUser>();
             Friends = steamClient.GetHandler<SteamFriends>();
 
             // register a few callbacks we're interested in
-            // these are registered upon creation to a callback manager, which will then route the callbacks
+            // these are registered upon creation to a callback Manager, which will then route the callbacks
             // to the functions specified
-            manager.Subscribe<SteamClient.ConnectedCallback>(OnConnected);
-            manager.Subscribe<SteamClient.DisconnectedCallback>(OnDisconnected);
-
-            manager.Subscribe<SteamUser.LoggedOnCallback>(OnLoggedOn);
-            manager.Subscribe<SteamUser.LoggedOffCallback>(OnLoggedOff);
+            Manager.Subscribe<SteamClient.ConnectedCallback>(OnConnected);
+            Manager.Subscribe<SteamClient.DisconnectedCallback>(OnDisconnected);
+            Manager.Subscribe<SteamUser.LoggedOnCallback>(OnLoggedOn);
+            Manager.Subscribe<SteamUser.LoggedOffCallback>(OnLoggedOff);
 
             // this callback is triggered when the steam servers wish for the client to store the sentry file
-            manager.Subscribe<SteamUser.UpdateMachineAuthCallback>(OnMachineAuth);
-
-            manager.Subscribe<SteamFriends.ChatEnterCallback>(OnJoinChat);
-            manager.Subscribe<SteamFriends.ChatActionResultCallback>(OnChatAction);
+            Manager.Subscribe<SteamUser.UpdateMachineAuthCallback>(OnMachineAuth);
 
             // Create then load cached server data.
             // NOTE: Currently, a server cache must be included in the bin directory because it's not possible to force SteamKit to refresh it's internal server list when running on Mono because reasons?
@@ -118,8 +106,8 @@ namespace Core
             // create our callback handling loop
             while (isRunning)
             {
-                // in order for the callbacks to get routed, they need to be handled by the manager
-                manager.RunWaitCallbacks(TimeSpan.FromSeconds(1));
+                // in order for the callbacks to get routed, they need to be handled by the Manager
+                Manager.RunWaitCallbacks(TimeSpan.FromSeconds(1));
             }
 
             logger.Info("Connection terminated.");
@@ -189,8 +177,6 @@ namespace Core
             // so after we read an authcode from the user, we need to reconnect to begin the logon flow again
             logger.Warning("Disconnected from Steam...");
 
-            handler.OnDisconnect(callback);
-
             isRunning = false;
 
             if (!callback.UserInitiated)
@@ -232,18 +218,11 @@ namespace Core
             // Automatically set the bot online.
             Friends.SetPersonaName(connectionInfo.DisplayName);
             Friends.SetPersonaState(EPersonaState.Online);
-
-            // Subscribe to all Friend related callbacks here.
-            manager.Subscribe<SteamFriends.ChatMsgCallback>(OnChatMessage);
-            manager.Subscribe<SteamFriends.FriendMsgCallback>(OnFriendMessage);
-
-            handler.OnLoggedIn();
         }
 
         void OnLoggedOff(SteamUser.LoggedOffCallback callback)
         {
             logger.Info("Logged off of Steam: {0}", callback.Result);
-            handler.OnLoggedOut();
         }
 
         void OnMachineAuth(SteamUser.UpdateMachineAuthCallback callback)
@@ -290,29 +269,6 @@ namespace Core
             });
 
             logger.Info("Done!");
-        }
-
-        void OnChatMessage(SteamFriends.ChatMsgCallback callback)
-        {
-            handler.OnReceiveChatMessage(callback);
-        }
-
-        void OnFriendMessage(SteamFriends.FriendMsgCallback callback)
-        {
-            handler.OnReceiveFriendMessage(callback);
-        }
-
-        void OnJoinChat(SteamFriends.ChatEnterCallback callback)
-        {
-            handler.OnJoinChat(callback);
-        }
-
-        void OnChatAction(SteamFriends.ChatActionResultCallback callback)
-        {
-            if (callback.Action == EChatAction.CloseChat)
-                handler.OnLeaveChat();
-
-            handler.OnChatAction(callback);
         }
     }
 }

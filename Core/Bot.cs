@@ -6,17 +6,18 @@ using System.Threading;
 
 namespace Core
 {
-    public sealed class Bot : ISteamKitCallbackHandler
+    public sealed class Bot
     {
         public event EventHandler<bool> OnMute;
-
-        Connection connection;
         readonly Config config;
         readonly Logger logger;
         readonly NameCache nameCache;
         readonly CommandRegistry commandRegistry;
+        readonly Connection connection;
 
         List<Module> modules;
+        List<ILogOnCallbackHandler> logOnListeners;
+        List<ILogOffCallbackHandler> logOffListeners;
         Strings strings;
         SteamID currentChatID;
         bool muted;
@@ -24,11 +25,11 @@ namespace Core
 
         public SteamID SID { get { return connection.User.SteamID; } }
         public Logger Logger { get; private set; }
-
         public List<Command> Commands { get { return commandRegistry.Commands; } }
         public string Token { get { return commandRegistry.Token; } }
         public string LogPath { get { return config.Data.ConnectionInfo.DisplayName + ".bin"; } }
         public Strings CoreStrings { get { return strings; } }
+        public CallbackManager CallbackManager { get { return connection.Manager; } }
 
         public enum MessageContext
         {
@@ -39,6 +40,16 @@ namespace Core
         public Bot()
         {
             config = new Config();
+
+            logOffListeners = new List<ILogOffCallbackHandler>();
+            logOnListeners = new List<ILogOnCallbackHandler>();
+
+            connection = new Connection(LogPath);
+
+            // Subscribe to callbacks here.
+            connection.Manager.Subscribe<SteamFriends.ChatMsgCallback>(OnReceiveChatMessage);
+            connection.Manager.Subscribe<SteamFriends.FriendMsgCallback>(OnReceiveFriendMessage);
+            connection.Manager.Subscribe<SteamUser.LoggedOnCallback>(OnLoggedOn);
 
             currentChatID = 0;
 
@@ -58,8 +69,7 @@ namespace Core
         {
             logger.Info("Starting...");
 
-            // Run the Steam connection in a separate thread.
-            connection = new Connection(this, LogPath);
+            // Start the connection in a seperate thread to prevent thread blocking.
             connectionThread = new Thread(() => connection.Connect(config.Data.ConnectionInfo));
             connectionThread.Start();
         }
@@ -87,53 +97,45 @@ namespace Core
             connection.Disconnect();
         }
 
-        #region Connection Handlers
-        void ISteamKitCallbackHandler.OnDisconnect(SteamClient.DisconnectedCallback callback)
+        public void RegisterLogOnListener(ILogOnCallbackHandler handler)
         {
-            logger.Warning("Disconnected from Steam.");
-            modules.ForEach(x => x.OnDisconnect(callback));
+            logOnListeners.Add(handler);
         }
 
-        void ISteamKitCallbackHandler.OnLoggedIn()
+        public void UnregisterLogOnListener(ILogOnCallbackHandler handler)
         {
-            logger.Info("Logged on");
-            modules.ForEach(x => x.OnLoggedIn());
+            if (logOnListeners.Contains(handler))
+                logOnListeners.Remove(handler);
         }
 
-        void ISteamKitCallbackHandler.OnLoggedOut()
+        public void RegisterLogOffListener(ILogOffCallbackHandler handler)
         {
-            modules.ForEach(x => x.OnLoggedOut());
+            logOffListeners.Add(handler);
         }
 
-        void ISteamKitCallbackHandler.OnReceiveChatMessage(SteamFriends.ChatMsgCallback callback)
+        public void UnregisterLogOffListener(ILogOffCallbackHandler handler)
+        {
+            if (logOffListeners.Contains(handler))
+                logOffListeners.Remove(handler);
+        }
+
+        #region Bot Behaviours
+        void OnLoggedOn(SteamUser.LoggedOnCallback callback)
+        {
+            if (callback.Result == EResult.OK)
+                logOnListeners.ForEach(x => x.OnLoggedOn());
+        }
+
+        void OnReceiveChatMessage(SteamFriends.ChatMsgCallback callback)
         {
             HandleMessage(MessageContext.Chat, callback.ChatterID, callback.Message);
         }
 
-        void ISteamKitCallbackHandler.OnReceiveFriendMessage(SteamFriends.FriendMsgCallback callback)
+        void OnReceiveFriendMessage(SteamFriends.FriendMsgCallback callback)
         {
             HandleMessage(MessageContext.Friend, callback.Sender, callback.Message);
         }
 
-        void ISteamKitCallbackHandler.OnJoinChat(SteamFriends.ChatEnterCallback callback)
-        {
-            currentChatID = callback.ChatID;
-            modules.ForEach(x => x.OnJoinChat(callback));
-        }
-
-        void ISteamKitCallbackHandler.OnLeaveChat()
-        {
-            currentChatID = null;
-            modules.ForEach(x => x.OnLeaveChat());
-        }
-
-        void ISteamKitCallbackHandler.OnChatAction(SteamFriends.ChatActionResultCallback callback)
-        {
-            modules.ForEach(x => x.OnChatAction(callback));
-        }
-        #endregion
-
-        #region Bot Behaviours
         void HandleMessage(MessageContext context, SteamID caller, string message)
         {
             // Process the received message and pass in the current Bot's data.
@@ -165,11 +167,6 @@ namespace Core
                 if (!string.IsNullOrEmpty(handler.Record.Result.LogMessage))
                     logger.Info(handler.Record.Result.LogMessage);
             }
-        }
-
-        void OnLeaveChat(SteamID chatroomID)
-        {
-            modules.ForEach(x => x.OnLeaveChat());
         }
 
         void SayToChat(SteamID chatId, string message)
@@ -208,6 +205,11 @@ namespace Core
         {
             this.currentChatID = 0;
             connection.Friends.LeaveChat(chatId);
+        }
+
+        public string GetChatRoomName(SteamID id)
+        {
+            return connection.Friends.GetClanName(id);
         }
 
         public string GetFriendName(SteamID id)

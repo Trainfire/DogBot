@@ -1,10 +1,11 @@
 using Core;
 using System.Timers;
 using SteamKit2;
+using System;
 
 namespace Modules.ChatJoiner
 {
-    public class ChatJoiner : Module
+    public class ChatJoiner : Module, ILogOnCallbackHandler
     {
         Timer inactivityTimer;
         Config config;
@@ -27,9 +28,32 @@ namespace Modules.ChatJoiner
             }
 
             chatRoomId = new SteamID(config.Data.ChatRoomId);
+
+            Bot.CallbackManager.Subscribe<SteamFriends.ChatEnterCallback>(OnJoinChat);
+            Bot.CallbackManager.Subscribe<SteamFriends.ChatMsgCallback>(OnReceiveChatMessage);
+            Bot.RegisterLogOnListener(this);
         }
 
-        public override void OnLoggedIn()
+        void OnJoinChat(SteamFriends.ChatEnterCallback callback)
+        {
+            // Start the inactivity timer.
+            inactivityTimer.Start();
+        }
+
+        void OnReceiveChatMessage(SteamFriends.ChatMsgCallback caller)
+        {
+            inactivityTimer.Stop();
+            inactivityTimer.Start();
+        }
+
+        void OnNoActivity(object sender, ElapsedEventArgs e)
+        {
+            Logger.Info("Rejoining chat due to inactivity");
+            Bot.LeaveChat(chatRoomId);
+            Bot.JoinChat(chatRoomId);
+        }
+
+        void ILogOnCallbackHandler.OnLoggedOn()
         {
             // Attempt to join chat.
             if (!string.IsNullOrEmpty(config.Data.ChatRoomId))
@@ -43,6 +67,7 @@ namespace Modules.ChatJoiner
                 }
                 else
                 {
+                    Logger.Info("Joining chat {0}", Bot.GetChatRoomName(chatRoomId));
                     Bot.JoinChat(chatRoomId);
                 }
             }
@@ -50,30 +75,6 @@ namespace Modules.ChatJoiner
             {
                 Logger.Error("Could not connect to chat room as the chat room ID is invalid.");
             }
-        }
-
-        public override void OnJoinChat(SteamFriends.ChatEnterCallback callback)
-        {
-            // Start the inactivity timer.
-            inactivityTimer.Start();
-        }
-
-        public override void OnChatAction(SteamFriends.ChatActionResultCallback callback)
-        {
-            Logger.Info(callback.ChatterID.ToString());
-        }
-
-        public override void OnReceiveChatMessage(SteamFriends.ChatMsgCallback caller)
-        {
-            inactivityTimer.Stop();
-            inactivityTimer.Start();
-        }
-
-        void OnNoActivity(object sender, ElapsedEventArgs e)
-        {
-            Logger.Info("Rejoining chat due to inactivity");
-            Bot.LeaveChat(chatRoomId);
-            Bot.JoinChat(chatRoomId);
         }
     }
 }
