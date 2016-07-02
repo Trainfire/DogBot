@@ -10,22 +10,26 @@ using Newtonsoft.Json;
 
 namespace Core
 {
+    public interface IConnectionHandler
+    {
+        void OnDisconnect();
+        void OnLoggedIn();
+        void OnLoggedOut();
+        void OnReceiveChatMessage(SteamFriends.ChatMsgCallback caller);
+        void OnReceiveFriendMessage(SteamFriends.FriendMsgCallback caller);
+    }
+
     /// <summary>
     /// Handles the connection to Steam via SteamKit2.
     /// </summary>
     public class Connection
     {
-        public event EventHandler LoggedOn;
-        public event EventHandler LoggedOff;
-        public event EventHandler Disconnected;
-        public event EventHandler<SteamFriends.ChatMsgCallback> ReceiveChatMessage;
-        public event EventHandler<SteamFriends.FriendMsgCallback> ReceiveFriendMessage;
-
         ServerCache serverCache;
         SteamClient steamClient;
         CallbackManager manager;
         bool isRunning;
         ConnectionInfo connectionInfo;
+        IConnectionHandler handler;
         //string user, pass, displayName;
         string authCode, twoFactorAuth;
         readonly Logger logger;
@@ -49,8 +53,10 @@ namespace Core
             }
         }
 
-        public Connection(string logPath)
+        public Connection(IConnectionHandler handler, string logPath)
         {
+            this.handler = handler;
+
             logger = new Logger(logPath, "SteamKit");
 
             // create our steamclient instance
@@ -175,8 +181,7 @@ namespace Core
             // so after we read an authcode from the user, we need to reconnect to begin the logon flow again
             logger.Warning("Disconnected from Steam...");
 
-            if (Disconnected != null)
-                Disconnected(this, null);
+            handler.OnDisconnect();
 
             Reconnect();
         }
@@ -221,16 +226,13 @@ namespace Core
             manager.Subscribe<SteamFriends.ChatMsgCallback>(OnChatMessage);
             manager.Subscribe<SteamFriends.FriendMsgCallback>(OnFriendMessage);
 
-            if (LoggedOn != null)
-                LoggedOn(this, null);
+            handler.OnLoggedIn();
         }
 
         void OnLoggedOff(SteamUser.LoggedOffCallback callback)
         {
             logger.Info("Logged off of Steam: {0}", callback.Result);
-
-            if (LoggedOff != null)
-                LoggedOff(this, null);
+            handler.OnLoggedOut();
         }
 
         void OnMachineAuth(SteamUser.UpdateMachineAuthCallback callback)
@@ -281,14 +283,12 @@ namespace Core
 
         void OnChatMessage(SteamFriends.ChatMsgCallback callback)
         {
-            if (ReceiveChatMessage != null)
-                ReceiveChatMessage(this, callback);
+            handler.OnReceiveChatMessage(callback);
         }
 
         void OnFriendMessage(SteamFriends.FriendMsgCallback callback)
         {
-            if (ReceiveFriendMessage != null)
-                ReceiveFriendMessage(this, callback);
+            handler.OnReceiveFriendMessage(callback);
         }
     }
 }

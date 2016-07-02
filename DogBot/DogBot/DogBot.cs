@@ -2,10 +2,11 @@ using System;
 using System.Timers;
 using System.Collections.Generic;
 using Core;
+using SteamKit2;
 
 namespace BotDogBot
 {
-    public class DogBot : Bot
+    public class DogBot : Module
     {
         Announcer announcer;
         DogBotConfig dogBotConfig;
@@ -34,8 +35,8 @@ namespace BotDogBot
             announcer.AllAnnounced += OnAllAnnouncements;
 
             // Register commands
-            CommandRegistry.AddCommand(new Command<GetDogOfTheDay>(DOTD));
-            CommandRegistry.AddCommand(new Command<SubmitDogOfTheDay>(DOTDSUBMIT)
+            Bot.CommandRegistry.AddCommand(new Command<GetDogOfTheDay>(DOTD));
+            Bot.CommandRegistry.AddCommand(new Command<SubmitDogOfTheDay>(DOTDSUBMIT)
             {
                 UsersOnly = true,
                 HelpArgs = new List<string>()
@@ -44,20 +45,17 @@ namespace BotDogBot
                             "Comment (Optional)"
                         }
             });
-            CommandRegistry.AddCommand(new Command<GetRandomDog>(RND));
-            CommandRegistry.AddCommand(new Command<GetDogOfTheDayCount>(COUNT));
+            Bot.CommandRegistry.AddCommand(new Command<GetRandomDog>(RND));
+            Bot.CommandRegistry.AddCommand(new Command<GetDogOfTheDayCount>(COUNT));
         }
 
-        protected override void OnDisconnected(object sender, EventArgs e)
+        public override void OnDisconnect()
         {
-            base.OnDisconnected(sender, e);
             announcer.Stop();
         }
 
-        protected override void OnJoinChat()
+        public override void OnJoinChat(SteamID chatroomID)
         {
-            base.OnJoinChat();
-
             // Start the announcer timer upon joining chat.
             announcer.Start();
 
@@ -70,7 +68,7 @@ namespace BotDogBot
             if (Data.HasDog)
             {
                 Logger.Info("Posting announcement...");
-                HandleMessage(MessageContext.Chat, SID, DOTD);
+                Bot.ProcessMessageInternally(Bot.MessageContext.Chat, DOTD);
             }
         }
 
@@ -91,11 +89,11 @@ namespace BotDogBot
         }
 
         #region Commands
-        public string Dotd { get { return CommandRegistry.Format(DOTD); } }
+        public string Dotd { get { return Bot.CommandRegistry.Format(DOTD); } }
 
         public string DotdSubmit(string url, string comment)
         {
-            return string.Format("{0} {1} {2}", CommandRegistry.Format(DOTDSUBMIT), url, comment);
+            return string.Format("{0} {1} {2}", Bot.CommandRegistry.Format(DOTDSUBMIT), url, comment);
         }
         #endregion
 

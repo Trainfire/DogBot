@@ -5,7 +5,14 @@ using SteamKit2;
 
 namespace Core
 {
-    public abstract class Bot
+    public interface IBot : IConnectionHandler
+    {
+        void OnJoinChat(SteamID chatroomID);
+        void OnLeaveChat(SteamID chatroomID);
+        void OnNoActivity();
+    }
+
+    public sealed class Bot : IConnectionHandler
     {
         public event EventHandler<bool> OnMute;
 
@@ -14,14 +21,16 @@ namespace Core
         readonly Timer inactivityTimer;
         readonly Logger logger;
         readonly NameCache nameCache;
+        readonly CommandRegistry commandRegistry;
 
+        List<Module> modules;
         Strings strings;
         SteamID chatId;
         bool muted;
 
         public SteamID SID { get { return connection.User.SteamID; } }
-        protected Logger Logger { get; private set; }
-        protected CommandRegistry CommandRegistry { get; private set; }
+        public Logger Logger { get; private set; }
+        public CommandRegistry CommandRegistry { get; private set; }
 
         public List<Command> Commands { get { return CommandRegistry.Commands; } }
         public string Token { get { return CommandRegistry.Token; } }
@@ -38,37 +47,106 @@ namespace Core
         {
             config = new Config();
 
-            CommandRegistry = new CommandRegistry(config.Data.Token, config.Data.CommandPrefix);
+            commandRegistry = new CommandRegistry(config.Data.Token, config.Data.CommandPrefix);
 
             logger = new Logger(LogPath, config.Data.ConnectionInfo.DisplayName);
             logger.Info("Started");
 
             nameCache = new NameCache();
 
+            modules = new List<Module>();
+
             strings = GetStrings();
 
             inactivityTimer = new Timer(1000 * config.Data.RejoinInterval);
             inactivityTimer.Elapsed += OnNoActivity;
 
-            Initialize();
-
-            connection = new Connection(LogPath);
-            connection.LoggedOn += OnLoggedOn;
-            connection.Disconnected += OnDisconnected;
-            connection.ReceiveChatMessage += OnReceiveChatMessage;
-            connection.ReceiveFriendMessage += OnReceiveFriendMessage;
+            connection = new Connection(this, LogPath);
+            //connection.LoggedOn += OnLogin;
+            //connection.Disconnected += OnDisconnect;
+            //connection.ReceiveChatMessage += OnReceiveChatMessage;
+            //connection.ReceiveFriendMessage += OnReceiveFriendMessage;
             connection.Connect(config.Data.ConnectionInfo);
         }
 
-        protected virtual void Initialize() { }
+        public void Start()
+        {
+            connection.Connect(config.Data.ConnectionInfo);
+        }
 
-        protected virtual void OnDisconnected(object sender, EventArgs e)
+        public void RegisterModule<T>() where T : Module
+        {
+            logger.Info("Registering module '{0}'", typeof(T).Name);
+            var instance = Activator.CreateInstance<T>();
+            modules.Add(instance);
+            instance.Initialize(this);
+        }
+
+        public void Stop()
+        {
+            connection.Disconnect();
+        }
+
+        #region Connection Handlers
+        void IConnectionHandler.OnDisconnect()
         {
             logger.Warning("Disconnected from Steam.");
             connection.Friends.LeaveChat(chatId);
+
+            modules.ForEach(x => x.OnDisconnect());
         }
 
-        protected void HandleMessage(MessageContext context, SteamID caller, string message)
+        void IConnectionHandler.OnLoggedIn()
+        {
+            logger.Info("Logged on");
+
+            // Attempt to join chat.
+            if (!string.IsNullOrEmpty(config.Data.ChatRoomId))
+            {
+                ulong chatRoomId = 0;
+                ulong.TryParse(config.Data.ChatRoomId, out chatRoomId);
+
+                if (chatRoomId == 0)
+                {
+                    logger.Error("{0} is an invalid chat room ID", config.Data.ChatRoomId);
+                }
+                else
+                {
+                    connection.Friends.JoinChat(chatRoomId);
+                    chatId = new SteamID(chatRoomId);
+
+                    // Start the inactivity timer.
+                    inactivityTimer.Start();
+
+                    OnJoinChat(chatId);
+                }
+            }
+            else
+            {
+                logger.Error("Could not connect to chat room as the chat room ID is invalid.");
+            }
+        }
+
+        void IConnectionHandler.OnLoggedOut()
+        {
+            modules.ForEach(x => x.OnLoggedOut());
+        }
+
+        void IConnectionHandler.OnReceiveChatMessage(SteamFriends.ChatMsgCallback callback)
+        {
+            inactivityTimer.Stop();
+            inactivityTimer.Start();
+            HandleMessage(MessageContext.Chat, callback.ChatterID, callback.Message);
+        }
+
+        void IConnectionHandler.OnReceiveFriendMessage(SteamFriends.FriendMsgCallback callback)
+        {
+            HandleMessage(MessageContext.Friend, callback.Sender, callback.Message);
+        }
+        #endregion
+
+        #region Bot Behaviours
+        void HandleMessage(MessageContext context, SteamID caller, string message)
         {
             // Process the received message and pass in the current Bot's data.
             var handler = new MessageHandler(this, caller, message);
@@ -101,35 +179,14 @@ namespace Core
             }
         }
 
-        void OnLoggedOn(object sender, EventArgs e)
+        void OnJoinChat(SteamID chatId)
         {
-            logger.Info("Logged on");
+            modules.ForEach(x => x.OnJoinChat(chatId));
+        }
 
-            // Attempt to join chat.
-            if (!string.IsNullOrEmpty(config.Data.ChatRoomId))
-            {
-                ulong chatRoomId = 0;
-                ulong.TryParse(config.Data.ChatRoomId, out chatRoomId);
-
-                if (chatRoomId == 0)
-                {
-                    logger.Error("{0} is an invalid chat room ID", config.Data.ChatRoomId);
-                }
-                else
-                {
-                    connection.Friends.JoinChat(chatRoomId);
-                    chatId = new SteamID(chatRoomId);
-
-                    // Start the inactivity timer.
-                    inactivityTimer.Start();
-
-                    OnJoinChat();
-                }
-            }
-            else
-            {
-                logger.Error("Could not connect to chat room as the chat room ID is invalid.");
-            }
+        void OnLeaveChat(SteamID chatroomID)
+        {
+            modules.ForEach(x => x.OnLeaveChat(chatId));
         }
 
         void OnNoActivity(object sender, ElapsedEventArgs e)
@@ -137,18 +194,8 @@ namespace Core
             logger.Info("Rejoining chat due to inactivity");
             connection.Friends.LeaveChat(chatId);
             connection.Friends.JoinChat(chatId);
-        }
 
-        void OnReceiveChatMessage(object sender, SteamFriends.ChatMsgCallback callback)
-        {
-            inactivityTimer.Stop();
-            inactivityTimer.Start();
-            HandleMessage(MessageContext.Chat, callback.ChatterID, callback.Message);
-        }
-
-        void OnReceiveFriendMessage(object sender, SteamFriends.FriendMsgCallback callback)
-        {
-            HandleMessage(MessageContext.Friend, callback.Sender, callback.Message);
+            modules.ForEach(x => x.OnNoActivity());
         }
 
         void SayToChat(SteamID chatId, string message)
@@ -165,13 +212,13 @@ namespace Core
             connection.Friends.SendChatMessage(friend, EChatEntryType.ChatMsg, message);
             logger.Info("@{0}: {1}", connection.Friends.GetFriendPersonaName(friend), message);
         }
+        #endregion
 
-        public virtual string NoPermission { get { return "*bark!* You do not have permission to do that!"; } }
-        public virtual string Muted { get { return "*muted*"; } }
-        public virtual string Unmuted { get { return "*bark!*"; } }
+        public string NoPermission { get { return "*bark!* You do not have permission to do that!"; } }
+        public string Muted { get { return "*muted*"; } }
+        public string Unmuted { get { return "*bark!*"; } }
 
-        protected virtual Strings GetStrings() { return new Strings(); }
-        protected virtual void OnJoinChat() { }
+        public Strings GetStrings() { return new Strings(); }
 
         #region Helpers
         [Obsolete]
@@ -213,6 +260,15 @@ namespace Core
             muted = false;
             if (OnMute != null)
                 OnMute(this, muted);
+        }
+
+        /// <summary>
+        /// Processes the message internally as if it was recieved as a command from a user.
+        /// </summary>
+        /// <param name="message"></param>
+        public void ProcessMessageInternally(MessageContext context, string message)
+        {
+            HandleMessage(MessageContext.Chat, SID, message);
         }
         #endregion
     }
