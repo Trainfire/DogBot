@@ -8,11 +8,20 @@ namespace Core
         public Bot Bot { get; private set; }
         public Logger Logger { get; private set; }
 
-        public virtual void Initialize(Bot bot)
+        public void Initialize(Bot bot)
         {
             Bot = bot;
             Logger = new Logger(GetType().Name + ".log");
+            OnInitialize();
         }
+
+        public void Stop()
+        {
+            OnStop();
+        }
+
+        protected virtual void OnInitialize() { }
+        protected virtual void OnStop() { }
 
         public virtual void OnDisconnect() { }
         public virtual void OnJoinChat(SteamID chatroomID) { }

@@ -21,10 +21,8 @@ namespace BotDogBot
         const string DOTDSUBMIT = "dotdsubmit";
         #endregion
 
-        protected override void Initialize()
+        protected override void OnInitialize()
         {
-            base.Initialize();
-
             dogBotConfig = new DogBotConfig();
 
             Data = new BotData();
