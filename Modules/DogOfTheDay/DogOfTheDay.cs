@@ -19,6 +19,7 @@ namespace Modules.DogOfTheDay
         const string COUNT = "dotdcount";
         const string DOTD = "dotd";
         const string DOTDSUBMIT = "dotdsubmit";
+        const string STATS = "dotdstats";
         #endregion
 
         protected override void OnInitialize()
@@ -50,7 +51,8 @@ namespace Modules.DogOfTheDay
                                 }
                     },
                     new Command<GetRandomDog>(RND),
-                    new Command<GetDogOfTheDayCount>(COUNT)
+                    new Command<GetDogOfTheDayCount>(COUNT),
+                    new Command<Stats>(STATS),
                 };
             }
         }
@@ -96,6 +98,7 @@ namespace Modules.DogOfTheDay
 
         public static class Strings
         {
+            public const string DogOfTheDay = "Dog of the Day";
             public const string SubmitDogOfTheDay = "Dog added to the queue!";
             public const string NoDog = " * whines * There is no Dog of the Day... If you have permission, use !dotdsubmit <URL> <Comment (Optional)> to submit a message.";
             public const string UrlInvalid = "*whines* That URL is invalid...";

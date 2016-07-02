@@ -27,7 +27,7 @@ namespace Modules.DogOfTheDay
 
         string GetDoTDInfo(DogData dog)
         {
-            return string.Format("{0}'s {1} // {2}", DateTime.Now.DayOfWeek.ToString(), DogBot, dog.URL);
+            return string.Format("{0}'s {1} // {2}", DateTime.Now.DayOfWeek.ToString(), DogOfTheDay.Strings.DogOfTheDay, dog.URL);
         }
     }
 }
