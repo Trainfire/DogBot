@@ -1,5 +1,6 @@
 using System;
 using SteamKit2;
+using Modules.Messenger;
 
 namespace Core.Commands
 {
@@ -7,7 +8,7 @@ namespace Core.Commands
     {
         public override CommandResult Execute(Bot bot, SteamID caller, MessageParser parser)
         {
-            bot.Mute();
+            bot.GetModule<Messenger>().Muted = true;
             return new CommandResult();
         }
     }

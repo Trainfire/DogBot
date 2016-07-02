@@ -19,8 +19,6 @@ namespace Core
         List<ILogOnCallbackHandler> logOnListeners;
         List<ILogOffCallbackHandler> logOffListeners;
         Strings strings;
-        SteamID currentChatID;
-        bool muted;
         Thread connectionThread;
 
         public SteamID SID { get { return connection.User.SteamID; } }
@@ -29,13 +27,13 @@ namespace Core
         public string Token { get { return commandRegistry.Token; } }
         public string LogPath { get { return config.Data.ConnectionInfo.DisplayName + ".bin"; } }
         public Strings CoreStrings { get { return strings; } }
-        public CallbackManager CallbackManager { get { return connection.Manager; } }
 
-        public enum MessageContext
-        {
-            Chat,
-            Friend,
-        }
+        #region Connection Wrappers
+        public CallbackManager CallbackManager { get { return connection.Manager; } }
+        public SteamFriends Friends { get { return connection.Friends; } }
+        #endregion
+
+        public SteamID CurrentChatRoomID { get; private set; }
 
         public Bot()
         {
@@ -47,11 +45,8 @@ namespace Core
             connection = new Connection(LogPath);
 
             // Subscribe to callbacks here.
-            connection.Manager.Subscribe<SteamFriends.ChatMsgCallback>(OnReceiveChatMessage);
-            connection.Manager.Subscribe<SteamFriends.FriendMsgCallback>(OnReceiveFriendMessage);
             connection.Manager.Subscribe<SteamUser.LoggedOnCallback>(OnLoggedOn);
-
-            currentChatID = 0;
+            connection.Manager.Subscribe<SteamFriends.ChatEnterCallback>(OnJoinChat);
 
             commandRegistry = new CommandRegistry(config.Data.Token, config.Data.CommandPrefix);
 
@@ -74,7 +69,7 @@ namespace Core
             connectionThread.Start();
         }
 
-        public void RegisterModule<T>() where T : Module
+        public void AddModule<T>() where T : Module
         {
             logger.Info("Registering module '{0}'", typeof(T).Name);
             var instance = Activator.CreateInstance<T>();
@@ -119,69 +114,16 @@ namespace Core
                 logOffListeners.Remove(handler);
         }
 
-        #region Bot Behaviours
+        #region Callbacks
         void OnLoggedOn(SteamUser.LoggedOnCallback callback)
         {
             if (callback.Result == EResult.OK)
                 logOnListeners.ForEach(x => x.OnLoggedOn());
         }
 
-        void OnReceiveChatMessage(SteamFriends.ChatMsgCallback callback)
+        void OnJoinChat(SteamFriends.ChatEnterCallback callback)
         {
-            HandleMessage(MessageContext.Chat, callback.ChatterID, callback.Message);
-        }
-
-        void OnReceiveFriendMessage(SteamFriends.FriendMsgCallback callback)
-        {
-            HandleMessage(MessageContext.Friend, callback.Sender, callback.Message);
-        }
-
-        void HandleMessage(MessageContext context, SteamID caller, string message)
-        {
-            // Process the received message and pass in the current Bot's data.
-            var handler = new MessageHandler(this, caller, message);
-
-            if (handler.Record != null)
-            {
-                // Log info about the execution of the command.
-                if (handler.Record.Executer.IsValid)
-                {
-                    var steamName = connection.Friends.GetFriendPersonaName(handler.Record.Executer);
-                    logger.Info("Command Execution: From {0}: '{1}' by {2}. Arguments: {3}", context.ToString(), handler.Record.Command, steamName, handler.Record.Args);
-                }
-
-                // Echo the result if there is one.
-                if (!string.IsNullOrEmpty(handler.Record.Result.FeedbackMessage))
-                {
-                    if (context == MessageContext.Chat)
-                    {
-                        SayToChat(currentChatID, handler.Record.Result.FeedbackMessage);
-                    }
-                    else
-                    {
-                        SayToFriend(caller, handler.Record.Result.FeedbackMessage);
-                    }
-                }
-
-                // Log a log message if there is one.
-                if (!string.IsNullOrEmpty(handler.Record.Result.LogMessage))
-                    logger.Info(handler.Record.Result.LogMessage);
-            }
-        }
-
-        void SayToChat(SteamID chatId, string message)
-        {
-            if (!muted)
-            {
-                connection.Friends.SendChatRoomMessage(chatId, EChatEntryType.ChatMsg, message);
-                logger.Info("@Chat: {0}", message);
-            }
-        }
-
-        void SayToFriend(SteamID friend, string message)
-        {
-            connection.Friends.SendChatMessage(friend, EChatEntryType.ChatMsg, message);
-            logger.Info("@{0}: {1}", connection.Friends.GetFriendPersonaName(friend), message);
+            CurrentChatRoomID = callback.ChatID;
         }
         #endregion
 
@@ -194,18 +136,6 @@ namespace Core
         #region Helpers
         [Obsolete]
         public void PopulateNameCache() { }
-
-        public void JoinChat(SteamID chatId)
-        {
-            this.currentChatID = chatId;
-            connection.Friends.JoinChat(chatId);
-        }
-
-        public void LeaveChat(SteamID chatId)
-        {
-            this.currentChatID = 0;
-            connection.Friends.LeaveChat(chatId);
-        }
 
         public string GetChatRoomName(SteamID id)
         {
@@ -235,29 +165,14 @@ namespace Core
         {
             return config.Data.Users != null ? config.Data.Users.Contains(id.ToString()) : false;
         }
-
-        public void Mute()
-        {
-            muted = true;
-            if (OnMute != null)
-                OnMute(this, muted);
-        }
-
-        public void Unmute()
-        {
-            muted = false;
-            if (OnMute != null)
-                OnMute(this, muted);
-        }
-
         /// <summary>
         /// Processes the message internally as if it was recieved as a command from a user.
         /// </summary>
         /// <param name="message"></param>
-        public void ProcessMessageInternally(MessageContext context, string message)
-        {
-            HandleMessage(MessageContext.Chat, SID, message);
-        }
+        //public void ProcessMessageInternally(MessageContext context, string message)
+        //{
+        //    HandleMessage(MessageContext.Chat, SID, message);
+        //}
         #endregion
     }
 }

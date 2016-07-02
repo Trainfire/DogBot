@@ -95,6 +95,7 @@
     <Compile Include="Core\Strings.cs" />
     <Compile Include="Modules\ChatJoiner\ChatJoiner.cs" />
     <Compile Include="Modules\ChatJoiner\Config.cs" />
+    <Compile Include="Modules\Messenger\Messenger.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

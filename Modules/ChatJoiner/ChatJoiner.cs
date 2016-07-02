@@ -49,8 +49,8 @@ namespace Modules.ChatJoiner
         void OnNoActivity(object sender, ElapsedEventArgs e)
         {
             Logger.Info("Rejoining chat due to inactivity");
-            Bot.LeaveChat(chatRoomId);
-            Bot.JoinChat(chatRoomId);
+            Bot.Friends.LeaveChat(chatRoomId);
+            Bot.Friends.JoinChat(chatRoomId);
         }
 
         void ILogOnCallbackHandler.OnLoggedOn()
@@ -68,7 +68,7 @@ namespace Modules.ChatJoiner
                 else
                 {
                     Logger.Info("Joining chat {0}", Bot.GetChatRoomName(chatRoomId));
-                    Bot.JoinChat(chatRoomId);
+                    Bot.Friends.JoinChat(chatRoomId);
                 }
             }
             else
