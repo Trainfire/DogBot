@@ -85,10 +85,10 @@
     <Compile Include="Modules\DogOfTheDay\Commands\Stats.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\SubmitDogOfTheDay.cs" />
     <Compile Include="Modules\DogOfTheDay\DogOfTheDayCommandAction.cs" />
-    <Compile Include="Modules\DogOfTheDay\DogOfTheDayConfig.cs" />
+    <Compile Include="Modules\DogOfTheDay\Config.cs" />
     <Compile Include="Modules\DogOfTheDay\DogData.cs" />
     <Compile Include="Modules\DogOfTheDay\DogOfTheDay.cs" />
-    <Compile Include="Modules\DogOfTheDay\DotdQueue.cs" />
+    <Compile Include="Modules\DogOfTheDay\Queue.cs" />
     <Compile Include="Modules\DogOfTheDay\History.cs" />
     <Compile Include="Modules\DogOfTheDay\Parsers\DogSetParser.cs" />
     <Compile Include="Program.cs" />

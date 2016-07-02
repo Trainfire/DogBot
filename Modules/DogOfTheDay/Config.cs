@@ -3,18 +3,9 @@ using Core;
 
 namespace Modules.DogOfTheDay
 {
-    public class DogOfTheDayConfig : FileStorage<DogOfTheDayConfigData>
-    {
-        public override string Filename
-        {
-            get
-            {
-                return GetType().Name.ToLower() + ".json";
-            }
-        }
-    }
+    public class Config : FileStorage<ConfigData> { }
 
-    public class DogOfTheDayConfigData
+    public class ConfigData
     {
         /// <summary>
         /// How many announcements to make before changing to the next one.

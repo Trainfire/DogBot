@@ -8,7 +8,7 @@ namespace Core
     {
         public T Data { get; private set; }
 
-        public abstract string Filename { get; }
+        public virtual string Filename { get { return GetType().FullName; } }
 
         string Path
         {

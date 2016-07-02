@@ -6,16 +6,8 @@ using Core;
 
 namespace Modules.DogOfTheDay
 {
-    public class DotdQueue : FileStorage<DotdQueueData>
-    {
-        public override string Filename
-        {
-            get
-            {
-                return "queue.json";
-            }
-        }
-        
+    public class Queue : FileStorage<DotdQueueData>
+    {        
         public void Enqueue(DogData dog)
         {
             Data.Queue.Add(dog);

@@ -19,14 +19,6 @@ namespace Modules.DogOfTheDay
             Data.History.Add(record);
             Save();
         }
-
-        public override string Filename
-        {
-            get
-            {
-                return "history.json";
-            }
-        }
     }
 
     public class HistoryData

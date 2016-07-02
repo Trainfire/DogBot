@@ -9,7 +9,7 @@ namespace Modules.DogOfTheDay
     public class DogOfTheDay : Module
     {
         Announcer announcer;
-        DogOfTheDayConfig dogBotConfig;
+        Config dogBotConfig;
 
         public BotData Data { get; private set; }
 
@@ -23,7 +23,7 @@ namespace Modules.DogOfTheDay
 
         protected override void OnInitialize()
         {
-            dogBotConfig = new DogOfTheDayConfig();
+            dogBotConfig = new Config();
 
             Data = new BotData();
 

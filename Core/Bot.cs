@@ -63,11 +63,6 @@ namespace Core
             inactivityTimer.Elapsed += OnNoActivity;
 
             connection = new Connection(this, LogPath);
-            //connection.LoggedOn += OnLogin;
-            //connection.Disconnected += OnDisconnect;
-            //connection.ReceiveChatMessage += OnReceiveChatMessage;
-            //connection.ReceiveFriendMessage += OnReceiveFriendMessage;
-            connection.Connect(config.Data.ConnectionInfo);
         }
 
         public void Start()

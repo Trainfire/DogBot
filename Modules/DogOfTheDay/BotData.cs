@@ -15,7 +15,7 @@ namespace Modules.DogOfTheDay
         readonly History history;
 
         DogData dog;
-        DotdQueue queue;
+        Queue queue;
 
         public HistoryStats HistoryStats { get { return history.Stats; } }
         public DogData CurrentDog { get { return queue.Peek(); } }
@@ -32,8 +32,7 @@ namespace Modules.DogOfTheDay
         public BotData()
         {
             history = new History();
-            queue = new DotdQueue();
-            history.Load();
+            queue = new Queue();
         }
 
         public void EnqueueDog(DogData dog)
