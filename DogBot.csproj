@@ -84,7 +84,7 @@
     <Compile Include="Modules\DogOfTheDay\Commands\GetRandomDog.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\Stats.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\SubmitDogOfTheDay.cs" />
-    <Compile Include="Modules\DogOfTheDay\DogOfTheDayCommandAction.cs" />
+    <Compile Include="Modules\DogOfTheDay\CommandAction.cs" />
     <Compile Include="Modules\DogOfTheDay\Config.cs" />
     <Compile Include="Modules\DogOfTheDay\DogData.cs" />
     <Compile Include="Modules\DogOfTheDay\DogOfTheDay.cs" />

@@ -4,7 +4,7 @@ using Core;
 
 namespace Modules.DogOfTheDay
 {
-    class Stats : DogOfTheDayCommandAction
+    class Stats : CommandAction
     {
         public override CommandResult Execute(Bot bot, SteamID caller, MessageParser parser)
         {

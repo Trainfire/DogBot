@@ -4,7 +4,7 @@ using SteamKit2;
 
 namespace Modules.DogOfTheDay
 {
-    class GetRandomDog : DogOfTheDayCommandAction
+    class GetRandomDog : CommandAction
     {
         public override CommandResult Execute(Bot bot, SteamID caller, MessageParser parser)
         {

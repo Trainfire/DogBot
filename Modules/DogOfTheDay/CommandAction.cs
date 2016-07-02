@@ -3,7 +3,7 @@ using SteamKit2;
 
 namespace Modules.DogOfTheDay
 {
-    public abstract class DogOfTheDayCommandAction : CommandAction
+    public abstract class CommandAction : Core.CommandAction
     {
         public DogOfTheDay DogBot { get; private set; }
 
