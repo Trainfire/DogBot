@@ -3,7 +3,7 @@ using SteamKit2;
 using System;
 using System.Linq;
 
-namespace BotDogBot
+namespace Modules.DogOfTheDay
 {
     public class DotdSetParser : MessageParser
     {
@@ -25,7 +25,7 @@ namespace BotDogBot
             }
             else
             {
-                Invalidate(DogBot.Strings.UrlInvalid);
+                Invalidate(DogOfTheDay.Strings.UrlInvalid);
             }
 
             if (IsValid)

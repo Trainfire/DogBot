@@ -4,15 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{EC9EB132-FD49-4130-ADBD-3AFDE4CC0F21}</ProjectGuid>
+    <ProjectGuid>{A7D3879E-0751-466B-907B-9A243DD528D9}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DogBot</RootNamespace>
     <AssemblyName>DogBot</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -34,6 +33,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
+      <HintPath>packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="SteamKit2, Version=1.7.0.33680, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\SteamKit2.1.7.0\lib\net45\SteamKit2.dll</HintPath>
       <Private>True</Private>
@@ -48,31 +55,48 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DogBot\BotData.cs" />
-    <Compile Include="DogBot\Commands\GetDogOfTheDayCount.cs" />
-    <Compile Include="DogBot\Commands\GetDogOfTheDay.cs" />
-    <Compile Include="DogBot\Commands\GetRandomDog.cs" />
-    <Compile Include="DogBot\Commands\Stats.cs" />
-    <Compile Include="DogBot\Commands\SubmitDogOfTheDay.cs" />
-    <Compile Include="DogBot\DogBot.cs" />
-    <Compile Include="DogBot\DogBotCommandAction.cs" />
-    <Compile Include="DogBot\DogBotConfig.cs" />
-    <Compile Include="DogBot\DogData.cs" />
-    <Compile Include="DogBot\DotdQueue.cs" />
-    <Compile Include="DogBot\History.cs" />
-    <Compile Include="DogBot\Parsers\DogSetParser.cs" />
+    <Compile Include="Core\Announcer.cs" />
+    <Compile Include="Core\Bot.cs" />
+    <Compile Include="Core\Command.cs" />
+    <Compile Include="Core\CommandRegistry.cs" />
+    <Compile Include="Core\Commands\Help.cs" />
+    <Compile Include="Core\Commands\Mute.cs" />
+    <Compile Include="Core\Commands\PopulateNameCache.cs" />
+    <Compile Include="Core\Commands\ShowPermissions.cs" />
+    <Compile Include="Core\Commands\ShowRepo.cs" />
+    <Compile Include="Core\Commands\Unmute.cs" />
+    <Compile Include="Core\Config.cs" />
+    <Compile Include="Core\Connection.cs" />
+    <Compile Include="Core\Converters\IPAddressConverter.cs" />
+    <Compile Include="Core\Converters\IPEndPointConverter.cs" />
+    <Compile Include="Core\FileStorage.cs" />
+    <Compile Include="Core\Logger.cs" />
+    <Compile Include="Core\MessageHandler.cs" />
+    <Compile Include="Core\MessageParser.cs" />
+    <Compile Include="Core\Module.cs" />
+    <Compile Include="Core\NameCache.cs" />
+    <Compile Include="Core\ServerCache.cs" />
+    <Compile Include="Core\ServerData.cs" />
+    <Compile Include="Core\Strings.cs" />
+    <Compile Include="Modules\DogOfTheDay\BotData.cs" />
+    <Compile Include="Modules\DogOfTheDay\Commands\GetDogOfTheDay.cs" />
+    <Compile Include="Modules\DogOfTheDay\Commands\GetDogOfTheDayCount.cs" />
+    <Compile Include="Modules\DogOfTheDay\Commands\GetRandomDog.cs" />
+    <Compile Include="Modules\DogOfTheDay\Commands\Stats.cs" />
+    <Compile Include="Modules\DogOfTheDay\Commands\SubmitDogOfTheDay.cs" />
+    <Compile Include="Modules\DogOfTheDay\DogOfTheDayCommandAction.cs" />
+    <Compile Include="Modules\DogOfTheDay\DogOfTheDayConfig.cs" />
+    <Compile Include="Modules\DogOfTheDay\DogData.cs" />
+    <Compile Include="Modules\DogOfTheDay\DogOfTheDay.cs" />
+    <Compile Include="Modules\DogOfTheDay\DotdQueue.cs" />
+    <Compile Include="Modules\DogOfTheDay\History.cs" />
+    <Compile Include="Modules\DogOfTheDay\Parsers\DogSetParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Core\Core.csproj">
-      <Project>{42568dc9-4739-40d9-9fa3-808048e49d9d}</Project>
-      <Name>Core</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

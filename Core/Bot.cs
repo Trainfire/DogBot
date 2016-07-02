@@ -30,10 +30,9 @@ namespace Core
 
         public SteamID SID { get { return connection.User.SteamID; } }
         public Logger Logger { get; private set; }
-        public CommandRegistry CommandRegistry { get; private set; }
 
-        public List<Command> Commands { get { return CommandRegistry.Commands; } }
-        public string Token { get { return CommandRegistry.Token; } }
+        public List<Command> Commands { get { return commandRegistry.Commands; } }
+        public string Token { get { return commandRegistry.Token; } }
         public string LogPath { get { return config.Data.ConnectionInfo.DisplayName + ".bin"; } }
         public Strings CoreStrings { get { return strings; } }
 
@@ -46,6 +45,8 @@ namespace Core
         public Bot()
         {
             config = new Config();
+
+            chatId = 0;
 
             commandRegistry = new CommandRegistry(config.Data.Token, config.Data.CommandPrefix);
 
@@ -78,8 +79,17 @@ namespace Core
         {
             logger.Info("Registering module '{0}'", typeof(T).Name);
             var instance = Activator.CreateInstance<T>();
+            instance.Commands.ForEach(x => commandRegistry.AddCommand(x));
             modules.Add(instance);
             instance.Initialize(this);
+        }
+
+        public T GetModule<T>() where T : Module
+        {
+            var module = modules.Find(x => x.GetType() == typeof(T));
+            if (module != null)
+                return module as T;
+            return null;
         }
 
         public void Stop()
@@ -91,7 +101,9 @@ namespace Core
         void IConnectionHandler.OnDisconnect()
         {
             logger.Warning("Disconnected from Steam.");
-            connection.Friends.LeaveChat(chatId);
+
+            if (chatId != 0)
+                connection.Friends.LeaveChat(chatId);
 
             modules.ForEach(x => x.OnDisconnect());
         }

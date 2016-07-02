@@ -4,7 +4,7 @@ using System.Linq;
 using SteamKit2;
 using Core;
 
-namespace BotDogBot
+namespace Modules.DogOfTheDay
 {
     public class DotdQueue : FileStorage<DotdQueueData>
     {

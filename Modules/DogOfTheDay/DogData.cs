@@ -1,6 +1,6 @@
 using SteamKit2;
 
-namespace BotDogBot
+namespace Modules.DogOfTheDay
 {
     public class DogData
     {

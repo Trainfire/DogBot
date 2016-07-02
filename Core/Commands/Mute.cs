@@ -1,7 +1,7 @@
 using System;
 using SteamKit2;
 
-namespace Core
+namespace Core.Commands
 {
     class Mute : CommandAction
     {

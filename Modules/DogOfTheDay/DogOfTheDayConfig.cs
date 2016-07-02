@@ -1,9 +1,9 @@
 using System;
 using Core;
 
-namespace BotDogBot
+namespace Modules.DogOfTheDay
 {
-    public class DogBotConfig : FileStorage<DogBotConfigData>
+    public class DogOfTheDayConfig : FileStorage<DogOfTheDayConfigData>
     {
         public override string Filename
         {
@@ -14,7 +14,7 @@ namespace BotDogBot
         }
     }
 
-    public class DogBotConfigData
+    public class DogOfTheDayConfigData
     {
         /// <summary>
         /// How many announcements to make before changing to the next one.

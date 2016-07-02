@@ -2,9 +2,9 @@ using System;
 using Core;
 using SteamKit2;
 
-namespace BotDogBot
+namespace Modules.DogOfTheDay
 {
-    class GetRandomDog : DogBotCommandAction
+    class GetRandomDog : DogOfTheDayCommandAction
     {
         public override CommandResult Execute(Bot bot, SteamID caller, MessageParser parser)
         {

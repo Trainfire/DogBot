@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using Core;
 using SteamKit2;
 
-namespace BotDogBot
+namespace Modules.DogOfTheDay
 {
-    public class DogBot : Module
+    public class DogOfTheDay : Module
     {
         Announcer announcer;
-        DogBotConfig dogBotConfig;
+        DogOfTheDayConfig dogBotConfig;
 
         public BotData Data { get; private set; }
 
@@ -23,7 +23,7 @@ namespace BotDogBot
 
         protected override void OnInitialize()
         {
-            dogBotConfig = new DogBotConfig();
+            dogBotConfig = new DogOfTheDayConfig();
 
             Data = new BotData();
 
@@ -31,20 +31,28 @@ namespace BotDogBot
             announcer = new Announcer(dogBotConfig.Data.AnnouncementInterval);
             announcer.Announce += OnAnnounce;
             announcer.AllAnnounced += OnAllAnnouncements;
+        }
 
-            // Register commands
-            Bot.CommandRegistry.AddCommand(new Command<GetDogOfTheDay>(DOTD));
-            Bot.CommandRegistry.AddCommand(new Command<SubmitDogOfTheDay>(DOTDSUBMIT)
+        public override List<Command> Commands
+        {
+            get
             {
-                UsersOnly = true,
-                HelpArgs = new List<string>()
-                        {
-                            "URL",
-                            "Comment (Optional)"
-                        }
-            });
-            Bot.CommandRegistry.AddCommand(new Command<GetRandomDog>(RND));
-            Bot.CommandRegistry.AddCommand(new Command<GetDogOfTheDayCount>(COUNT));
+                return new List<Command>()
+                {
+                    new Command<GetDogOfTheDay>(DOTD),
+                    new Command<SubmitDogOfTheDay>(DOTDSUBMIT)
+                    {
+                        UsersOnly = true,
+                        HelpArgs = new List<string>()
+                                {
+                                    "URL",
+                                    "Comment (Optional)"
+                                }
+                    },
+                    new Command<GetRandomDog>(RND),
+                    new Command<GetDogOfTheDayCount>(COUNT)
+                };
+            }
         }
 
         public override void OnDisconnect()
@@ -85,15 +93,6 @@ namespace BotDogBot
                 Logger.Info("Nothing to announce.");
             }
         }
-
-        #region Commands
-        public string Dotd { get { return Bot.CommandRegistry.Format(DOTD); } }
-
-        public string DotdSubmit(string url, string comment)
-        {
-            return string.Format("{0} {1} {2}", Bot.CommandRegistry.Format(DOTDSUBMIT), url, comment);
-        }
-        #endregion
 
         public static class Strings
         {

@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using SteamKit2;
 
 namespace Core
@@ -7,6 +7,7 @@ namespace Core
     {
         public Bot Bot { get; private set; }
         public Logger Logger { get; private set; }
+        public virtual List<Command> Commands { get; }
 
         public void Initialize(Bot bot)
         {

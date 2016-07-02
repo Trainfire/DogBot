@@ -2,9 +2,9 @@ using System;
 using Core;
 using SteamKit2;
 
-namespace BotDogBot
+namespace Modules.DogOfTheDay
 {
-    class GetDogOfTheDay : DogBotCommandAction
+    class GetDogOfTheDay : DogOfTheDayCommandAction
     {
         public override CommandResult Execute(Bot bot, SteamID caller, MessageParser parser)
         {
@@ -21,7 +21,7 @@ namespace BotDogBot
             }
             else
             {
-                return new CommandResult(DogBot.Strings.UrlInvalid);
+                return new CommandResult(DogOfTheDay.Strings.UrlInvalid);
             }
         }
 

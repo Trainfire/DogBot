@@ -3,7 +3,7 @@ using SteamKit2;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace BotDogBot
+namespace Modules.DogOfTheDay
 {
     /// <summary>
     /// Information about the current state of the Bot.

@@ -2,26 +2,26 @@ using SteamKit2;
 using System.Collections.Generic;
 using Core;
 
-namespace BotDogBot
+namespace Modules.DogOfTheDay
 {
-    class Stats : DogBotCommandAction
+    class Stats : DogOfTheDayCommandAction
     {
         public override CommandResult Execute(Bot bot, SteamID caller, MessageParser parser)
         {
             var stats = new List<string>();
 
             // Total records
-            stats.Add(DogBot.Strings.StatsTotalAdded + DogBot.Data.TotalDogsAdded);
+            stats.Add(DogOfTheDay.Strings.StatsTotalAdded + DogBot.Data.TotalDogsAdded);
 
             // Dogs Shown
-            stats.Add(DogBot.Strings.StatsTotalShown + DogBot.Data.TotalDogsShown);
+            stats.Add(DogOfTheDay.Strings.StatsTotalShown + DogBot.Data.TotalDogsShown);
 
             // Highest contributer
             var highestContributor = DogBot.Data.HighestContributor;
             if (highestContributor != null)
             {
                 var name = bot.GetFriendName(highestContributor);
-                stats.Add(string.Format("{0}{1} ({2})", DogBot.Strings.StatsHighestContributer, name, DogBot.Data.GetUserContributions(highestContributor).Count));
+                stats.Add(string.Format("{0}{1} ({2})", DogOfTheDay.Strings.StatsHighestContributer, name, DogBot.Data.GetUserContributions(highestContributor).Count));
             }
 
             // Include caller's contributions if they have any.

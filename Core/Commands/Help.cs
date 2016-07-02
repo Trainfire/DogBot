@@ -1,7 +1,7 @@
 using System.Linq;
 using SteamKit2;
 
-namespace Core
+namespace Core.Commands
 {
     class Help : CommandAction
     {
