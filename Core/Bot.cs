@@ -126,9 +126,6 @@ namespace Core
         #endregion
 
         #region Helpers
-        [Obsolete]
-        public void PopulateNameCache() { }
-
         public string GetChatRoomName(SteamID id)
         {
             return connection.Friends.GetClanName(id);
@@ -146,6 +143,11 @@ namespace Core
 
             if (name != "[unknown]")
                 nameCache.Store(id, name);
+        }
+
+        public void CacheNames(List<SteamID> names)
+        {
+            names.ForEach(x => CacheName(x));
         }
 
         public bool IsAdmin(SteamID id)
