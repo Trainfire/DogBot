@@ -16,7 +16,6 @@ namespace Core
         List<Module> modules;
         List<ILogOnCallbackHandler> logOnListeners;
         List<ILogOffCallbackHandler> logOffListeners;
-        Strings strings;
         Thread connectionThread;
 
         public SteamID SID { get { return connection.User.SteamID; } }
@@ -49,8 +48,6 @@ namespace Core
             nameCache = new NameCache();
 
             modules = new List<Module>();
-
-            strings = GetStrings();
         }
 
         public void Start()
@@ -128,13 +125,6 @@ namespace Core
         }
         #endregion
 
-        // Do *something* with these. Like...???
-        public string NoPermission { get { return "*bark!* You do not have permission to do that!"; } }
-        public string Muted { get { return "*muted*"; } }
-        public string Unmuted { get { return "*bark!*"; } }
-
-        public Strings GetStrings() { return new Strings(); }
-
         #region Helpers
         [Obsolete]
         public void PopulateNameCache() { }
@@ -170,11 +160,8 @@ namespace Core
 
         public void SayToChat(SteamID chatId, string message)
         {
-            //if (!Muted)
-            //{
-                Friends.SendChatRoomMessage(chatId, EChatEntryType.ChatMsg, message);
-                logger.Info("@Chat: {0}", message);
-            //}
+            Friends.SendChatRoomMessage(chatId, EChatEntryType.ChatMsg, message);
+            logger.Info("@Chat: {0}", message);
         }
 
         public void SayToFriend(SteamID friend, string message)
