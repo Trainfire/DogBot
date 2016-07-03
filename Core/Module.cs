@@ -7,12 +7,11 @@ namespace Core
     {
         public Bot Bot { get; private set; }
         public Logger Logger { get; private set; }
-        //public virtual List<Command> Commands { get { return new List<Command>(); } }
 
         public void Initialize(Bot bot)
         {
             Bot = bot;
-            Logger = new Logger(GetType().Name + ".log", GetType().Name);
+            Logger = new Logger(GetType().Name.ToLower() + ".log", GetType().Name);
             OnInitialize();
         }
 
