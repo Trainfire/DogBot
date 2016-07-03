@@ -166,6 +166,7 @@ namespace Modules.CommandHandler
 
         void FireCallbacks(CommandEvent commandEvent)
         {
+            Logger.Info("Executing command '{0}'. Called by '{1}' from '{2}'.", commandEvent.Command.Alias, Bot.GetFriendName(commandEvent.Source.Caller), commandEvent.Source.Context);
             listeners[commandEvent.Command].ForEach(x => x.OnCommandTriggered(commandEvent));
         }
     }
