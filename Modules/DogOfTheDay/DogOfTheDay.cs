@@ -3,10 +3,11 @@ using System.Timers;
 using System.Collections.Generic;
 using Core;
 using SteamKit2;
+using Modules.CommandHandler;
 
 namespace Modules.DogOfTheDay
 {
-    public class DogOfTheDay : Module
+    public class DogOfTheDay : Module, ICommandListener
     {
         Announcer announcer;
         Config dogBotConfig;
@@ -32,37 +33,49 @@ namespace Modules.DogOfTheDay
             announcer = new Announcer(dogBotConfig.Data.AnnouncementInterval);
             announcer.Announce += OnAnnounce;
             announcer.AllAnnounced += OnAllAnnouncements;
+
+            var commandListener = Bot.GetOrAddModule<CommandListener>();
+            commandListener.AddCommand<GetDogOfTheDay>(DOTD, this);
+            commandListener.AddCommand<GetDogOfTheDayCount>(COUNT, this);
+            commandListener.AddCommand<GetRandomDog>(RND, this);
+            commandListener.AddCommand<Stats>(STATS, this);
+            commandListener.AddCommand<SubmitDogOfTheDay>(DOTDSUBMIT, this);
+
+            // Subscribe callbacks
+            Bot.CallbackManager.Subscribe<SteamClient.DisconnectedCallback>(OnDisconnect);
+            Bot.CallbackManager.Subscribe<SteamFriends.ChatEnterCallback>(OnJoinChat);
         }
 
-        public override List<Command> Commands
+        void ICommandListener.OnCommandTriggered(CommandEvent commandEvent)
         {
-            get
+            ProcessCommand(commandEvent);   
+        }
+
+        void ProcessCommand(CommandEvent commandEvent)
+        {
+            var result = commandEvent.Command.Execute(commandEvent.Source);
+
+            if (!string.IsNullOrEmpty(result.Message))
             {
-                return new List<Command>()
+                if (commandEvent.Source.Context == MessageContext.Chat)
                 {
-                    new Command<GetDogOfTheDay>(DOTD),
-                    new Command<SubmitDogOfTheDay>(DOTDSUBMIT)
-                    {
-                        UsersOnly = true,
-                        HelpArgs = new List<string>()
-                                {
-                                    "URL",
-                                    "Comment (Optional)"
-                                }
-                    },
-                    new Command<GetRandomDog>(RND),
-                    new Command<GetDogOfTheDayCount>(COUNT),
-                    new Command<Stats>(STATS),
-                };
+                    // say to chat here
+                    Bot.SayToChat(Bot.CurrentChatRoomID, result.Message);
+                }
+                else
+                {
+                    // say to friend here
+                    Bot.SayToFriend(commandEvent.Source.Caller, result.Message);
+                }
             }
         }
 
-        public override void OnDisconnect(SteamClient.DisconnectedCallback callback)
+        void OnDisconnect(SteamClient.DisconnectedCallback callback)
         {
             announcer.Stop();
         }
 
-        public override void OnJoinChat(SteamFriends.ChatEnterCallback callback)
+        void OnJoinChat(SteamFriends.ChatEnterCallback callback)
         {
             // Start the announcer timer upon joining chat.
             announcer.Start();
@@ -76,7 +89,7 @@ namespace Modules.DogOfTheDay
             if (Data.HasDog)
             {
                 Logger.Info("Posting announcement...");
-                Bot.ProcessMessageInternally(Bot.MessageContext.Chat, DOTD);
+                Bot.GetModule<CommandListener>().FireCommand<GetDogOfTheDay>();
             }
         }
 

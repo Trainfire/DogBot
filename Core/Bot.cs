@@ -8,11 +8,9 @@ namespace Core
 {
     public sealed class Bot
     {
-        public event EventHandler<bool> OnMute;
         readonly Config config;
         readonly Logger logger;
         readonly NameCache nameCache;
-        readonly CommandRegistry commandRegistry;
         readonly Connection connection;
 
         List<Module> modules;
@@ -22,11 +20,7 @@ namespace Core
         Thread connectionThread;
 
         public SteamID SID { get { return connection.User.SteamID; } }
-        public Logger Logger { get; private set; }
-        public List<Command> Commands { get { return commandRegistry.Commands; } }
-        public string Token { get { return commandRegistry.Token; } }
         public string LogPath { get { return config.Data.ConnectionInfo.DisplayName + ".bin"; } }
-        public Strings CoreStrings { get { return strings; } }
 
         #region Connection Wrappers
         public CallbackManager CallbackManager { get { return connection.Manager; } }
@@ -48,11 +42,10 @@ namespace Core
             connection.Manager.Subscribe<SteamUser.LoggedOnCallback>(OnLoggedOn);
             connection.Manager.Subscribe<SteamFriends.ChatEnterCallback>(OnJoinChat);
 
-            commandRegistry = new CommandRegistry(config.Data.Token, config.Data.CommandPrefix);
-
             logger = new Logger(LogPath, config.Data.ConnectionInfo.DisplayName);
             logger.Info("Started");
 
+            // Move into Module?
             nameCache = new NameCache();
 
             modules = new List<Module>();
@@ -69,13 +62,13 @@ namespace Core
             connectionThread.Start();
         }
 
-        public void AddModule<T>() where T : Module
+        public T AddModule<T>() where T : Module
         {
             logger.Info("Registering module '{0}'", typeof(T).Name);
             var instance = Activator.CreateInstance<T>();
-            instance.Commands.ForEach(x => commandRegistry.AddCommand(x));
             modules.Add(instance);
             instance.Initialize(this);
+            return instance;
         }
 
         public T GetModule<T>() where T : Module
@@ -84,6 +77,14 @@ namespace Core
             if (module != null)
                 return module as T;
             return null;
+        }
+
+        public T GetOrAddModule<T>() where T : Module
+        {
+            var module = GetModule<T>();
+            if (module == null)
+                module = AddModule<T>();
+            return module;
         }
 
         public void Stop()
@@ -127,6 +128,7 @@ namespace Core
         }
         #endregion
 
+        // Do *something* with these. Like...???
         public string NoPermission { get { return "*bark!* You do not have permission to do that!"; } }
         public string Muted { get { return "*muted*"; } }
         public string Unmuted { get { return "*bark!*"; } }
@@ -165,14 +167,21 @@ namespace Core
         {
             return config.Data.Users != null ? config.Data.Users.Contains(id.ToString()) : false;
         }
-        /// <summary>
-        /// Processes the message internally as if it was recieved as a command from a user.
-        /// </summary>
-        /// <param name="message"></param>
-        //public void ProcessMessageInternally(MessageContext context, string message)
-        //{
-        //    HandleMessage(MessageContext.Chat, SID, message);
-        //}
+
+        public void SayToChat(SteamID chatId, string message)
+        {
+            //if (!Muted)
+            //{
+                Friends.SendChatRoomMessage(chatId, EChatEntryType.ChatMsg, message);
+                logger.Info("@Chat: {0}", message);
+            //}
+        }
+
+        public void SayToFriend(SteamID friend, string message)
+        {
+            Friends.SendChatMessage(friend, EChatEntryType.ChatMsg, message);
+            logger.Info("@{0}: {1}", GetFriendName(friend), message);
+        }
         #endregion
     }
 }

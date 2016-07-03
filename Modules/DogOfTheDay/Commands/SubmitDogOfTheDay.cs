@@ -1,19 +1,20 @@
 using System;
 using Core;
 using SteamKit2;
+using Modules.CommandHandler;
 
 namespace Modules.DogOfTheDay
 {
-    class SubmitDogOfTheDay : CommandAction
+    class SubmitDogOfTheDay : DogOfTheDayCommand
     {
-        public override CommandResult Execute(Bot bot, SteamID caller, MessageParser parser)
+        public override CommandResult Execute(CommandSource source)
         {
-            var dotdParser = new DotdSetParser(caller, bot.Token, parser.Message);
+            var dotdParser = new DotdSetParser(source.Caller, source.Parser.Token, source.Parser.OriginalMessage);
 
             if (dotdParser.IsValid)
             {
                 if (dotdParser.Dog != null)
-                    DogBot.Data.EnqueueDog(dotdParser.Dog);
+                    DogOfTheDay.Data.EnqueueDog(dotdParser.Dog);
                 return new CommandResult(DogOfTheDay.Strings.SubmitDogOfTheDay);
             }
             else

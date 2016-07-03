@@ -1,15 +1,15 @@
 using System;
 using Core;
-using SteamKit2;
+using Modules.CommandHandler;
 
 namespace Modules.DogOfTheDay
 {
-    class GetRandomDog : CommandAction
+    class GetRandomDog : DogOfTheDayCommand
     {
-        public override CommandResult Execute(Bot bot, SteamID caller, MessageParser parser)
+        public override CommandResult Execute(CommandSource source)
         {
-            var rnd = new Random().Next(0, DogBot.Data.HistoryStats.Dogs.Count);
-            var dog = DogBot.Data.HistoryStats.Dogs[rnd];
+            var rnd = new Random().Next(0, DogOfTheDay.Data.HistoryStats.Dogs.Count);
+            var dog = DogOfTheDay.Data.HistoryStats.Dogs[rnd];
             return new CommandResult(dog.URL);
         }
     }

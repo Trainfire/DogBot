@@ -1,14 +1,15 @@
 using System;
 using Core;
 using SteamKit2;
+using Modules.CommandHandler;
 
 namespace Modules.DogOfTheDay
 {
-    class GetDogOfTheDayCount : CommandAction
+    class GetDogOfTheDayCount : DogOfTheDayCommand
     {
-        public override CommandResult Execute(Bot bot, SteamID caller, MessageParser parser)
+        public override CommandResult Execute(CommandSource source)
         {
-            return new CommandResult(DogOfTheDay.Strings.TotalMessages + DogBot.Data.QueueCount);
+            return new CommandResult(DogOfTheDay.Strings.TotalMessages + DogOfTheDay.Data.QueueCount);
         }
     }
 }

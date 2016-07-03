@@ -9,7 +9,8 @@ namespace Core
     /// </summary>
     public class MessageParser
     {
-        public string Message { get; private set; }
+        public string OriginalMessage { get; private set; }
+        public string Token { get; private set; }
         public string Command { get; private set; }
         public List<string> Args { get; private set; }
         public bool IsValid { get; private set; }
@@ -17,7 +18,8 @@ namespace Core
 
         public MessageParser(string token, string message)
         {
-            Message = message;
+            OriginalMessage = message;
+            Token = token;
             IsValid = true;
             Args = new List<string>();
 

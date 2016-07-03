@@ -1,22 +1,25 @@
 using System;
 using Core;
+using Modules.CommandHandler;
 using SteamKit2;
 
 namespace Modules.DogOfTheDay
 {
-    class GetDogOfTheDay : CommandAction
+    class GetDogOfTheDay : ChatCommand
     {
-        public override CommandResult Execute(Bot bot, SteamID caller, MessageParser parser)
+        public override CommandResult Execute(CommandSource source)
         {
-            if (DogBot.Data.HasDog)
+            var dotd = Bot.GetModule<DogOfTheDay>();
+
+            if (dotd.Data.HasDog)
             {
-                if (!string.IsNullOrEmpty(DogBot.Data.CurrentDog.Message))
+                if (!string.IsNullOrEmpty(dotd.Data.CurrentDog.Message))
                 {
-                    return new CommandResult(string.Format("{0} // {1} said: '{2}'", GetDoTDInfo(DogBot.Data.CurrentDog), bot.GetFriendName(DogBot.Data.CurrentDog.Setter), DogBot.Data.CurrentDog.Message));
+                    return new CommandResult(string.Format("{0} // {1} said: '{2}'", GetDoTDInfo(dotd.Data.CurrentDog), Bot.GetFriendName(dotd.Data.CurrentDog.Setter), dotd.Data.CurrentDog.Message));
                 }
                 else
                 {
-                    return new CommandResult(string.Format("{0} // Courtesy of {1}", GetDoTDInfo(DogBot.Data.CurrentDog), bot.GetFriendName(DogBot.Data.CurrentDog.Setter)));
+                    return new CommandResult(string.Format("{0} // Courtesy of {1}", GetDoTDInfo(dotd.Data.CurrentDog), Bot.GetFriendName(dotd.Data.CurrentDog.Setter)));
                 }
             }
             else

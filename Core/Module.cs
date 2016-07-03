@@ -7,7 +7,7 @@ namespace Core
     {
         public Bot Bot { get; private set; }
         public Logger Logger { get; private set; }
-        public virtual List<Command> Commands { get { return new List<Command>(); } }
+        //public virtual List<Command> Commands { get { return new List<Command>(); } }
 
         public void Initialize(Bot bot)
         {
