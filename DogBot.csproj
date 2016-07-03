@@ -75,11 +75,11 @@
     <Compile Include="Core\Command.cs" />
     <Compile Include="Core\CommandRegistry.cs" />
     <Compile Include="Modules\CommandHandler\Commands\Help.cs" />
-    <Compile Include="Modules\CommandHandler\Commands\Mute.cs" />
+    <Compile Include="Modules\DogOfTheDay\Commands\Mute.cs" />
     <Compile Include="Modules\CommandHandler\Commands\PopulateNameCache.cs" />
     <Compile Include="Modules\CommandHandler\Commands\ShowPermissions.cs" />
     <Compile Include="Modules\CommandHandler\Commands\ShowRepo.cs" />
-    <Compile Include="Modules\CommandHandler\Commands\Unmute.cs" />
+    <Compile Include="Modules\DogOfTheDay\Commands\Unmute.cs" />
     <Compile Include="Core\Config.cs" />
     <Compile Include="Core\Connection.cs" />
     <Compile Include="Core\Converters\IPAddressConverter.cs" />

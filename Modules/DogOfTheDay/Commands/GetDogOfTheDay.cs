@@ -5,21 +5,19 @@ using SteamKit2;
 
 namespace Modules.DogOfTheDay
 {
-    class GetDogOfTheDay : ChatCommand
+    class GetDogOfTheDay : DogOfTheDayCommand
     {
         public override CommandResult Execute(CommandSource source)
         {
-            var dotd = Bot.GetModule<DogOfTheDay>();
-
-            if (dotd.Data.HasDog)
+            if (DogOfTheDay.Data.HasDog)
             {
-                if (!string.IsNullOrEmpty(dotd.Data.CurrentDog.Message))
+                if (!string.IsNullOrEmpty(DogOfTheDay.Data.CurrentDog.Message))
                 {
-                    return new CommandResult(string.Format("{0} // {1} said: '{2}'", GetDoTDInfo(dotd.Data.CurrentDog), Bot.GetFriendName(dotd.Data.CurrentDog.Setter), dotd.Data.CurrentDog.Message));
+                    return new CommandResult(string.Format("{0} // {1} said: '{2}'", GetDoTDInfo(DogOfTheDay.Data.CurrentDog), Bot.GetFriendName(DogOfTheDay.Data.CurrentDog.Setter), DogOfTheDay.Data.CurrentDog.Message));
                 }
                 else
                 {
-                    return new CommandResult(string.Format("{0} // Courtesy of {1}", GetDoTDInfo(dotd.Data.CurrentDog), Bot.GetFriendName(dotd.Data.CurrentDog.Setter)));
+                    return new CommandResult(string.Format("{0} // Courtesy of {1}", GetDoTDInfo(DogOfTheDay.Data.CurrentDog), Bot.GetFriendName(DogOfTheDay.Data.CurrentDog.Setter)));
                 }
             }
             else

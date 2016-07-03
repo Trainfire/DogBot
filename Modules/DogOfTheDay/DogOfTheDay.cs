@@ -14,6 +14,23 @@ namespace Modules.DogOfTheDay
 
         public BotData Data { get; private set; }
 
+        bool muted;
+        public bool Muted
+        {
+            set
+            {
+                muted = value;
+                if (muted)
+                {
+                    Bot.SayToChat(Bot.CurrentChatRoomID, Strings.Muted);
+                }
+                else
+                {
+                    Bot.SayToChat(Bot.CurrentChatRoomID, Strings.Unmuted);
+                }
+            }
+        }
+
         #region Commands
         const string RND = "dotdrnd";
         const string REPO = "dotdrepo";
@@ -21,6 +38,8 @@ namespace Modules.DogOfTheDay
         const string DOTD = "dotd";
         const string DOTDSUBMIT = "dotdsubmit";
         const string STATS = "dotdstats";
+        const string MUTE = "dotdmute";
+        const string UNMUTE = "dotdunmute";
         #endregion
 
         protected override void OnInitialize()
@@ -40,6 +59,8 @@ namespace Modules.DogOfTheDay
             commandListener.AddCommand<GetRandomDog>(RND, this);
             commandListener.AddCommand<Stats>(STATS, this);
             commandListener.AddCommand<SubmitDogOfTheDay>(DOTDSUBMIT, this);
+            commandListener.AddCommand<Mute>(MUTE, this);
+            commandListener.AddCommand<Unmute>(UNMUTE, this);
 
             // Subscribe callbacks
             Bot.CallbackManager.Subscribe<SteamClient.DisconnectedCallback>(OnDisconnect);
@@ -55,7 +76,7 @@ namespace Modules.DogOfTheDay
         {
             var result = commandEvent.Command.Execute(commandEvent.Source);
 
-            if (!string.IsNullOrEmpty(result.Message))
+            if (!string.IsNullOrEmpty(result.Message) && !muted)
             {
                 if (commandEvent.Source.Context == MessageContext.Chat)
                 {
@@ -121,6 +142,8 @@ namespace Modules.DogOfTheDay
             public const string StatsHighestContributer = "Highest contributor: ";
             public const string Repo = "https://github.com/Trainfire/DogBot";
             public const string TotalMessages = "Dog of the Day // Messages remaining: ";
+            public const string Muted = "*muted*";
+            public const string Unmuted = "*bark!*";
         }
     }
 }
