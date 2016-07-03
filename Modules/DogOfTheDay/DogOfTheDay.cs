@@ -101,7 +101,7 @@ namespace Modules.DogOfTheDay
             // Start the announcer timer upon joining chat.
             announcer.Start();
 
-            Logger.Info("Announcements remaining for {0}: {1}", DateTime.Now.Day.ToString(), announcer.AnnouncementsRemaining);
+            Logger.Info("Announcements remaining for {0}: {1}", DateTime.Now.DayOfWeek.ToString(), announcer.AnnouncementsRemaining);
         }
 
         void OnAnnounce(object sender, EventArgs e)
