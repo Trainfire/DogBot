@@ -1,0 +1,10 @@
+<PropertyGroup>
+	<NuGetExe Condition="'$(OS)' == 'Windows_NT'">.nuget\NuGet.exe</NuGetExe>
+	<NuGetExe Condition="'$(OS)' != 'Windows_NT'">nuget</NuGetExe>
+</PropertyGroup>
+
+<Target Name="RestorePackages" 
+		BeforeTargets="Build" 
+		DependsOnTargets="DownloadNuGet">
+	<Exec Command="&quot;$(NuGetExe)&quot; Restore &quot;$(SolutionPath)&quot;" />
+</Target>
