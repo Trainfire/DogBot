@@ -8,7 +8,13 @@ namespace Modules.Twitter
 
         protected override void OnInitialize()
         {
-            
+            var config = new Config();
+            tinyTwitter = new TinyTwitter(config.Data);
+        }
+
+        public void UpdateStatus(string message)
+        {
+            tinyTwitter.UpdateStatus(message);
         }
     }
 }

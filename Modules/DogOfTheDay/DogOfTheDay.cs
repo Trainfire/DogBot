@@ -10,6 +10,7 @@ namespace Modules.DogOfTheDay
     public class DogOfTheDay : Module, ICommandListener
     {
         Announcer announcer;
+        Announcer twitterAnnouncer;
         Config dogBotConfig;
 
         public BotData Data { get; private set; }
@@ -128,6 +129,11 @@ namespace Modules.DogOfTheDay
             {
                 Logger.Info("Nothing to announce.");
             }
+        }
+
+        public string GetDogOfTheDay()
+        {
+            return string.Format("{0}'s {1} // {2}", DateTime.Now.DayOfWeek.ToString(), Strings.DogOfTheDay, Data.CurrentDog.URL);
         }
 
         public static class Strings
