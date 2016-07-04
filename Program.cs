@@ -3,6 +3,7 @@ using Core;
 using Modules.ChatJoiner;
 using Modules.CommandHandler;
 using Modules.DogOfTheDay;
+using Modules.Twitter;
 
 namespace DogBot
 {
@@ -14,6 +15,7 @@ namespace DogBot
             bot.AddModule<ChatJoiner>();
             bot.AddModule<CommandListener>();
             bot.AddModule<DogOfTheDay>();
+            bot.AddModule<Twitter>();
             bot.Start();
 
             while (true)

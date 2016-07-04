@@ -18,7 +18,6 @@ namespace Core
         /// </summary>
         public event EventHandler AllAnnounced;
 
-        readonly double timeBetweenAnnouncements;
         Timer timer;
 
         /// <summary>
@@ -28,7 +27,7 @@ namespace Core
 
         public Announcer(double timeBetweenAnnouncements)
         {
-            this.timeBetweenAnnouncements = timeBetweenAnnouncements;
+            
         }
 
         public void Start()
