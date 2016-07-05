@@ -108,6 +108,14 @@
     <Compile Include="Modules\DogOfTheDay\History.cs" />
     <Compile Include="Modules\DogOfTheDay\Parsers\DogSetParser.cs" />
     <Compile Include="Modules\DogOfTheDay\Queue.cs" />
+    <Compile Include="Modules\SteamQuery\MasterServer.cs" />
+    <Compile Include="Modules\SteamQuery\MasterServerFilter.cs" />
+    <Compile Include="Modules\SteamQuery\MasterServerRegion.cs" />
+    <Compile Include="Modules\SteamQuery\ResponseParser.cs" />
+    <Compile Include="Modules\SteamQuery\Server.cs" />
+    <Compile Include="Modules\SteamQuery\ServerInfoResult.cs" />
+    <Compile Include="Modules\SteamQuery\ServerRulesResult.cs" />
+    <Compile Include="Modules\SteamQuery\SteamQuery.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -127,6 +135,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
