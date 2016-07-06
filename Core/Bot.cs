@@ -3,6 +3,7 @@ using System.Timers;
 using System.Collections.Generic;
 using SteamKit2;
 using System.Threading;
+using Modules.DogOfTheDay;
 
 namespace Core
 {
@@ -48,6 +49,28 @@ namespace Core
             nameCache = new NameCache();
 
             modules = new List<Module>();
+
+            // Load modules dynamically.
+            config.Data.Modules.ForEach(moduleName =>
+            {
+                // Modules must be in the namespace 'Modules.ModuleName'
+                // A module must have contain a class of the same name that derives from Module.
+                // ---
+                // For example, the Twitter module has the class 'Twitter' that derives from Module
+                // in the namespace 'Modules.Twitter'.
+                string moduleClassName = string.Format("Modules.{0}.{0}", moduleName);
+
+                var type = Type.GetType(moduleClassName);
+                if (type == null)
+                {
+                    logger.Error("Failed to load module '{0}'. Either the path is invalid or the module does not exist.", moduleName);
+                }
+                else
+                {
+                    var instance = Activator.CreateInstance(type) as Module;
+                    AddModule(instance);
+                }
+            });
         }
 
         public void Start()
@@ -63,9 +86,14 @@ namespace Core
         {
             logger.Info("Registering module '{0}'", typeof(T).Name);
             var instance = Activator.CreateInstance<T>();
-            modules.Add(instance);
-            instance.Initialize(this);
+            AddModule(instance);
             return instance;
+        }
+
+        void AddModule(Module module)
+        {
+            modules.Add(module);
+            module.Initialize(this);
         }
 
         public T GetModule<T>() where T : Module

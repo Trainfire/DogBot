@@ -25,6 +25,7 @@ namespace Core
         public string Token { get; set; }
         public string CommandPrefix { get; set; }
 
+        public List<string> Modules { get; set; }
         public List<string> Admins { get; set; }
         public List<string> Users { get; set; }
 

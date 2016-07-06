@@ -54,6 +54,7 @@ namespace Modules.DogOfTheDay
             announcer.Announce += OnAnnounce;
             announcer.AllAnnounced += OnAllAnnouncements;
 
+            // Make an announcement once every hour.
             for (int i = 0; i < 24; i++)
             {
                 announcer.AddTime(i, 59, 59);
