@@ -32,6 +32,7 @@ namespace Core
         public ConfigData()
         {
             ConnectionInfo = new Connection.ConnectionInfo();
+            Modules = new List<string>();
             Admins = new List<string>();
             Users = new List<string>();
             Token = "";

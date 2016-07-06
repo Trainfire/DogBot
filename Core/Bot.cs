@@ -1,9 +1,7 @@
 using System;
-using System.Timers;
 using System.Collections.Generic;
 using SteamKit2;
 using System.Threading;
-using Modules.DogOfTheDay;
 
 namespace Core
 {
@@ -84,7 +82,6 @@ namespace Core
 
         public T AddModule<T>() where T : Module
         {
-            logger.Info("Registering module '{0}'", typeof(T).Name);
             var instance = Activator.CreateInstance<T>();
             AddModule(instance);
             return instance;
@@ -92,6 +89,7 @@ namespace Core
 
         void AddModule(Module module)
         {
+            logger.Info("Registering module '{0}'", module.GetType().Name);
             modules.Add(module);
             module.Initialize(this);
         }
