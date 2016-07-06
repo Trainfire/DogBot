@@ -1,10 +1,12 @@
 using System;
 using System.Timers;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Core
 {
     /// <summary>
-    /// Makes an announcement once every hour over a 24 hour period.
+    /// Makes an daily announcements at specified intervals.
     /// </summary>
     public class Announcer
     {
@@ -14,41 +16,77 @@ namespace Core
         public event EventHandler Announce;
 
         /// <summary>
-        /// Fired once all announcements have been made.
+        /// Fired once all announcements have been made for the current day.
         /// </summary>
         public event EventHandler AllAnnounced;
 
+        class Announcement
+        {
+            public event EventHandler Triggered;
+
+            public DateTime Time { get; private set; }
+            public bool Announced { get; private set; }
+
+            public Announcement(int hour, int minute, int second)
+            {
+                Time = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, hour, minute, second);
+
+                // Flag as announced if date is in the past.
+                if (Time < DateTime.Now)
+                    Announced = true;
+            }
+
+            public void Announce()
+            {
+                Announced = true;
+                Time = Time.AddDays(1);
+
+                if (Triggered != null)
+                    Triggered(this, null);
+            }
+
+            public void Reset()
+            {
+                Announced = false;
+            }
+        }
+
+        Announcement nextAnnouncement;
         Timer timer;
+        List<Announcement> announcements;
 
         /// <summary>
-        /// How many announcements remain over a 24 hour period. One announcement is made every hour.
+        /// How many announcements remain over a 24 hour period.
         /// </summary>
-        public int AnnouncementsRemaining { get; private set; }
+        public int AnnouncementsRemaining { get { return announcements.Where(x => !x.Announced).Count(); } }
 
-        public Announcer(double timeBetweenAnnouncements)
+        public Announcer()
         {
-            
+            announcements = new List<Announcement>();
+            timer = new Timer(1000);
+            timer.Elapsed += Tick;
+        }
+
+        public void AddTime(int hour, int minute, int second)
+        {
+            announcements.Add(new Announcement(hour, minute, second));
         }
 
         public void Start()
         {
-            AnnouncementsRemaining = 24 - DateTime.Now.Hour;
-
-            timer = new Timer(GetMillisecondsToHour());
-            timer.Elapsed += MakeAnnouncement;
+            GetNextTime();
             timer.Start();
         }
 
-        /// <summary>
-        /// Stops the announcer from ticking.
-        /// </summary>
         public void Stop()
         {
-            if (timer != null)
-            {
-                timer.Elapsed -= MakeAnnouncement;
-                timer.Stop();
-            }
+            timer.Stop();
+        }
+
+        void Tick(object sender, ElapsedEventArgs e)
+        {
+            if (DateTime.Now > nextAnnouncement.Time)
+                MakeAnnouncement(this, e);
         }
 
         void MakeAnnouncement(object sender, ElapsedEventArgs e)
@@ -56,32 +94,29 @@ namespace Core
             if (Announce != null)
                 Announce(this, null);
 
-            AnnouncementsRemaining--;
+            nextAnnouncement.Announce();
 
-            timer.Interval = GetMillisecondsToHour();
-
-            if (AnnouncementsRemaining == 0)
+            if (announcements.TrueForAll(x => x.Announced))
             {
                 if (AllAnnounced != null)
                     AllAnnounced(this, null);
 
-                AnnouncementsRemaining = 24;
+                announcements.ForEach(x => x.Reset());
             }
+
+            GetNextTime();
         }
 
-        int GetMillisecondsToHour()
+        void GetNextTime()
         {
-            int interval;
-
-            int minutesRemaining = 59 - DateTime.Now.Minute;
-            int secondsRemaining = 59 - DateTime.Now.Second;
-
-            interval = ((minutesRemaining * 60) + secondsRemaining) * 1000;
-
-            if (interval == 0)
-                interval = 60 * 60 * 1000;
-
-            return interval;
+            foreach (var announcement in announcements)
+            {
+                if (announcement.Time > DateTime.Now)
+                {
+                    nextAnnouncement = announcement;
+                    return;
+                }
+            }
         }
     }
 }
