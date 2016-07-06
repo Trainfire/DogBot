@@ -35,6 +35,26 @@ namespace Core
 
         void Log(string message, params object[] args)
         {
+            var str = Format(message, args);
+
+            try
+            {
+                using (var fa = File.AppendText(path))
+                {
+                    fa.WriteLine(str);
+                    fa.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(Format(ex.Message));
+            }
+
+            Console.WriteLine(str);
+        }
+
+        public string Format(string message, params object[] args)
+        {
             string str = "";
             if (!string.IsNullOrEmpty(prefix))
             {
@@ -45,14 +65,7 @@ namespace Core
                 str = string.Format(message, args);
             }
 
-            str = DateTime.Now.ToString("d/M/y h:mm:ss tt") + " | " + str;
-            Console.WriteLine(str);
-
-            using (var fa = File.AppendText(path))
-            {
-                fa.WriteLine(str);
-                fa.Close();
-            }
+            return DateTime.Now.ToString("d/M/y h:mm:ss tt") + " | " + str;
         }
     }
 }

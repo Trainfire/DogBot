@@ -17,15 +17,16 @@ namespace DogBot
             bool isRunning = true;
             while (isRunning)
             {
-                if (Console.ReadLine() == "stop")
+                var input = Console.ReadLine();
+
+                if (input == "stop")
                     bot.Stop();
 
-                if (Console.ReadLine() == "start")
+                if (input == "start")
                     bot.Start();
 
-                if (Console.ReadLine() == "quit")
+                if (input == "quit")
                 {
-                    bot.Stop();
                     isRunning = false;
                 }
             }
