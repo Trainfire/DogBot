@@ -12,19 +12,22 @@ namespace DogBot
         static void Main(string[] args)
         {
             var bot = new Bot();
-            bot.AddModule<ChatJoiner>();
-            bot.AddModule<CommandListener>();
-            bot.AddModule<DogOfTheDay>();
-            bot.AddModule<Twitter>();
             bot.Start();
 
-            while (true)
+            bool isRunning = true;
+            while (isRunning)
             {
                 if (Console.ReadLine() == "stop")
                     bot.Stop();
 
                 if (Console.ReadLine() == "start")
                     bot.Start();
+
+                if (Console.ReadLine() == "quit")
+                {
+                    bot.Stop();
+                    isRunning = false;
+                }
             }
         }
     }
