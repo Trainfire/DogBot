@@ -72,37 +72,6 @@ namespace Modules.DogOfTheDay
             commandListener.AddCommand<SubmitDogOfTheDay>(DOTDSUBMIT, this);
             commandListener.AddCommand<Mute>(MUTE, this);
             commandListener.AddCommand<Unmute>(UNMUTE, this);
-
-            TestQueue();
-        }
-
-        void TestQueue()
-        {
-            int dogsToShow = Data.QueueCount;
-            int dogsShown = 0;
-            while (Data.QueueCount != 0)
-            {
-                var oldDog = Data.CurrentDog;
-                //Console.WriteLine("Current Dog: " + oldDog.URL);
-                Data.MoveToNextDog();
-                //Console.WriteLine("New Dog: " + Data.CurrentDog.URL);
-
-                if (Data.CurrentDog == oldDog)
-                {
-                    Logger.Error("Old dog '{0}' matches new dog. This should not happen.", oldDog.URL);
-                }
-                else
-                {
-                    Logger.Warning("Passed");
-                }
-
-                dogsShown++;
-            }
-
-            if (dogsShown != dogsToShow)
-            {
-                Logger.Error("There were {0} dogs but we only showed {1}", dogsToShow, dogsShown);
-            }
         }
 
         void ICommandListener.OnCommandTriggered(CommandEvent commandEvent)
