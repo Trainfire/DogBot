@@ -108,6 +108,7 @@
     <Compile Include="Modules\DogOfTheDay\History.cs" />
     <Compile Include="Modules\DogOfTheDay\Parsers\DogSetParser.cs" />
     <Compile Include="Modules\DogOfTheDay\Queue.cs" />
+    <Compile Include="Modules\DogOfTheDay\QueueController.cs" />
     <Compile Include="Modules\Twitter\Config.cs" />
     <Compile Include="Modules\Twitter\TinyTwitter.cs" />
     <Compile Include="Modules\Twitter\Twitter.cs" />
