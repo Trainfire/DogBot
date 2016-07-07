@@ -18,7 +18,7 @@ namespace Modules.DogOfTheDay
         Queue queue;
 
         public HistoryStats HistoryStats { get { return history.Stats; } }
-        public DogData CurrentDog { get { return queue.Peek(); } }
+        public DogData CurrentDog { get { return queue.Controller.Peek(); } }
         public bool HasDog { get { return CurrentDog != null; } }
         public int QueueCount { get { return Queue.Count; } }
         public int TotalDogsShown { get { return HistoryStats.Dogs.Count; } }
@@ -37,7 +37,7 @@ namespace Modules.DogOfTheDay
 
         public void EnqueueDog(DogData dog)
         {
-            queue.Enqueue(dog);
+            queue.Controller.Enqueue(dog);
 
             if (DogSubmitted != null)
                 DogSubmitted(this, dog);
@@ -50,7 +50,7 @@ namespace Modules.DogOfTheDay
         {
             if (queue.Data.Queue.Count != 0)
             {
-                dog = queue.Dequeue();
+                dog = queue.Controller.Dequeue();
                 WriteToHistory(dog);
             }
         }
@@ -58,7 +58,7 @@ namespace Modules.DogOfTheDay
         public List<DogData> GetUserContributions(SteamKit2.SteamID steamID)
         {
             var fromHistory = history.Stats.GetUserContributions(steamID);
-            var fromQueue = queue.GetUserContributions(steamID);
+            var fromQueue = queue.Controller.GetUserContributions(steamID);
 
             return fromHistory.Concat(fromQueue).ToList();
         }
