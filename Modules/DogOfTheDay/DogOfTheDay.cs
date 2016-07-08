@@ -52,6 +52,9 @@ namespace Modules.DogOfTheDay
             announcer = new Announcer(dogBotConfig.Data.AnnouncementInterval);
             announcer.Announce += OnAnnounce;
             announcer.AllAnnounced += OnAllAnnouncements;
+            announcer.Start();
+
+            Logger.Info("Announcements remaining for {0}: {1}", DateTime.Now.DayOfWeek.ToString(), announcer.AnnouncementsRemaining);
 
             var commandListener = Bot.GetOrAddModule<CommandListener>();
             commandListener.AddCommand<GetDogOfTheDay>(DOTD, this);
@@ -61,10 +64,6 @@ namespace Modules.DogOfTheDay
             commandListener.AddCommand<SubmitDogOfTheDay>(DOTDSUBMIT, this);
             commandListener.AddCommand<Mute>(MUTE, this);
             commandListener.AddCommand<Unmute>(UNMUTE, this);
-
-            // Subscribe callbacks
-            Bot.CallbackManager.Subscribe<SteamClient.DisconnectedCallback>(OnDisconnect);
-            Bot.CallbackManager.Subscribe<SteamFriends.ChatEnterCallback>(OnJoinChat);
         }
 
         void ICommandListener.OnCommandTriggered(CommandEvent commandEvent)
@@ -89,19 +88,6 @@ namespace Modules.DogOfTheDay
                     Bot.SayToFriend(commandEvent.Source.Caller, result.Message);
                 }
             }
-        }
-
-        void OnDisconnect(SteamClient.DisconnectedCallback callback)
-        {
-            announcer.Stop();
-        }
-
-        void OnJoinChat(SteamFriends.ChatEnterCallback callback)
-        {
-            // Start the announcer timer upon joining chat.
-            announcer.Start();
-
-            Logger.Info("Announcements remaining for {0}: {1}", DateTime.Now.DayOfWeek.ToString(), announcer.AnnouncementsRemaining);
         }
 
         void OnAnnounce(object sender, EventArgs e)

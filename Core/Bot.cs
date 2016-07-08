@@ -162,12 +162,23 @@ namespace Core
 
         public void SayToChat(SteamID chatId, string message)
         {
+            if (chatId == null)
+            {
+                logger.Warning("Cannot send message to chat as the provided SteamID is either null or invalid");
+                return;
+            }
+
             Friends.SendChatRoomMessage(chatId, EChatEntryType.ChatMsg, message);
             logger.Info("@Chat: {0}", message);
         }
 
         public void SayToFriend(SteamID friend, string message)
         {
+            if (friend == null)
+            {
+                logger.Warning("Cannot send message to friend as the provided SteamID is either null or invalid");
+            }
+
             Friends.SendChatMessage(friend, EChatEntryType.ChatMsg, message);
             logger.Info("@{0}: {1}", GetFriendName(friend), message);
         }
