@@ -75,6 +75,7 @@
     <Compile Include="Core\Bot.cs" />
     <Compile Include="Core\Command.cs" />
     <Compile Include="Core\CommandRegistry.cs" />
+    <Compile Include="Core\Utils\ImageDownloader.cs" />
     <Compile Include="Modules\CommandHandler\Commands\Help.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\Mute.cs" />
     <Compile Include="Modules\CommandHandler\Commands\PopulateNameCache.cs" />

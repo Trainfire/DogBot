@@ -62,6 +62,12 @@ namespace Modules.DogOfTheDay
 
             announcer.Start();
 
+            // Create the Twitter announcer.
+            twitterAnnouncer = new Announcer();
+            twitterAnnouncer.AddTime(20, 10, 0);
+            twitterAnnouncer.AllAnnounced += TwitterAnnouncer_Announce;
+            twitterAnnouncer.Start();
+
             Logger.Info("Announcements remaining for {0}: {1}", DateTime.Now.DayOfWeek.ToString(), announcer.AnnouncementsRemaining);
 
             var commandListener = Bot.GetOrAddModule<CommandListener>();
@@ -72,6 +78,11 @@ namespace Modules.DogOfTheDay
             commandListener.AddCommand<SubmitDogOfTheDay>(DOTDSUBMIT, this);
             commandListener.AddCommand<Mute>(MUTE, this);
             commandListener.AddCommand<Unmute>(UNMUTE, this);
+        }
+
+        private void TwitterAnnouncer_Announce(object sender, EventArgs e)
+        {
+            Bot.GetModule<Twitter.Twitter>().UpdateStatus(GetDogOfTheDay());
         }
 
         void ICommandListener.OnCommandTriggered(CommandEvent commandEvent)
