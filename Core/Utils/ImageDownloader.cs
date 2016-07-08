@@ -1,15 +1,26 @@
-using System.IO;
-using System.Net;
 using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Net;
 
 namespace Core.Utils
 {
-    class ImageDownloader
+    public class ImageDownloader
     {
+        readonly List<string> validExtensions;
+
+        public ImageDownloader()
+        {
+            validExtensions = new List<string>();
+            validExtensions.Add("jpg");
+            validExtensions.Add("gif");
+            validExtensions.Add("png");
+            validExtensions.Add("jpeg");
+        }
+
         public async Task<byte[]> Download(string url)
         {
-            if (url.EndsWith(".jpg") || url.EndsWith(".gif") || url.EndsWith(".png") || url.EndsWith(".jpeg"))
+            if (IsUrlValid(url))
             {
                 using (WebClient webClient = new WebClient())
                 {
@@ -18,18 +29,32 @@ namespace Core.Utils
                     try
                     {
                         var data = await webClient.DownloadDataTaskAsync(url);
-
-                        if (data != null)
-                            Console.WriteLine("Downloaded {0} bytes", data.Length);
+                        Console.WriteLine("Downloaded {0} bytes", data.Length);
+                        return data;
                     }
+
                     catch(Exception ex)
                     {
                         Console.WriteLine("Failed to download from URL '{0}'. Reason: {1}", url, ex.Message);
                     }
-                    return null;
                 }
             }
+            else
+            {
+                Console.WriteLine("URL '{0}' is invalid. It must end with an image extension.");
+            }
+
             return null;
+        }
+
+        bool IsUrlValid(string URL)
+        {
+            foreach (var ext in validExtensions)
+            {
+                if (URL.EndsWith(ext))
+                    return true;
+            }
+            return false;
         }
     }
 }
