@@ -15,5 +15,10 @@ namespace Modules.ChatJoiner
         /// How long to wait for no activity before automatically rejoining chat.
         /// </summary>
         public double RejoinInterval { get; set; }
+
+        /// <summary>
+        /// How long to wait between leaving and rejoining chat.
+        /// </summary>
+        public double RejoinIntermission { get; set; }
     }
 }
