@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using SteamKit2;
 using System.Threading;
+using Modules.CommandHandler;
 
 namespace Core
 {
@@ -11,6 +12,7 @@ namespace Core
         readonly Logger logger;
         readonly NameCache nameCache;
         readonly Connection connection;
+        readonly CoreCommandHandler commandHandler;
 
         List<Module> modules;
         List<ILogOnCallbackHandler> logOnListeners;
@@ -45,7 +47,6 @@ namespace Core
 
             // Move into Module?
             nameCache = new NameCache();
-
             modules = new List<Module>();
 
             // Load modules dynamically.
@@ -69,6 +70,8 @@ namespace Core
                     AddModule(instance);
                 }
             });
+
+            commandHandler = new CoreCommandHandler(this);
         }
 
         public void Start()
@@ -152,6 +155,37 @@ namespace Core
         #endregion
 
         #region Helpers
+        public bool AddUser(string steamID)
+        {
+            var parsedSID = new SteamID(steamID);
+
+            if (!parsedSID.IsValid)
+                return false;
+
+            if (config.Data.Users.Contains(parsedSID.Render()))
+            {
+                return false;
+            }
+            else
+            {
+                config.Data.Users.Add(steamID);
+                config.Save();
+            }
+
+            return true;
+        }
+
+        public bool RemoveUser(string steamID)
+        {
+            if (config.Data.Users.Contains(steamID))
+            {
+                config.Data.Users.Remove(steamID);
+                config.Save();
+                return true;
+            }
+            return false;
+        }
+
         public string GetChatRoomName(SteamID id)
         {
             return connection.Friends.GetClanName(id);
@@ -194,6 +228,12 @@ namespace Core
                 return;
             }
 
+            if (string.IsNullOrEmpty(message))
+            {
+                logger.Warning("Cannot send message to chat as the message is null or empty");
+                return;
+            }
+
             Friends.SendChatRoomMessage(chatId, EChatEntryType.ChatMsg, message);
             logger.Info("@Chat: {0}", message);
         }
@@ -203,6 +243,13 @@ namespace Core
             if (friend == null)
             {
                 logger.Warning("Cannot send message to friend as the provided SteamID is either null or invalid");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(message))
+            {
+                logger.Warning("Cannot send message to friend as the message is null or empty");
+                return;
             }
 
             Friends.SendChatMessage(friend, EChatEntryType.ChatMsg, message);

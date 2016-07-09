@@ -75,7 +75,12 @@
     <Compile Include="Core\Bot.cs" />
     <Compile Include="Core\Command.cs" />
     <Compile Include="Core\CommandRegistry.cs" />
+    <Compile Include="Core\Commands\RemoveUser.cs" />
+    <Compile Include="Core\CoreCommandHandler.cs" />
+    <Compile Include="Modules\CommandHandler\ChatCommand.cs" />
+    <Compile Include="Modules\CommandHandler\ChatCommandProcessor.cs" />
     <Compile Include="Modules\CommandHandler\Commands\Help.cs" />
+    <Compile Include="Core\Commands\AddUser.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\MoveNext.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\Mute.cs" />
     <Compile Include="Modules\CommandHandler\Commands\PopulateNameCache.cs" />
@@ -132,6 +137,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
