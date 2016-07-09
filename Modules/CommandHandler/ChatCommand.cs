@@ -1,4 +1,5 @@
-﻿using Core;
+using Core;
+using System.Threading.Tasks;
 
 namespace Modules.CommandHandler
 {
@@ -18,6 +19,11 @@ namespace Modules.CommandHandler
         public virtual CommandResult Execute(CommandSource source)
         {
             return new CommandResult();
+        }
+
+        public virtual async Task<CommandResult> ExecuteAsync(CommandSource source)
+        {
+            return await Task.FromResult<CommandResult>(null);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Modules.CommandHandler;
+using Modules.CommandHandler;
 
 namespace Core
 {
@@ -13,6 +13,7 @@ namespace Core
         const string PREFIX = "core";
         const string ADDUSER = "adduser";
         const string REMOVEUSER = "removeuser";
+        const string EUSERVER = "euserver";
         #endregion
 
         public CoreCommandHandler(Bot bot)
@@ -22,6 +23,7 @@ namespace Core
             var listener = bot.GetOrAddModule<CommandListener>();
             listener.AddCommand<AddUser>(FormatCommand(ADDUSER), this);
             listener.AddCommand<RemoveUser>(FormatCommand(REMOVEUSER), this);
+            listener.AddCommand<ServerQuery>(FormatCommand(EUSERVER), this);
         }
 
         void ICommandListener.OnCommandTriggered(CommandEvent commandEvent)

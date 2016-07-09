@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Core;
 
 namespace Modules.CommandHandler
@@ -18,7 +18,7 @@ namespace Modules.CommandHandler
             this.Bot = bot;
         }
 
-        public void ProcessCommand(CommandEvent commandEvent)
+        public async void ProcessCommand(CommandEvent commandEvent)
         {
             if (!commandEvent.Source.HadPermission)
             {
@@ -36,7 +36,15 @@ namespace Modules.CommandHandler
             }
             else
             {
-                var result = commandEvent.Command.Execute(commandEvent.Source);
+                CommandResult result = null;
+                if (commandEvent.Command.IsAsync)
+                {
+                    result = await commandEvent.Command.ExecuteAsync(commandEvent.Source);
+                }
+                else
+                {
+                    result = commandEvent.Command.Execute(commandEvent.Source);
+                }
 
                 if (!string.IsNullOrEmpty(result.Message) && !Muted)
                 {

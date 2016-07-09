@@ -76,6 +76,7 @@
     <Compile Include="Core\Command.cs" />
     <Compile Include="Core\CommandRegistry.cs" />
     <Compile Include="Core\Commands\RemoveUser.cs" />
+    <Compile Include="Core\Commands\ServerQuery.cs" />
     <Compile Include="Core\CoreCommandHandler.cs" />
     <Compile Include="Modules\CommandHandler\ChatCommand.cs" />
     <Compile Include="Modules\CommandHandler\ChatCommandProcessor.cs" />
@@ -115,6 +116,14 @@
     <Compile Include="Modules\DogOfTheDay\Parsers\DogSetParser.cs" />
     <Compile Include="Modules\DogOfTheDay\Queue.cs" />
     <Compile Include="Modules\DogOfTheDay\QueueController.cs" />
+    <Compile Include="Modules\SteamQuery\MasterServer.cs" />
+    <Compile Include="Modules\SteamQuery\MasterServerFilter.cs" />
+    <Compile Include="Modules\SteamQuery\MasterServerRegion.cs" />
+    <Compile Include="Modules\SteamQuery\ResponseParser.cs" />
+    <Compile Include="Modules\SteamQuery\Server.cs" />
+    <Compile Include="Modules\SteamQuery\ServerInfoResult.cs" />
+    <Compile Include="Modules\SteamQuery\ServerRulesResult.cs" />
+    <Compile Include="Modules\SteamQuery\SteamQuery.cs" />
     <Compile Include="Modules\Twitter\Config.cs" />
     <Compile Include="Modules\Twitter\TinyTwitter.cs" />
     <Compile Include="Modules\Twitter\Twitter.cs" />

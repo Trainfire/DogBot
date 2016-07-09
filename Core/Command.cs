@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Core
 {
     public abstract class Command
     {
-        public virtual bool UsersOnly { get; }
-        public virtual bool AdminOnly { get; }
+        public virtual bool IsAsync { get { return false; } }
+        public virtual bool UsersOnly { get { return false; } }
+        public virtual bool AdminOnly { get { return false; } }
         public string Alias { get; set; }
         public List<string> HelpArgs { get; set; }
         public string Help
@@ -37,6 +39,7 @@ namespace Core
         }
 
         public virtual CommandResult Execute(string message) { return new CommandResult(); }
+        public virtual async Task<CommandResult> ExecuteAsync(string message) { return await Task.FromResult<CommandResult>(null); }
     }
 
     /// <summary>
