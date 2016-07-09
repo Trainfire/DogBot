@@ -124,6 +124,7 @@
     <Compile Include="Modules\SteamQuery\ServerInfoResult.cs" />
     <Compile Include="Modules\SteamQuery\ServerRulesResult.cs" />
     <Compile Include="Modules\SteamQuery\SteamQuery.cs" />
+    <Compile Include="Modules\SteamQuery\SteamQueryEx.cs" />
     <Compile Include="Modules\Twitter\Config.cs" />
     <Compile Include="Modules\Twitter\TinyTwitter.cs" />
     <Compile Include="Modules\Twitter\Twitter.cs" />
