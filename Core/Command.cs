@@ -5,8 +5,8 @@ namespace Core
 {
     public abstract class Command
     {
-        public virtual bool UsersOnly { get; }
-        public virtual bool AdminOnly { get; }
+        public virtual bool UsersOnly { get { return false; } }
+        public virtual bool AdminOnly { get { return false; } }
         public string Alias { get; set; }
         public List<string> HelpArgs { get; set; }
         public string Help
