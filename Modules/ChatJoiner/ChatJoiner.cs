@@ -64,7 +64,7 @@ namespace Modules.ChatJoiner
             Bot.Friends.LeaveChat(chatRoomId);
 
             var waitTime = TimeSpan.FromSeconds(config.Data.RejoinIntermission);
-            Logger.Info("Waiting {0} seconds before rejoin...", waitTime.Seconds);
+            Logger.Info("Waiting {0} seconds before rejoin...", waitTime.TotalSeconds);
 
             await Task.Delay(waitTime);
 
