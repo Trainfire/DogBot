@@ -12,16 +12,16 @@ namespace Modules.DogOfTheDay
         Announcer announcer;
         Announcer twitterAnnouncer;
         Config dogBotConfig;
+        ChatCommandProcessor commandProcessor;
 
         public BotData Data { get; private set; }
 
-        bool muted;
         public bool Muted
         {
             set
             {
-                muted = value;
-                if (muted)
+                commandProcessor.Muted = value;
+                if (commandProcessor.Muted)
                 {
                     Bot.SayToChat(Bot.CurrentChatRoomID, Strings.Muted);
                 }
@@ -42,12 +42,14 @@ namespace Modules.DogOfTheDay
         const string STATS = "dotdstats";
         const string MUTE = "dotdmute";
         const string UNMUTE = "dotdunmute";
+        const string ADDUSER = "dotdadduser";
         #endregion
 
         protected override void OnInitialize()
         {
             dogBotConfig = new Config();
-
+            commandProcessor = new ChatCommandProcessor(Bot);
+            commandProcessor.NoPermissionMessage = Strings.NoPermission;
             Data = new BotData();
 
             // Create the announcer
@@ -78,40 +80,7 @@ namespace Modules.DogOfTheDay
 
         void ICommandListener.OnCommandTriggered(CommandEvent commandEvent)
         {
-            ProcessCommand(commandEvent);   
-        }
-
-        void ProcessCommand(CommandEvent commandEvent)
-        {
-            if (!commandEvent.Source.HadPermission)
-            {
-                if (commandEvent.Source.Context == MessageContext.Chat)
-                {
-                    Bot.SayToChat(Bot.CurrentChatRoomID, Strings.NoPermission);
-                }
-                else
-                {
-                    Bot.SayToFriend(commandEvent.Source.Caller, Strings.NoPermission);
-                }
-            }
-            else
-            {
-                var result = commandEvent.Command.Execute(commandEvent.Source);
-
-                if (!string.IsNullOrEmpty(result.Message) && !muted)
-                {
-                    if (commandEvent.Source.Context == MessageContext.Chat)
-                    {
-                        // say to chat here
-                        Bot.SayToChat(Bot.CurrentChatRoomID, result.Message);
-                    }
-                    else
-                    {
-                        // say to friend here
-                        Bot.SayToFriend(commandEvent.Source.Caller, result.Message);
-                    }
-                }
-            }
+            commandProcessor.ProcessCommand(commandEvent);
         }
 
         void OnAnnounce(object sender, EventArgs e)
