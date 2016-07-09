@@ -38,6 +38,7 @@ namespace Modules.DogOfTheDay
         const string COUNT = "dotdcount";
         const string DOTD = "dotd";
         const string DOTDSUBMIT = "dotdsubmit";
+        const string MOVENEXT = "dotdmovenext";
         const string STATS = "dotdstats";
         const string MUTE = "dotdmute";
         const string UNMUTE = "dotdunmute";
@@ -68,6 +69,7 @@ namespace Modules.DogOfTheDay
             commandListener.AddCommand<GetDogOfTheDay>(DOTD, this);
             commandListener.AddCommand<GetDogOfTheDayCount>(COUNT, this);
             commandListener.AddCommand<GetRandomDog>(RND, this);
+            commandListener.AddCommand<MoveNext>(MOVENEXT, this);
             commandListener.AddCommand<Stats>(STATS, this);
             commandListener.AddCommand<SubmitDogOfTheDay>(DOTDSUBMIT, this);
             commandListener.AddCommand<Mute>(MUTE, this);
@@ -81,19 +83,33 @@ namespace Modules.DogOfTheDay
 
         void ProcessCommand(CommandEvent commandEvent)
         {
-            var result = commandEvent.Command.Execute(commandEvent.Source);
-
-            if (!string.IsNullOrEmpty(result.Message) && !muted)
+            if (!commandEvent.Source.HadPermission)
             {
                 if (commandEvent.Source.Context == MessageContext.Chat)
                 {
-                    // say to chat here
-                    Bot.SayToChat(Bot.CurrentChatRoomID, result.Message);
+                    Bot.SayToChat(Bot.CurrentChatRoomID, Strings.NoPermission);
                 }
                 else
                 {
-                    // say to friend here
-                    Bot.SayToFriend(commandEvent.Source.Caller, result.Message);
+                    Bot.SayToFriend(commandEvent.Source.Caller, Strings.NoPermission);
+                }
+            }
+            else
+            {
+                var result = commandEvent.Command.Execute(commandEvent.Source);
+
+                if (!string.IsNullOrEmpty(result.Message) && !muted)
+                {
+                    if (commandEvent.Source.Context == MessageContext.Chat)
+                    {
+                        // say to chat here
+                        Bot.SayToChat(Bot.CurrentChatRoomID, result.Message);
+                    }
+                    else
+                    {
+                        // say to friend here
+                        Bot.SayToFriend(commandEvent.Source.Caller, result.Message);
+                    }
                 }
             }
         }
@@ -143,6 +159,7 @@ namespace Modules.DogOfTheDay
             public const string TotalMessages = "Dog of the Day // Messages remaining: ";
             public const string Muted = "*muted*";
             public const string Unmuted = "*bark!*";
+            public const string NoPermission = "*bark* You don't have permission to do that!";
         }
     }
 }

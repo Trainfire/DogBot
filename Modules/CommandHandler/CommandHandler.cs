@@ -25,10 +25,10 @@ namespace Modules.CommandHandler
             Source = source;
         }
 
-        public CommandEvent(MessageContext context, SteamID caller, MessageParser parser, ChatCommand command)
+        public CommandEvent(MessageContext context, SteamID caller, MessageParser parser, ChatCommand command, bool hadPermission)
         {
             Command = command;
-            Source = new CommandSource(context, caller, parser);
+            Source = new CommandSource(context, caller, parser, hadPermission);
         }
     }
 
@@ -40,12 +40,14 @@ namespace Modules.CommandHandler
         public MessageContext Context { get; private set; }
         public SteamID Caller { get; private set; }
         public MessageParser Parser { get; private set; }
+        public bool HadPermission { get; private set; }
 
-        public CommandSource(MessageContext context, SteamID caller, MessageParser parser)
+        public CommandSource(MessageContext context, SteamID caller, MessageParser parser, bool hadPermission)
         {
             Context = context;
             Caller = caller;
             Parser = parser;
+            HadPermission = hadPermission;
         }
     }
 
@@ -142,24 +144,11 @@ namespace Modules.CommandHandler
                     // Cache the name of the caller.
                     Bot.CacheName(caller);
 
-                    var commandEvent = new CommandEvent(context, caller, parser, command);
-
                     var requiresPermission = command.UsersOnly || command.AdminOnly;
-                    var hasPermission = command.UsersOnly && Bot.IsUser(caller) || command.AdminOnly && Bot.IsAdmin(caller);
+                    var hasPermission = command.UsersOnly && (Bot.IsAdmin(caller) || Bot.IsUser(caller)) || command.AdminOnly && Bot.IsAdmin(caller);
+                    var commandEvent = new CommandEvent(context, caller, parser, command, requiresPermission ? hasPermission : true);
 
-                    if (requiresPermission && hasPermission)
-                    {
-                        FireCallbacks(commandEvent);
-                    }
-                    else if (requiresPermission && !hasPermission)
-                    {
-                        // TODO: Figure out what to do if the caller has no permission.
-                        //Record = new CommandRecord(null, caller, new CommandResult(bot.CoreStrings.NoPermission), parser);
-                    }
-                    else
-                    {
-                        FireCallbacks(commandEvent);
-                    }
+                    FireCallbacks(commandEvent);
                 }
             }
         }

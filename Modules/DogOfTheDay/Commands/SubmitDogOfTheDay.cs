@@ -7,6 +7,8 @@ namespace Modules.DogOfTheDay
 {
     class SubmitDogOfTheDay : DogOfTheDayCommand
     {
+        public override bool UsersOnly { get { return true; } }
+
         public override CommandResult Execute(CommandSource source)
         {
             var dotdParser = new DotdSetParser(source.Caller, source.Parser.Token, source.Parser.OriginalMessage);
