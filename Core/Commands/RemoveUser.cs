@@ -12,13 +12,15 @@ namespace Modules.CommandHandler
 
             if (source.Parser.Args.Count > 0)
             {
+                var arg = source.Parser.Args[0];
+
                 if (Bot.RemoveUser(source.Parser.Args[0]))
                 {
-                    str = "'{0}' is no longer a User.";
+                    str = string.Format("'{0}' is no longer a User.", arg);
                 }
                 else
                 {
-                    str = "Failed to remove '{0}' from users.";
+                    str = string.Format("Failed to remove '{0}' from users.", arg);
                 }
             }
             else

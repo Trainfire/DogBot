@@ -12,13 +12,15 @@ namespace Modules.CommandHandler
 
             if (source.Parser.Args.Count > 0)
             {
+                var arg = source.Parser.Args[0];
+
                 if (Bot.AddUser(source.Parser.Args[0]))
                 {
-                    str = "'{0}' is now a User";
+                    str = string.Format("'{0}' is now a User", arg);
                 }
                 else
                 {
-                    str = "Failed to add '{0}' as a User.";
+                    str = string.Format("Failed to add '{0}' as a User.", arg);
                 }
             }
             else
