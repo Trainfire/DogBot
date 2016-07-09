@@ -191,6 +191,11 @@ namespace Core
             return connection.Friends.GetClanName(id);
         }
 
+        public string GetFriendName(string steamID3)
+        {
+            return GetFriendName(new SteamID(steamID3));
+        }
+
         public string GetFriendName(SteamID id)
         {
             CacheName(id);
