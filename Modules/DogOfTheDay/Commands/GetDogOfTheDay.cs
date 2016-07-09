@@ -22,7 +22,7 @@ namespace Modules.DogOfTheDay
             }
             else
             {
-                return new CommandResult(DogOfTheDay.Strings.UrlInvalid);
+                return new CommandResult(DogOfTheDay.Strings.NoDog);
             }
         }
 
