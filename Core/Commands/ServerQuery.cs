@@ -7,7 +7,6 @@ namespace Modules.CommandHandler
 {
     class ServerQuery : ChatCommand
     {
-        public override bool AdminOnly { get { return true; } }
         public override bool IsAsync { get { return true; } }
 
         public override async Task<CommandResult> ExecuteAsync(CommandSource source)
