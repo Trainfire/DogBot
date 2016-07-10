@@ -10,10 +10,11 @@ namespace Core
         readonly ChatCommandProcessor commandProcessor;
 
         #region Commands
-        const string PREFIX = "core";
+        const string PREFIX = "~";
         const string ADDUSER = "adduser";
         const string REMOVEUSER = "removeuser";
         const string EUSERVER = "euserver";
+        const string SETNAME = "setname";
         #endregion
 
         public CoreCommandHandler(Bot bot)
@@ -24,6 +25,7 @@ namespace Core
             listener.AddCommand<AddUser>(FormatCommand(ADDUSER), this);
             listener.AddCommand<RemoveUser>(FormatCommand(REMOVEUSER), this);
             listener.AddCommand<ServerQuery>(FormatCommand(EUSERVER), this);
+            listener.AddCommand<SetName>(FormatCommand(SETNAME), this);
         }
 
         void ICommandListener.OnCommandTriggered(CommandEvent commandEvent)

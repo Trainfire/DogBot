@@ -76,6 +76,7 @@
     <Compile Include="Core\Command.cs" />
     <Compile Include="Core\CommandRegistry.cs" />
     <Compile Include="Core\Commands\RemoveUser.cs" />
+    <Compile Include="Core\Commands\SetName.cs" />
     <Compile Include="Core\Commands\ServerQuery.cs" />
     <Compile Include="Core\CoreCommandHandler.cs" />
     <Compile Include="Modules\CommandHandler\ChatCommand.cs" />
