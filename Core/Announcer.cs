@@ -33,15 +33,17 @@ namespace Core
 
                 // Flag as announced if date is in the past.
                 if (Time < DateTime.Now)
-                    Announced = true;
+                {
+                    Announce(true);
+                }
             }
 
-            public void Announce()
+            public void Announce(bool silent = false)
             {
                 Announced = true;
                 Time = Time.AddDays(1);
 
-                if (Triggered != null)
+                if (Triggered != null && !silent)
                     Triggered(this, null);
             }
 
@@ -70,6 +72,7 @@ namespace Core
         public void AddTime(int hour, int minute, int second)
         {
             announcements.Add(new Announcement(hour, minute, second));
+            OrderAnnouncementsByTime();
         }
 
         public void Start()
@@ -105,10 +108,19 @@ namespace Core
             }
 
             GetNextTime();
+
+            Console.WriteLine("Next announcement is at: {0}", nextAnnouncement.Time);
+        }
+
+        void OrderAnnouncementsByTime()
+        {
+            announcements = announcements.OrderBy(x => x.Time).ToList();
         }
 
         void GetNextTime()
         {
+            OrderAnnouncementsByTime();
+
             foreach (var announcement in announcements)
             {
                 if (announcement.Time > DateTime.Now)
