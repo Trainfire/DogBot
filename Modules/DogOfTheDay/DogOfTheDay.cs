@@ -50,9 +50,15 @@ namespace Modules.DogOfTheDay
             Data = new BotData();
 
             // Create the announcer
-            announcer = new Announcer(dogBotConfig.Data.AnnouncementInterval);
+            announcer = new Announcer();
             announcer.Announce += OnAnnounce;
             announcer.AllAnnounced += OnAllAnnouncements;
+
+            for (int i = 0; i < 24; i++)
+            {
+                announcer.AddTime(i, 59, 59);
+            }
+
             announcer.Start();
 
             Logger.Info("Announcements remaining for {0}: {1}", DateTime.Now.DayOfWeek.ToString(), announcer.AnnouncementsRemaining);
