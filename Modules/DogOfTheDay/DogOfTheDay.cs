@@ -9,9 +9,9 @@ namespace Modules.DogOfTheDay
     public class DogOfTheDay : Module, ICommandListener
     {
         Announcer announcer;
-        Announcer twitterAnnouncer;
         Config dogBotConfig;
         ChatCommandProcessor commandProcessor;
+        CommandListener commandListener;
 
         public BotData Data { get; private set; }
 
@@ -66,7 +66,7 @@ namespace Modules.DogOfTheDay
 
             Logger.Info("Announcements remaining for {0}: {1}", DateTime.Now.DayOfWeek.ToString(), announcer.AnnouncementsRemaining);
 
-            var commandListener = Bot.GetOrAddModule<CommandListener>();
+            commandListener = new CommandListener(Bot);
             commandListener.AddCommand<GetDogOfTheDay>(DOTD, this);
             commandListener.AddCommand<GetDogOfTheDayCount>(COUNT, this);
             commandListener.AddCommand<GetRandomDog>(RND, this);
@@ -88,7 +88,7 @@ namespace Modules.DogOfTheDay
             if (Data.HasDog)
             {
                 Logger.Info("Posting announcement...");
-                Bot.GetModule<CommandListener>().FireCommand<GetDogOfTheDay>();
+                commandListener.FireCommand<GetDogOfTheDay>();
             }
         }
 

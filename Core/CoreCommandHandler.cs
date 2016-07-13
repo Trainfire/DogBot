@@ -19,7 +19,7 @@ namespace Core
         {
             commandProcessor = new ChatCommandProcessor(bot);
 
-            var listener = bot.GetOrAddModule<CommandListener>();
+            var listener = new CommandListener(bot);
             listener.AddCommand<AddUser>(FormatCommand(ADDUSER), this);
             listener.AddCommand<RemoveUser>(FormatCommand(REMOVEUSER), this);
             listener.AddCommand<ServerQuery>(FormatCommand(EUSERVER), this);
