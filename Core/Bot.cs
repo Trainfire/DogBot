@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using SteamKit2;
 using System.Threading;
-using Modules.CommandHandler;
+using System.Linq;
 
 namespace Core
 {
@@ -92,9 +92,16 @@ namespace Core
 
         void AddModule(Module module)
         {
-            logger.Info("Registering module '{0}'", module.GetType().Name);
-            modules.Add(module);
-            module.Initialize(this);
+            if (modules.Any(x => x.GetType() == module.GetType()))
+            {
+                logger.Error("Module of type '{0}' has already been added. Only one module of each type is allowed.", module.GetType());
+            }
+            else
+            {
+                logger.Info("Registering module '{0}'", module.GetType().Name);
+                modules.Add(module);
+                module.Initialize(this);
+            }
         }
 
         public T GetModule<T>() where T : Module
