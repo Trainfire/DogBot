@@ -1,9 +1,5 @@
 using System;
 using Core;
-using Modules.ChatJoiner;
-using Modules.CommandHandler;
-using Modules.DogOfTheDay;
-using Modules.Twitter;
 
 namespace DogBot
 {

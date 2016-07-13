@@ -1,4 +1,3 @@
-using Core;
 using Steam.Query;
 using System;
 using System.Collections.Generic;
@@ -6,9 +5,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
-namespace Modules.SteamQuery
+namespace Extensions.SteamQuery
 {
-    class SteamQuery : Module
+    class SteamQuery
     {
         public async Task<ServerInfoResult> GetServerInfo(string ipAddress, int port)
         {
@@ -17,7 +16,7 @@ namespace Modules.SteamQuery
 
             if (ip == null)
             {
-                Logger.Error("Failed to parse IP '{0}'", ipAddress);
+                //Logger.Error("Failed to parse IP '{0}'", ipAddress);
                 return null;
             }
 
@@ -27,7 +26,7 @@ namespace Modules.SteamQuery
 
             if (result != null)
             {
-                Logger.Error("Failed to connect to IP '{0}'. Reason: {1}", ipAddress, result.Message);
+                //Logger.Error("Failed to connect to IP '{0}'. Reason: {1}", ipAddress, result.Message);
                 return null;
             }
 
@@ -38,7 +37,7 @@ namespace Modules.SteamQuery
             data.Add(string.Format("Players: {0} / {1}", info.Players, info.MaxPlayers));
             data.Add(string.Format("Map: {0}", info.Map));
 
-            Logger.Info(string.Join(" // ", data));
+            //Logger.Info(string.Join(" // ", data));
 
             return info;
         }

@@ -1,7 +1,7 @@
 using System;
 using Core;
 
-namespace Modules.CommandHandler
+namespace Core
 {
     /// <summary>
     /// Process a chat command and relays it to the caller.

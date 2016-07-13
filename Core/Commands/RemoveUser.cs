@@ -1,6 +1,6 @@
 using Core;
 
-namespace Modules.CommandHandler
+namespace Core
 {
     class RemoveUser : ChatCommand
     {

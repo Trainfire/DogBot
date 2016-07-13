@@ -1,7 +1,7 @@
 using Core;
 using System.Threading.Tasks;
 
-namespace Modules.CommandHandler
+namespace Core
 {
     /// <summary>
     /// A command executed via a Chat or Friend message.

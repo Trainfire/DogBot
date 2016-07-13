@@ -3,7 +3,6 @@ using System.Timers;
 using System.Collections.Generic;
 using Core;
 using SteamKit2;
-using Modules.CommandHandler;
 
 namespace Modules.DogOfTheDay
 {

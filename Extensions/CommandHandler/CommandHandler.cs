@@ -4,9 +4,9 @@ using Core;
 using SteamKit2;
 
 /// <summary>
-/// This module listens for commands sent via Chat or Private Messaging and relays a callback to any subscribed listeners.
+/// This extension listens for commands sent via Chat or Private Messaging and relays a callback to any subscribed listeners.
 /// </summary>
-namespace Modules.CommandHandler
+namespace Core
 {
     public enum MessageContext
     {

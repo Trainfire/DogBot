@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Core;
 using Steam.Query;
 
-namespace Modules.CommandHandler
+namespace Core
 {
     class SetName : ChatCommand
     {
