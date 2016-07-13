@@ -54,7 +54,7 @@ namespace Core
     /// <summary>
     /// Receives a callback when a command is triggered.
     /// </summary>
-    public interface ICommandListener
+    public interface ICommandHandler
     {
         void OnCommandTriggered(CommandEvent commandEvent);
     }
@@ -64,7 +64,7 @@ namespace Core
     /// </summary>
     public class CommandListener
     {
-        Dictionary<Command, List<ICommandListener>> listeners;
+        Dictionary<Command, List<ICommandHandler>> listeners;
         CommandRegistry commands;
         Bot bot;
 
@@ -74,14 +74,14 @@ namespace Core
         {
             this.bot = bot;
 
-            listeners = new Dictionary<Command, List<ICommandListener>>();
+            listeners = new Dictionary<Command, List<ICommandHandler>>();
             commands = new CommandRegistry("!", "");
 
             bot.CallbackManager.Subscribe<SteamFriends.ChatMsgCallback>(OnReceiveChatMessage);
             bot.CallbackManager.Subscribe<SteamFriends.FriendMsgCallback>(OnReceiveFriendMessage);
         }
 
-        public void AddCommand<TCommand>(string alias, ICommandListener listener = null) where TCommand : ChatCommand
+        public void AddCommand<TCommand>(string alias, ICommandHandler listener = null) where TCommand : ChatCommand
         {
             var command = Activator.CreateInstance<TCommand>();
 
@@ -92,7 +92,7 @@ namespace Core
 
             if (!listeners.ContainsKey(command))
             {
-                listeners.Add(command, new List<ICommandListener>());
+                listeners.Add(command, new List<ICommandHandler>());
 
                 if (listener != null)
                     Subscribe<TCommand>(listener);
@@ -103,7 +103,7 @@ namespace Core
             }
         }
 
-        public void Subscribe<TCommand>(ICommandListener listener) where TCommand : ChatCommand
+        public void Subscribe<TCommand>(ICommandHandler listener) where TCommand : ChatCommand
         {
             var command = commands.GetCommand<TCommand>();
             if (command != null)

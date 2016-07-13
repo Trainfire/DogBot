@@ -3,7 +3,7 @@ namespace Core
     /// <summary>
     /// Adds and processes the core bot commands.
     /// </summary>
-    public class CoreCommandHandler : ICommandListener
+    public class CoreCommandHandler : ICommandHandler
     {
         readonly ChatCommandProcessor commandProcessor;
 
@@ -26,7 +26,7 @@ namespace Core
             listener.AddCommand<SetName>(FormatCommand(SETNAME), this);
         }
 
-        void ICommandListener.OnCommandTriggered(CommandEvent commandEvent)
+        void ICommandHandler.OnCommandTriggered(CommandEvent commandEvent)
         {
             commandProcessor.ProcessCommand(commandEvent);
         }

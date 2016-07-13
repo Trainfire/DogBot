@@ -6,7 +6,7 @@ using SteamKit2;
 
 namespace Modules.DogOfTheDay
 {
-    public class DogOfTheDay : Module, ICommandListener
+    public class DogOfTheDay : Module, ICommandHandler
     {
         Announcer announcer;
         Config dogBotConfig;
@@ -77,7 +77,7 @@ namespace Modules.DogOfTheDay
             commandListener.AddCommand<Unmute>(UNMUTE, this);
         }
 
-        void ICommandListener.OnCommandTriggered(CommandEvent commandEvent)
+        void ICommandHandler.OnCommandTriggered(CommandEvent commandEvent)
         {
             commandProcessor.ProcessCommand(commandEvent);
         }
