@@ -15,6 +15,7 @@ namespace Extensions.GoogleSpreadsheets
         private readonly string ID;
 
         public List<RowData> Rows { get; private set; }
+        public bool Dirty { get; private set; }
 
         public Spreadsheet(string spreadsheetID)
         {
@@ -25,16 +26,8 @@ namespace Extensions.GoogleSpreadsheets
 
         public void AddRow(List<object> values)
         {
-            var rowData = new RowData();
-            rowData.Values = new List<CellData>();
-
-            foreach (var value in values)
-            {
-                Console.WriteLine("Add value: {0}", value);
-                rowData.Values.Add(ProcessCellData(value));
-            }
-
-            Rows.Add(rowData);
+            Dirty = true;
+            AddRowInternal(values);
         }
 
         /// <summary>
@@ -56,11 +49,19 @@ namespace Extensions.GoogleSpreadsheets
         /// <summary>
         /// Gets the current data from the associated Google spreadsheet.
         /// </summary>
-        public async Task Get()
+        /// <param name="force">Set to True to override any local changes.</param>
+        public async Task Get(bool force = false)
         {
+            if (Dirty && !force)
+            {
+                Console.WriteLine("The Spreadsheet data has been modified since the last Get. Push your changes first or pass in 'True' to overwrite your changes.");
+                return;
+            }
+
             var request = await RequestValues();
 
             Rows.Clear();
+            Dirty = false;
 
             if (request == null)
             {
@@ -70,9 +71,23 @@ namespace Extensions.GoogleSpreadsheets
             {
                 foreach (var row in request.Values)
                 {
-                    AddRow(row as List<object>);
+                    AddRowInternal(row as List<object>);
                 }
             }
+        }
+
+        void AddRowInternal(List<object> values)
+        {
+            var rowData = new RowData();
+            rowData.Values = new List<CellData>();
+
+            foreach (var value in values)
+            {
+                Console.WriteLine("Add value: {0}", value);
+                rowData.Values.Add(ProcessCellData(value));
+            }
+
+            Rows.Add(rowData);
         }
 
         private async Task<ValueRange> RequestValues()
