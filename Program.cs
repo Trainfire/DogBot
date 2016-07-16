@@ -2,6 +2,7 @@ using System;
 using Core;
 using Extensions.GoogleSpreadsheets;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DogBot
 {
@@ -37,16 +38,22 @@ namespace DogBot
     {
         public TestSpreadsheet()
         {
+            Initialize();
+        }
+
+        async void Initialize()
+        {
             var data = new Spreadsheet("10OPZWQ4O8eDrLYSkjZWU5jHu5YlwvxQiSZgQfNGwNKY");
+            await data.Get();
+            PrintValue(data);
+        }
 
-            data.AddRow(new List<object>()
+        void PrintValue(Spreadsheet spreadsheet)
+        {
+            foreach (var row in spreadsheet.Rows)
             {
-                "Tekka",
-                12,
-                true,
-            });
-
-            data.Push();
+                Console.WriteLine(string.Join(", ", row.Values.Select(x => x.UserEnteredValue.GetValue())));
+            }
         }
     }
 }

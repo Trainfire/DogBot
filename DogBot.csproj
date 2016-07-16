@@ -131,6 +131,7 @@
     <Compile Include="Core\CommandListener\ChatCommandProcessor.cs" />
     <Compile Include="Core\Commands\AddUser.cs" />
     <Compile Include="Extensions\GoogleSpreadsheet\BatchRequestHelpers.cs" />
+    <Compile Include="Extensions\GoogleSpreadsheet\Extensions.cs" />
     <Compile Include="Extensions\GoogleSpreadsheet\SpreadsheetService.cs" />
     <Compile Include="Extensions\GoogleSpreadsheet\Spreedsheet.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\MoveNext.cs" />

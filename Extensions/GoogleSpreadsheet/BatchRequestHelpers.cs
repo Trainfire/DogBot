@@ -3,18 +3,19 @@ using Google.Apis.Sheets.v4.Data;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace Extensions.GoogleSpreadsheets
 {
     /// <summary>
     /// Wraps a BatchUpdateSpreadsheetRequest for convenience.
     /// </summary>
-    public class BatchUpdateHelper
+    public class BatchUpdateSpreadsheetHelper
     {
         private BatchUpdateSpreadsheetRequest batchUpdateRequest;
         private string spreadsheetID;
 
-        public BatchUpdateHelper(string spreadsheetID)
+        public BatchUpdateSpreadsheetHelper(string spreadsheetID)
         {
             this.spreadsheetID = spreadsheetID;
             batchUpdateRequest = new BatchUpdateSpreadsheetRequest();

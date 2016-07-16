@@ -5,6 +5,10 @@ using System.Threading.Tasks;
 
 namespace Extensions.GoogleSpreadsheets
 {
+    /// <summary>
+    /// Wraps a Google Spreadsheet.
+    /// TODO: Support multiple sheets.
+    /// </summary>
     class Spreadsheet
     {
         private readonly SpreadsheetService spreadSheet;
@@ -26,6 +30,7 @@ namespace Extensions.GoogleSpreadsheets
 
             foreach (var value in values)
             {
+                Console.WriteLine("Add value: {0}", value);
                 rowData.Values.Add(ProcessCellData(value));
             }
 
@@ -48,9 +53,44 @@ namespace Extensions.GoogleSpreadsheets
             return await CreateUpdateRequest().ExecuteAsync(spreadSheet.Service);
         }
 
-        private BatchUpdateHelper CreateUpdateRequest()
+        /// <summary>
+        /// Gets the current data from the associated Google spreadsheet.
+        /// </summary>
+        public async Task Get()
         {
-            var batchRequest = new BatchUpdateHelper(ID);
+            var request = await RequestValues();
+
+            Rows.Clear();
+
+            if (request == null)
+            {
+                // TODO.
+            }
+            else
+            {
+                foreach (var row in request.Values)
+                {
+                    AddRow(row as List<object>);
+                }
+            }
+        }
+
+        private async Task<ValueRange> RequestValues()
+        {
+            var requestSheet = spreadSheet.Service.Spreadsheets.Get(ID);
+            var requestSheetResponse = requestSheet.Execute();
+
+            // Convert column count to full range. Obviously error prone at the moment...
+            // TODO: Support more than 26 columns.
+            int columnCount = requestSheetResponse.Sheets[0].Properties.GridProperties.ColumnCount.Value;
+
+            var request = spreadSheet.Service.Spreadsheets.Values.Get(ID, "A:" + IntToColumnRange(columnCount));
+            return await request.ExecuteAsync();
+        }
+
+        private BatchUpdateSpreadsheetHelper CreateUpdateRequest()
+        {
+            var batchRequest = new BatchUpdateSpreadsheetHelper(ID);
             batchRequest.Add((request) =>
             {
                 request.UpdateCells = new UpdateCellsRequest()
@@ -89,6 +129,32 @@ namespace Extensions.GoogleSpreadsheets
                 cellData.UserEnteredValue.BoolValue = Convert.ToBoolean(value);
 
             return cellData;
+        }
+
+        /// <summary>
+        /// Converts a column count to a range value. For example, a count of 4 would return 'D' and a count of 70 would return 'BR'.
+        /// </summary>
+        private string IntToColumnRange(int columns)
+        {
+            // TODO: Currently broken.
+            int baseChar = Convert.ToInt32('A') - 1;
+
+            return Convert.ToChar(baseChar + columns).ToString();
+
+            //int remainder = columns % 26;
+            //if (remainder != 0)
+            //{
+            //    int charPosition = (columns - remainder) / 26;
+
+            //    char firstColumn = Convert.ToChar(baseChar + (charPosition - 1));
+            //    char secondColumn = Convert.ToChar(baseChar + (remainder - 1));
+
+            //    return string.Join("", firstColumn, secondColumn);
+            //}
+            //else
+            //{
+            //    return Convert.ToChar(baseChar + (columns)).ToString();
+            //}
         }
     }
 }
