@@ -1,5 +1,7 @@
 using System;
 using Core;
+using Extensions.GoogleSpreadsheets;
+using System.Collections.Generic;
 
 namespace DogBot
 {
@@ -9,6 +11,8 @@ namespace DogBot
         {
             var bot = new Bot();
             bot.Start();
+
+            new TestSpreadsheet();
 
             bool isRunning = true;
             while (isRunning)
@@ -26,6 +30,23 @@ namespace DogBot
                     isRunning = false;
                 }
             }
+        }
+    }
+
+    class TestSpreadsheet
+    {
+        public TestSpreadsheet()
+        {
+            var data = new Spreadsheet("10OPZWQ4O8eDrLYSkjZWU5jHu5YlwvxQiSZgQfNGwNKY");
+
+            data.AddRow(new List<object>()
+            {
+                "Tekka",
+                12,
+                true,
+            });
+
+            data.Push();
         }
     }
 }

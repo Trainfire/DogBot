@@ -130,7 +130,9 @@
     <Compile Include="Core\CommandListener\ChatCommand.cs" />
     <Compile Include="Core\CommandListener\ChatCommandProcessor.cs" />
     <Compile Include="Core\Commands\AddUser.cs" />
-    <Compile Include="Extensions\GoogleSpreadsheet\GoogleSpreadsheet.cs" />
+    <Compile Include="Extensions\GoogleSpreadsheet\BatchRequestHelpers.cs" />
+    <Compile Include="Extensions\GoogleSpreadsheet\SpreadsheetService.cs" />
+    <Compile Include="Extensions\GoogleSpreadsheet\Spreedsheet.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\MoveNext.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\Mute.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\Unmute.cs" />
