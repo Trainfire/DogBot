@@ -13,7 +13,7 @@ namespace DogBot
             var bot = new Bot();
             bot.Start();
 
-            new TestSpreadsheet();
+            //new TestSpreadsheet();
 
             bool isRunning = true;
             while (isRunning)

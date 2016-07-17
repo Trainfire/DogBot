@@ -132,10 +132,10 @@
     <Compile Include="Core\Commands\AddUser.cs" />
     <Compile Include="Extensions\GoogleSpreadsheet\BatchRequestHelpers.cs" />
     <Compile Include="Extensions\GoogleSpreadsheet\Extensions.cs" />
-    <Compile Include="Extensions\GoogleSpreadsheet\SpreadsheetService.cs" />
     <Compile Include="Extensions\GoogleSpreadsheet\Spreedsheet.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\MoveNext.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\Mute.cs" />
+    <Compile Include="Modules\DogOfTheDay\Commands\Sync.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\Unmute.cs" />
     <Compile Include="Core\Config.cs" />
     <Compile Include="Core\Connection.cs" />
@@ -151,7 +151,7 @@
     <Compile Include="Modules\ChatJoiner\ChatJoiner.cs" />
     <Compile Include="Modules\ChatJoiner\Config.cs" />
     <Compile Include="Core\CommandListener\CommandListener.cs" />
-    <Compile Include="Modules\DogOfTheDay\BotData.cs" />
+    <Compile Include="Modules\DogOfTheDay\Data.cs" />
     <Compile Include="Modules\DogOfTheDay\Command.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\GetDogOfTheDay.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\GetDogOfTheDayCount.cs" />
