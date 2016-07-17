@@ -45,11 +45,43 @@ namespace DogBot
         {
             var data = new Spreadsheet("10OPZWQ4O8eDrLYSkjZWU5jHu5YlwvxQiSZgQfNGwNKY");
             await data.Get();
-            PrintValue(data);
+
+            var history = await data.GetOrAddSheet("History");
+
+            history.AddRow(new List<object>()
+            {
+                "Tekka", "Sucks",
+            });
+
+            history.AddRow(new List<object>()
+            {
+                "Tekka", "Nerd",
+            });
+
+            await history.PushAsync();
+            await history.Get(true);
+            PrintValue(history);
+
+            var users = await data.GetOrAddSheet("Users");
+
+            users.AddRow(new List<object>()
+            {
+                "Poopy Joe",
+            });
+
+            users.AddRow(new List<object>()
+            {
+                "Ham Sandwich Apocalypse",
+            });
+
+            await users.PushAsync();
+            await users.Get(true);
+            PrintValue(users);
         }
 
-        void PrintValue(Spreadsheet spreadsheet)
+        void PrintValue(Sheet spreadsheet)
         {
+            Console.WriteLine("Recieved {0} rows for spreadsheet '{1}'", spreadsheet.Rows.Count, spreadsheet.Name);
             foreach (var row in spreadsheet.Rows)
             {
                 Console.WriteLine(string.Join(", ", row.Values.Select(x => x.UserEnteredValue.GetValue())));

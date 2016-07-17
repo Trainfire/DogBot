@@ -1,27 +1,174 @@
 using Google.Apis.Sheets.v4.Data;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Sheets.v4;
+using Google.Apis.Services;
+using Google.Apis.Util.Store;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.IO;
+using System.Threading;
 
 namespace Extensions.GoogleSpreadsheets
 {
     /// <summary>
     /// Wraps a Google Spreadsheet.
-    /// TODO: Support multiple sheets.
     /// </summary>
     class Spreadsheet
     {
-        private readonly SpreadsheetService spreadSheet;
-        private readonly string ID;
+        readonly UserCredential credential;
 
-        public List<RowData> Rows { get; private set; }
+        public string ID { get; private set; }
         public bool Dirty { get; private set; }
+        public List<Sheet> Sheets { get; private set; }
+        public SheetsService Service { get; private set; }
 
         public Spreadsheet(string spreadsheetID)
         {
             ID = spreadsheetID;
+            Sheets = new List<Sheet>();
+
+            string[] scopes = { SheetsService.Scope.Spreadsheets };
+            string applicationName = "Test"; // TODO: Read from config.
+
+            using (var stream = new FileStream("client_secret.json", FileMode.Open, FileAccess.Read))
+            {
+                string credPath = System.Environment.GetFolderPath(
+                    Environment.SpecialFolder.Personal);
+                credPath = Path.Combine(credPath, ".credentials/sheets.googleapis.com-dotnet-quickstart.json");
+
+                credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+                    GoogleClientSecrets.Load(stream).Secrets,
+                    scopes,
+                    "user",
+                    CancellationToken.None,
+                    new FileDataStore(credPath, true)).Result;
+                Console.WriteLine("Credential file saved to: " + credPath);
+            }
+
+            // Create Google Sheets API service.
+            Service = new SheetsService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = applicationName,
+            });
+        }
+
+        /// <summary>
+        /// Pulls all sheet data from the API.
+        /// </summary>
+        /// <returns></returns>
+        public async Task Get()
+        {
+            var requestSheet = Service.Spreadsheets.Get(ID);
+            var requestSheetResponse = await requestSheet.ExecuteAsync();
+
+            foreach (var sheet in requestSheetResponse.Sheets)
+            {
+                var s = new Sheet(this, sheet.Properties.SheetId.Value, sheet.Properties.Title);
+                Sheets.Add(s);
+            }
+        }
+
+        /// <summary>
+        /// Pushes all sheet data to the API.
+        /// </summary>
+        /// <returns></returns>
+        public async Task Push()
+        {
+            foreach (var sheet in Sheets)
+            {
+                await sheet.PushAsync();
+            }
+        }
+
+        public async Task<Sheet> GetOrAddSheet(string name)
+        {
+            var find = Sheets.Find(x => x.Name == name);
+            if (find != null)
+            {
+                return find;
+            }
+            else
+            {
+                return await AddSheet(name);
+            }
+        }
+
+        public async Task<Sheet> AddSheet(string name)
+        {
+            var sheet = new Sheet(this, Sheets.Count, name);
+            Sheets.Add(sheet);
+
+            var batchRequest = new BatchUpdateSpreadsheetHelper(ID);
+
+            batchRequest.Add((request) =>
+            {
+                // By default, a spreadsheet already has one sheet. 
+                // If there is more than one sheet, create a new one.
+                // Otherwise, just update the title of the first one.
+                if (Sheets.Count > 1)
+                {
+                    request.AddSheet = new AddSheetRequest()
+                    {
+                        Properties = new SheetProperties()
+                        {
+                            SheetId = Sheets.Count - 1,
+                            Title = name,
+                            GridProperties = new GridProperties()
+                            {
+                                ColumnCount = 1,
+                                RowCount = 1,
+                            }
+                        },
+                    };
+                }
+                else
+                {
+                    request.UpdateSheetProperties = new UpdateSheetPropertiesRequest()
+                    {
+                        Properties = new SheetProperties()
+                        {
+                            Title = name,
+                            GridProperties = new GridProperties()
+                            {
+                                ColumnCount = 1,
+                                RowCount = 1,
+                            }
+                        },
+                        Fields = "*",
+                    };
+                }
+            });
+
+            await batchRequest.ExecuteAsync(Service);
+
+            return sheet;
+        }
+
+        // TODO.
+        //public async Task RemoveSheet(Sheet sheet)
+        //{
+
+        //}
+    }
+
+    class Sheet
+    {
+        private readonly Spreadsheet spreadSheet;
+        private readonly int ID;
+
+        public string Name { get; private set; }
+        public List<RowData> Rows { get; private set; }
+        public bool Dirty { get; private set; }
+        public SpreadsheetProperties Properties { get; private set; }
+
+        public Sheet(Spreadsheet spreadSheet, int id, string name)
+        {
+            this.spreadSheet = spreadSheet;
+            ID = id;
+            Name = name;
             Rows = new List<RowData>();
-            spreadSheet = new SpreadsheetService();
         }
 
         public void AddRow(List<object> values)
@@ -83,7 +230,6 @@ namespace Extensions.GoogleSpreadsheets
 
             foreach (var value in values)
             {
-                Console.WriteLine("Add value: {0}", value);
                 rowData.Values.Add(ProcessCellData(value));
             }
 
@@ -92,27 +238,46 @@ namespace Extensions.GoogleSpreadsheets
 
         private async Task<ValueRange> RequestValues()
         {
-            var requestSheet = spreadSheet.Service.Spreadsheets.Get(ID);
+            var requestSheet = spreadSheet.Service.Spreadsheets.Get(spreadSheet.ID);
             var requestSheetResponse = requestSheet.Execute();
 
             // Convert column count to full range. Obviously error prone at the moment...
             // TODO: Support more than 26 columns.
-            int columnCount = requestSheetResponse.Sheets[0].Properties.GridProperties.ColumnCount.Value;
+            int columnCount = requestSheetResponse.Sheets[ID].Properties.GridProperties.ColumnCount.Value;
 
-            var request = spreadSheet.Service.Spreadsheets.Values.Get(ID, "A:" + IntToColumnRange(columnCount));
+            var request = spreadSheet.Service.Spreadsheets.Values.Get(spreadSheet.ID, "A:" + IntToColumnRange(columnCount));
             return await request.ExecuteAsync();
         }
 
         private BatchUpdateSpreadsheetHelper CreateUpdateRequest()
         {
-            var batchRequest = new BatchUpdateSpreadsheetHelper(ID);
+            var batchRequest = new BatchUpdateSpreadsheetHelper(spreadSheet.ID);
+
+            batchRequest.Add((request) =>
+            {
+                request.UpdateSheetProperties = new UpdateSheetPropertiesRequest()
+                {
+                    Properties = new SheetProperties()
+                    {
+                        GridProperties = new GridProperties()
+                        {
+                            RowCount = this.Rows.Count,
+                            ColumnCount = this.Rows[0].Values.Count, // bad
+                        },
+                        SheetId = ID,
+                        Title = Name,
+                    },
+                    Fields = "*",
+                };
+            });
+
             batchRequest.Add((request) =>
             {
                 request.UpdateCells = new UpdateCellsRequest()
                 {
                     Start = new GridCoordinate()
                     {
-                        SheetId = 0,
+                        SheetId = ID,
                         RowIndex = 0,
                         ColumnIndex = 0,
                     },
@@ -120,6 +285,7 @@ namespace Extensions.GoogleSpreadsheets
                     Fields = "*",
                 };
             });
+
             return batchRequest;
         }
 
