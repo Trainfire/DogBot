@@ -81,13 +81,9 @@
     <Compile Include="Core\CoreCommandHandler.cs" />
     <Compile Include="Core\CommandListener\ChatCommand.cs" />
     <Compile Include="Core\CommandListener\ChatCommandProcessor.cs" />
-    <Compile Include="Core\CommandListener\Commands\Help.cs" />
     <Compile Include="Core\Commands\AddUser.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\MoveNext.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\Mute.cs" />
-    <Compile Include="Core\CommandListener\Commands\PopulateNameCache.cs" />
-    <Compile Include="Core\CommandListener\Commands\ShowPermissions.cs" />
-    <Compile Include="Core\CommandListener\Commands\ShowRepo.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\Unmute.cs" />
     <Compile Include="Core\Config.cs" />
     <Compile Include="Core\Connection.cs" />
@@ -145,7 +141,9 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Core\CommandListener\Commands\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

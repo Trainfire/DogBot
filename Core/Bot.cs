@@ -23,6 +23,7 @@ namespace Core
         public string LogPath { get { return config.Data.ConnectionInfo.DisplayName + ".bin"; } }
 
         #region Connection Wrappers
+        public bool Connected { get { return connection.Connected; } }
         public CallbackManager CallbackManager { get { return connection.Manager; } }
         public SteamFriends Friends { get { return connection.Friends; } }
         #endregion

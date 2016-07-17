@@ -51,7 +51,8 @@ namespace Modules.ChatJoiner
 
         void OnNoActivity(object sender, ElapsedEventArgs e)
         {
-            Rejoin();
+            if (Bot.Connected)
+                Rejoin();
         }
 
         async void Rejoin()
