@@ -12,6 +12,7 @@ namespace Core
         const string ADDUSER = "adduser";
         const string REMOVEUSER = "removeuser";
         const string EUSERVER = "euserver";
+        const string USSERVER = "usserver";
         const string SETNAME = "setname";
         #endregion
 
@@ -22,8 +23,9 @@ namespace Core
             var listener = new CommandListener(bot);
             listener.AddCommand<AddUser>(FormatCommand(ADDUSER), this);
             listener.AddCommand<RemoveUser>(FormatCommand(REMOVEUSER), this);
-            listener.AddCommand<ServerQuery>(FormatCommand(EUSERVER), this);
             listener.AddCommand<SetName>(FormatCommand(SETNAME), this);
+            listener.AddCommand<EUServerQuery>(FormatCommand(EUSERVER), this);
+            listener.AddCommand<USServerQuery>(FormatCommand(USSERVER), this);
         }
 
         void ICommandHandler.OnCommandTriggered(CommandEvent commandEvent)

@@ -81,7 +81,7 @@ namespace Core
             bot.CallbackManager.Subscribe<SteamFriends.FriendMsgCallback>(OnReceiveFriendMessage);
         }
 
-        public void AddCommand<TCommand>(string alias, ICommandHandler listener = null) where TCommand : ChatCommand
+        public void AddCommand<TCommand>(string alias, ICommandHandler listener, Action<TCommand> onAdd = null) where TCommand : ChatCommand
         {
             var command = Activator.CreateInstance<TCommand>();
 
@@ -101,6 +101,9 @@ namespace Core
             {
                 bot.Logger.Error("Cannot add command '{0}' as that has already been registered.", command.GetType().Name);
             }
+
+            if (onAdd != null)
+                onAdd(command);
         }
 
         public void Subscribe<TCommand>(ICommandHandler listener) where TCommand : ChatCommand
