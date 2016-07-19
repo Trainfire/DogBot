@@ -1,6 +1,6 @@
 using Core;
 
-namespace Modules.CommandHandler
+namespace Core
 {
     class AddUser : ChatCommand
     {
@@ -16,11 +16,11 @@ namespace Modules.CommandHandler
 
                 if (Bot.AddUser(source.Parser.Args[0]))
                 {
-                    str = string.Format("'{0}' is now a User", arg);
+                    str = string.Format("'{0}' is now a User", Bot.GetFriendName(arg));
                 }
                 else
                 {
-                    str = string.Format("Failed to add '{0}' as a User.", arg);
+                    str = string.Format("Failed to add '{0}' as a User.", Bot.GetFriendName(arg));
                 }
             }
             else

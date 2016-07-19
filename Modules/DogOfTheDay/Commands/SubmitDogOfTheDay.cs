@@ -1,7 +1,6 @@
 using System;
 using Core;
 using SteamKit2;
-using Modules.CommandHandler;
 
 namespace Modules.DogOfTheDay
 {

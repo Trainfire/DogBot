@@ -1,6 +1,6 @@
 using Core;
 
-namespace Modules.CommandHandler
+namespace Core
 {
     class RemoveUser : ChatCommand
     {
@@ -16,11 +16,11 @@ namespace Modules.CommandHandler
 
                 if (Bot.RemoveUser(source.Parser.Args[0]))
                 {
-                    str = string.Format("'{0}' is no longer a User.", arg);
+                    str = string.Format("'{0}' is no longer a User.", Bot.GetFriendName(arg));
                 }
                 else
                 {
-                    str = string.Format("Failed to remove '{0}' from users.", arg);
+                    str = string.Format("Failed to remove '{0}' from users.", Bot.GetFriendName(arg));
                 }
             }
             else

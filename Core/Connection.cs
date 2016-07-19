@@ -33,6 +33,7 @@ namespace Core
         public SteamUser User { get; private set; }
         public SteamFriends Friends { get; private set; }
         public CallbackManager Manager { get; private set; }
+        public bool Connected { get { return isRunning; } }
 
         public class ConnectionInfo
         {

@@ -1,30 +1,34 @@
-﻿using Modules.CommandHandler;
-
 namespace Core
 {
     /// <summary>
     /// Adds and processes the core bot commands.
     /// </summary>
-    public class CoreCommandHandler : ICommandListener
+    public class CoreCommandHandler : ICommandHandler
     {
         readonly ChatCommandProcessor commandProcessor;
 
         #region Commands
-        const string PREFIX = "core";
+        const string PREFIX = "~";
         const string ADDUSER = "adduser";
         const string REMOVEUSER = "removeuser";
+        const string EUSERVER = "euserver";
+        const string USSERVER = "usserver";
+        const string SETNAME = "setname";
         #endregion
 
         public CoreCommandHandler(Bot bot)
         {
             commandProcessor = new ChatCommandProcessor(bot);
 
-            var listener = bot.GetOrAddModule<CommandListener>();
+            var listener = new CommandListener(bot);
             listener.AddCommand<AddUser>(FormatCommand(ADDUSER), this);
             listener.AddCommand<RemoveUser>(FormatCommand(REMOVEUSER), this);
+            listener.AddCommand<SetName>(FormatCommand(SETNAME), this);
+            listener.AddCommand<EUServerQuery>(FormatCommand(EUSERVER), this);
+            listener.AddCommand<USServerQuery>(FormatCommand(USSERVER), this);
         }
 
-        void ICommandListener.OnCommandTriggered(CommandEvent commandEvent)
+        void ICommandHandler.OnCommandTriggered(CommandEvent commandEvent)
         {
             commandProcessor.ProcessCommand(commandEvent);
         }

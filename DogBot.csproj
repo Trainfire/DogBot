@@ -49,6 +49,50 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto, Version=1.7.4137.9688, Culture=neutral, PublicKeyToken=a4292a325f69b123, processorArchitecture=MSIL">
+      <HintPath>packages\BouncyCastle.1.7.0\lib\Net40-Client\BouncyCastle.Crypto.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Google.Apis, Version=1.14.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>packages\Google.Apis.1.14.0\lib\net45\Google.Apis.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Google.Apis.Auth, Version=1.14.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>packages\Google.Apis.Auth.1.14.0\lib\net45\Google.Apis.Auth.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Google.Apis.Auth.PlatformServices, Version=1.14.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>packages\Google.Apis.Auth.1.14.0\lib\net45\Google.Apis.Auth.PlatformServices.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Google.Apis.Core, Version=1.14.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>packages\Google.Apis.Core.1.14.0\lib\net45\Google.Apis.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Google.Apis.PlatformServices, Version=1.14.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>packages\Google.Apis.1.14.0\lib\net45\Google.Apis.PlatformServices.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Google.Apis.Sheets.v4, Version=1.14.0.554, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>packages\Google.Apis.Sheets.v4.1.14.0.554\lib\portable-net45+netcore45+wpa81+wp8\Google.Apis.Sheets.v4.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Google.GData.Client, Version=2.2.0.0, Culture=neutral, PublicKeyToken=04a59ca9b0273830, processorArchitecture=MSIL">
+      <HintPath>packages\Google.GData.Client.2.2.0.0\lib\Google.GData.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Google.GData.Extensions, Version=2.2.0.0, Culture=neutral, PublicKeyToken=0b4c5df2ebf20876, processorArchitecture=MSIL">
+      <HintPath>packages\Google.GData.Extensions.2.2.0.0\lib\Google.GData.Extensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Google.GData.Spreadsheets, Version=2.2.0.0, Culture=neutral, PublicKeyToken=3f77feb76ff0d9a1, processorArchitecture=MSIL">
+      <HintPath>packages\Google.GData.Spreadsheets.2.2.0.0\lib\Google.GData.Spreadsheets.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -69,6 +113,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="Zlib.Portable, Version=1.11.0.0, Culture=neutral, PublicKeyToken=431cba815f6a8b5b, processorArchitecture=MSIL">
+      <HintPath>packages\Zlib.Portable.Signed.1.11.0\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Announcer.cs" />
@@ -76,16 +124,18 @@
     <Compile Include="Core\Command.cs" />
     <Compile Include="Core\CommandRegistry.cs" />
     <Compile Include="Core\Commands\RemoveUser.cs" />
+    <Compile Include="Core\Commands\SetName.cs" />
+    <Compile Include="Core\Commands\ServerQuery.cs" />
     <Compile Include="Core\CoreCommandHandler.cs" />
-    <Compile Include="Modules\CommandHandler\ChatCommand.cs" />
-    <Compile Include="Modules\CommandHandler\ChatCommandProcessor.cs" />
-    <Compile Include="Modules\CommandHandler\Commands\Help.cs" />
+    <Compile Include="Core\CommandListener\ChatCommand.cs" />
+    <Compile Include="Core\CommandListener\ChatCommandProcessor.cs" />
     <Compile Include="Core\Commands\AddUser.cs" />
+    <Compile Include="Extensions\GoogleSpreadsheet\BatchRequestHelpers.cs" />
+    <Compile Include="Extensions\GoogleSpreadsheet\Extensions.cs" />
+    <Compile Include="Extensions\GoogleSpreadsheet\Spreedsheet.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\MoveNext.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\Mute.cs" />
-    <Compile Include="Modules\CommandHandler\Commands\PopulateNameCache.cs" />
-    <Compile Include="Modules\CommandHandler\Commands\ShowPermissions.cs" />
-    <Compile Include="Modules\CommandHandler\Commands\ShowRepo.cs" />
+    <Compile Include="Modules\DogOfTheDay\Commands\Sync.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\Unmute.cs" />
     <Compile Include="Core\Config.cs" />
     <Compile Include="Core\Connection.cs" />
@@ -100,8 +150,8 @@
     <Compile Include="Core\ServerData.cs" />
     <Compile Include="Modules\ChatJoiner\ChatJoiner.cs" />
     <Compile Include="Modules\ChatJoiner\Config.cs" />
-    <Compile Include="Modules\CommandHandler\CommandHandler.cs" />
-    <Compile Include="Modules\DogOfTheDay\BotData.cs" />
+    <Compile Include="Core\CommandListener\CommandListener.cs" />
+    <Compile Include="Modules\DogOfTheDay\Data.cs" />
     <Compile Include="Modules\DogOfTheDay\Command.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\GetDogOfTheDay.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\GetDogOfTheDayCount.cs" />
@@ -115,9 +165,15 @@
     <Compile Include="Modules\DogOfTheDay\Parsers\DogSetParser.cs" />
     <Compile Include="Modules\DogOfTheDay\Queue.cs" />
     <Compile Include="Modules\DogOfTheDay\QueueController.cs" />
-    <Compile Include="Modules\Twitter\Config.cs" />
-    <Compile Include="Modules\Twitter\TinyTwitter.cs" />
-    <Compile Include="Modules\Twitter\Twitter.cs" />
+    <Compile Include="Extensions\SteamQuery\MasterServer.cs" />
+    <Compile Include="Extensions\SteamQuery\MasterServerFilter.cs" />
+    <Compile Include="Extensions\SteamQuery\MasterServerRegion.cs" />
+    <Compile Include="Extensions\SteamQuery\ResponseParser.cs" />
+    <Compile Include="Extensions\SteamQuery\Server.cs" />
+    <Compile Include="Extensions\SteamQuery\ServerInfoResult.cs" />
+    <Compile Include="Extensions\SteamQuery\ServerRulesResult.cs" />
+    <Compile Include="Extensions\SteamQuery\SteamQuery.cs" />
+    <Compile Include="Extensions\SteamQuery\SteamQueryEx.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

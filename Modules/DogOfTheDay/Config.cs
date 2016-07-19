@@ -8,13 +8,13 @@ namespace Modules.DogOfTheDay
     public class ConfigData
     {
         /// <summary>
-        /// How many announcements to make before changing to the next one.
+        /// Set to true to sync data with a Google Spreadsheet.
         /// </summary>
-        public int AnnouncementAmount { get; set; }
+        public bool SyncEnabled { get; set; }
 
         /// <summary>
-        /// How often to make an announcement in seconds.
+        /// The ID of the Google Spreadsheet to sync with.
         /// </summary>
-        public double AnnouncementInterval { get; set; }
+        public string SpreadsheetID { get; set; }
     }
 }

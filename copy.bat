@@ -1,0 +1,1 @@
+xcopy /s "TemplateConfigs\*.*" "..\bin\Debug\"

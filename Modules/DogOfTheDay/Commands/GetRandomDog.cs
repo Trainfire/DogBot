@@ -1,6 +1,5 @@
 using System;
 using Core;
-using Modules.CommandHandler;
 
 namespace Modules.DogOfTheDay
 {

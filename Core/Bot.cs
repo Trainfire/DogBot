@@ -2,14 +2,13 @@ using System;
 using System.Collections.Generic;
 using SteamKit2;
 using System.Threading;
-using Modules.CommandHandler;
+using System.Linq;
 
 namespace Core
 {
     public sealed class Bot
     {
         readonly Config config;
-        readonly Logger logger;
         readonly NameCache nameCache;
         readonly Connection connection;
         readonly CoreCommandHandler commandHandler;
@@ -19,10 +18,12 @@ namespace Core
         List<ILogOffCallbackHandler> logOffListeners;
         Thread connectionThread;
 
+        public Logger Logger { get; private set; }
         public SteamID SID { get { return connection.User.SteamID; } }
         public string LogPath { get { return config.Data.ConnectionInfo.DisplayName + ".bin"; } }
 
         #region Connection Wrappers
+        public bool Connected { get { return connection.Connected; } }
         public CallbackManager CallbackManager { get { return connection.Manager; } }
         public SteamFriends Friends { get { return connection.Friends; } }
         #endregion
@@ -42,8 +43,8 @@ namespace Core
             connection.Manager.Subscribe<SteamUser.LoggedOnCallback>(OnLoggedOn);
             connection.Manager.Subscribe<SteamFriends.ChatEnterCallback>(OnJoinChat);
 
-            logger = new Logger(LogPath, config.Data.ConnectionInfo.DisplayName);
-            logger.Info("Started");
+            Logger = new Logger(LogPath, config.Data.ConnectionInfo.DisplayName);
+            Logger.Info("Started");
 
             // Move into Module?
             nameCache = new NameCache();
@@ -62,7 +63,7 @@ namespace Core
                 var type = Type.GetType(moduleClassName);
                 if (type == null)
                 {
-                    logger.Error("Failed to load module '{0}'. Either the path is invalid or the module does not exist.", moduleName);
+                    Logger.Error("Failed to load module '{0}'. Either the path is invalid or the module does not exist.", moduleName);
                 }
                 else
                 {
@@ -76,7 +77,7 @@ namespace Core
 
         public void Start()
         {
-            logger.Info("Starting...");
+            Logger.Info("Starting...");
 
             // Start the connection in a seperate thread to prevent thread blocking.
             connectionThread = new Thread(() => connection.Connect(config.Data.ConnectionInfo));
@@ -92,9 +93,16 @@ namespace Core
 
         void AddModule(Module module)
         {
-            logger.Info("Registering module '{0}'", module.GetType().Name);
-            modules.Add(module);
-            module.Initialize(this);
+            if (modules.Any(x => x.GetType() == module.GetType()))
+            {
+                Logger.Error("Module of type '{0}' has already been added. Only one module of each type is allowed.", module.GetType());
+            }
+            else
+            {
+                Logger.Info("Registering module '{0}'", module.GetType().Name);
+                modules.Add(module);
+                module.Initialize(this);
+            }
         }
 
         public T GetModule<T>() where T : Module
@@ -115,7 +123,7 @@ namespace Core
 
         public void Stop()
         {
-            logger.Info("Stopping...");
+            Logger.Info("Stopping...");
             connection.Disconnect();
         }
 
@@ -191,6 +199,11 @@ namespace Core
             return connection.Friends.GetClanName(id);
         }
 
+        public string GetFriendName(string steamID3)
+        {
+            return GetFriendName(new SteamID(steamID3));
+        }
+
         public string GetFriendName(SteamID id)
         {
             CacheName(id);
@@ -224,36 +237,36 @@ namespace Core
         {
             if (chatId == null)
             {
-                logger.Warning("Cannot send message to chat as the provided SteamID is either null or invalid");
+                Logger.Warning("Cannot send message to chat as the provided SteamID is either null or invalid");
                 return;
             }
 
             if (string.IsNullOrEmpty(message))
             {
-                logger.Warning("Cannot send message to chat as the message is null or empty");
+                Logger.Warning("Cannot send message to chat as the message is null or empty");
                 return;
             }
 
             Friends.SendChatRoomMessage(chatId, EChatEntryType.ChatMsg, message);
-            logger.Info("@Chat: {0}", message);
+            Logger.Info("@Chat: {0}", message);
         }
 
         public void SayToFriend(SteamID friend, string message)
         {
             if (friend == null)
             {
-                logger.Warning("Cannot send message to friend as the provided SteamID is either null or invalid");
+                Logger.Warning("Cannot send message to friend as the provided SteamID is either null or invalid");
                 return;
             }
 
             if (string.IsNullOrEmpty(message))
             {
-                logger.Warning("Cannot send message to friend as the message is null or empty");
+                Logger.Warning("Cannot send message to friend as the message is null or empty");
                 return;
             }
 
             Friends.SendChatMessage(friend, EChatEntryType.ChatMsg, message);
-            logger.Info("@{0}: {1}", GetFriendName(friend), message);
+            Logger.Info("@{0}: {1}", GetFriendName(friend), message);
         }
         #endregion
     }

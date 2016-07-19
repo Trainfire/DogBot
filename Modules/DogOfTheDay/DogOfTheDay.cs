@@ -1,20 +1,18 @@
 using System;
-using System.Timers;
-using System.Collections.Generic;
 using Core;
-using SteamKit2;
-using Modules.CommandHandler;
 
 namespace Modules.DogOfTheDay
 {
-    public class DogOfTheDay : Module, ICommandListener
+    public class DogOfTheDay : Module, ICommandHandler
     {
         Announcer announcer;
-        Announcer twitterAnnouncer;
-        Config dogBotConfig;
+        Config Config;
         ChatCommandProcessor commandProcessor;
+        CommandListener commandListener;
 
-        public BotData Data { get; private set; }
+        public Data Data { get; private set; }
+        public bool SyncEnabled { get { return Config.Data.SyncEnabled; } }
+        public string SpreadsheetID { get { return Config.Data.SpreadsheetID; } }
 
         public bool Muted
         {
@@ -43,14 +41,15 @@ namespace Modules.DogOfTheDay
         const string MUTE = "dotdmute";
         const string UNMUTE = "dotdunmute";
         const string ADDUSER = "dotdadduser";
+        const string SYNC = "dotdsync";
         #endregion
 
         protected override void OnInitialize()
         {
-            dogBotConfig = new Config();
+            Config = new Config();
             commandProcessor = new ChatCommandProcessor(Bot);
             commandProcessor.NoPermissionMessage = Strings.NoPermission;
-            Data = new BotData();
+            Data = new Data(this);
 
             // Create the announcer
             announcer = new Announcer();
@@ -67,7 +66,7 @@ namespace Modules.DogOfTheDay
 
             Logger.Info("Announcements remaining for {0}: {1}", DateTime.Now.DayOfWeek.ToString(), announcer.AnnouncementsRemaining);
 
-            var commandListener = Bot.GetOrAddModule<CommandListener>();
+            commandListener = new CommandListener(Bot);
             commandListener.AddCommand<GetDogOfTheDay>(DOTD, this);
             commandListener.AddCommand<GetDogOfTheDayCount>(COUNT, this);
             commandListener.AddCommand<GetRandomDog>(RND, this);
@@ -76,9 +75,10 @@ namespace Modules.DogOfTheDay
             commandListener.AddCommand<SubmitDogOfTheDay>(DOTDSUBMIT, this);
             commandListener.AddCommand<Mute>(MUTE, this);
             commandListener.AddCommand<Unmute>(UNMUTE, this);
+            commandListener.AddCommand<Sync>(SYNC, this);
         }
 
-        void ICommandListener.OnCommandTriggered(CommandEvent commandEvent)
+        void ICommandHandler.OnCommandTriggered(CommandEvent commandEvent)
         {
             commandProcessor.ProcessCommand(commandEvent);
         }
@@ -89,7 +89,7 @@ namespace Modules.DogOfTheDay
             if (Data.HasDog)
             {
                 Logger.Info("Posting announcement...");
-                Bot.GetModule<CommandListener>().FireCommand<GetDogOfTheDay>();
+                commandListener.FireCommand<GetDogOfTheDay>();
             }
         }
 

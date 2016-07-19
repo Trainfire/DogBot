@@ -1,0 +1,13 @@
+{
+  "ConnectionInfo": {
+    "User": "SteamUserName",
+    "Pass": "SteamPassword",
+    "DisplayName": "DisplayName",
+    "ReconnectInterval": 300.0
+  },
+  "Token": "!",
+  "CommandPrefix": "",
+  "Modules": [  ],
+  "Admins": [  ],
+  "Users": [  ]
+}

@@ -4,9 +4,9 @@ using Core;
 using SteamKit2;
 
 /// <summary>
-/// This module listens for commands sent via Chat or Private Messaging and relays a callback to any subscribed listeners.
+/// This extension listens for commands sent via Chat or Private Messaging and relays a callback to any subscribed listeners.
 /// </summary>
-namespace Modules.CommandHandler
+namespace Core
 {
     public enum MessageContext
     {
@@ -54,7 +54,7 @@ namespace Modules.CommandHandler
     /// <summary>
     /// Receives a callback when a command is triggered.
     /// </summary>
-    public interface ICommandListener
+    public interface ICommandHandler
     {
         void OnCommandTriggered(CommandEvent commandEvent);
     }
@@ -62,45 +62,51 @@ namespace Modules.CommandHandler
     /// <summary>
     /// Listens for commands sent via Chat or Private Messaging and relays a callback to any listeners.
     /// </summary>
-    public class CommandListener : Module
+    public class CommandListener
     {
-        Dictionary<Command, List<ICommandListener>> listeners;
+        Dictionary<Command, List<ICommandHandler>> listeners;
         CommandRegistry commands;
+        Bot bot;
 
         public bool Muted { get; set; }
 
-        protected override void OnInitialize()
+        public CommandListener(Bot bot)
         {
-            listeners = new Dictionary<Command, List<ICommandListener>>();
+            this.bot = bot;
+
+            listeners = new Dictionary<Command, List<ICommandHandler>>();
             commands = new CommandRegistry("!", "");
 
-            Bot.CallbackManager.Subscribe<SteamFriends.ChatMsgCallback>(OnReceiveChatMessage);
-            Bot.CallbackManager.Subscribe<SteamFriends.FriendMsgCallback>(OnReceiveFriendMessage);
+            bot.CallbackManager.Subscribe<SteamFriends.ChatMsgCallback>(OnReceiveChatMessage);
+            bot.CallbackManager.Subscribe<SteamFriends.FriendMsgCallback>(OnReceiveFriendMessage);
         }
 
-        public void AddCommand<TCommand>(string alias, ICommandListener listener = null) where TCommand : ChatCommand
+        public void AddCommand<TCommand>(string alias, ICommandHandler listener, Action<TCommand> onAdd = null) where TCommand : ChatCommand
         {
             var command = Activator.CreateInstance<TCommand>();
 
-            command.Initialize(Bot);
+            command.Initialize(bot);
             command.Alias = alias;
 
             commands.AddCommand(command);
 
             if (!listeners.ContainsKey(command))
             {
-                listeners.Add(command, new List<ICommandListener>());
+                listeners.Add(command, new List<ICommandHandler>());
 
                 if (listener != null)
                     Subscribe<TCommand>(listener);
             }
             else
             {
-                Logger.Error("Cannot add command '{0}' as that has already been registered.", command.GetType().Name);
+                bot.Logger.Error("Cannot add command '{0}' as that has already been registered.", command.GetType().Name);
             }
+
+            if (onAdd != null)
+                onAdd(command);
         }
 
-        public void Subscribe<TCommand>(ICommandListener listener) where TCommand : ChatCommand
+        public void Subscribe<TCommand>(ICommandHandler listener) where TCommand : ChatCommand
         {
             var command = commands.GetCommand<TCommand>();
             if (command != null)
@@ -117,7 +123,7 @@ namespace Modules.CommandHandler
         {
             var command = commands.GetCommand<TCommand>();
             if (command != null)
-                HandleMessage(MessageContext.Chat, Bot.SID, commands.Format(command.Alias));
+                HandleMessage(MessageContext.Chat, bot.SID, commands.Format(command.Alias));
         }
 
         void OnReceiveChatMessage(SteamFriends.ChatMsgCallback callback)
@@ -142,10 +148,10 @@ namespace Modules.CommandHandler
                 if (command != null)
                 {
                     // Cache the name of the caller.
-                    Bot.CacheName(caller);
+                    bot.CacheName(caller);
 
                     var requiresPermission = command.UsersOnly || command.AdminOnly;
-                    var hasPermission = command.UsersOnly && (Bot.IsAdmin(caller) || Bot.IsUser(caller)) || command.AdminOnly && Bot.IsAdmin(caller);
+                    var hasPermission = command.UsersOnly && (bot.IsAdmin(caller) || bot.IsUser(caller)) || command.AdminOnly && bot.IsAdmin(caller);
                     var commandEvent = new CommandEvent(context, caller, parser, command, requiresPermission ? hasPermission : true);
 
                     FireCallbacks(commandEvent);
@@ -155,7 +161,7 @@ namespace Modules.CommandHandler
 
         void FireCallbacks(CommandEvent commandEvent)
         {
-            Logger.Info("Executing command '{0}'. Called by '{1}' from '{2}'.", commandEvent.Command.Alias, Bot.GetFriendName(commandEvent.Source.Caller), commandEvent.Source.Context);
+            bot.Logger.Info("Executing command '{0}'. Called by '{1}' from '{2}'.", commandEvent.Command.Alias, bot.GetFriendName(commandEvent.Source.Caller), commandEvent.Source.Context);
             listeners[commandEvent.Command].ForEach(x => x.OnCommandTriggered(commandEvent));
         }
     }
