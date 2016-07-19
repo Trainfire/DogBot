@@ -33,9 +33,7 @@ namespace Extensions.GoogleSpreadsheets
 
             using (var stream = new FileStream("client_secret.json", FileMode.Open, FileAccess.Read))
             {
-                string credPath = System.Environment.GetFolderPath(
-                    Environment.SpecialFolder.Personal);
-                credPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".credentials/sheets.googleapis.com-dotnet-quickstart.json");
+                string credPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "sheets.googleapis.com.json");
 
                 credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
                     GoogleClientSecrets.Load(stream).Secrets,
