@@ -95,7 +95,7 @@ namespace Core
                 listeners.Add(command, new List<ICommandHandler>());
 
                 if (listener != null)
-                    Subscribe<TCommand>(listener);
+                    Subscribe(alias, listener);
             }
             else
             {
@@ -106,9 +106,9 @@ namespace Core
                 onAdd(command);
         }
 
-        public void Subscribe<TCommand>(ICommandHandler listener) where TCommand : ChatCommand
+        public void Subscribe(string alias, ICommandHandler listener)
         {
-            var command = commands.GetCommand<TCommand>();
+            var command = commands.GetCommand(alias);
             if (command != null)
             {
                 listeners[command].Add(listener);
@@ -119,9 +119,9 @@ namespace Core
         /// Internally triggers the command and sends the output to chat.
         /// </summary>
         /// <typeparam name="TCommand"></typeparam>
-        public void FireCommand<TCommand>() where TCommand : ChatCommand
+        public void FireCommand(string alias)
         {
-            var command = commands.GetCommand<TCommand>();
+            var command = commands.GetCommand(alias);
             if (command != null)
                 HandleMessage(MessageContext.Chat, bot.SID, commands.Format(command.Alias));
         }

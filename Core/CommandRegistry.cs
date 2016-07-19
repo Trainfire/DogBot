@@ -25,11 +25,6 @@ namespace Core
             return Commands.FirstOrDefault(x => x.Alias == command);
         }
 
-        public Command GetCommand<TCommand>() where TCommand : Command
-        {
-            return Commands.FirstOrDefault(x => x.GetType() == typeof(TCommand));
-        }
-
         /// <summary>
         /// Formats the specified string into a command. If the command is 'help' and the command token is '!', the return value would be '!help'.
         /// </summary>

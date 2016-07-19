@@ -89,7 +89,7 @@ namespace Modules.DogOfTheDay
             if (Data.HasDog)
             {
                 Logger.Info("Posting announcement...");
-                commandListener.FireCommand<GetDogOfTheDay>();
+                commandListener.FireCommand(DOTD);
             }
         }
 
