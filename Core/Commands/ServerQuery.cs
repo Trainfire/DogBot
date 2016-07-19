@@ -6,13 +6,13 @@ using System;
 
 namespace Core
 {
-    abstract class ServerQuery : ChatCommand
+    class ServerQuery : ChatCommand
     {
         public override bool IsAsync { get { return true; } }
 
-        public abstract string IPAddress { get; }
-        public abstract int Port { get; }
-        public abstract string ServerName { get; }
+        public string IPAddress { get; set; }
+        public int Port { get; set; }
+        public string ServerName { get; set; }
 
         public override async Task<CommandResult> ExecuteAsync(CommandSource source)
         {
@@ -36,22 +36,5 @@ namespace Core
             str.Add("Map: " + info.GetMapInfo());
             return ServerName + " // " + string.Join(" // ", str);
         }
-    }
-
-    // Really dumb implementation...
-    // Ideally, these properties would be exposed in ServerQuery.
-    // But the current implementation of commands prevents this due to the way commands are registered.
-    class EUServerQuery : ServerQuery
-    {
-        public override string ServerName { get { return "EU Server"; } }
-        public override string IPAddress { get { return "91.121.155.109"; } }
-        public override int Port { get { return 27015; } }
-    }
-
-    class USServerQuery : ServerQuery
-    {
-        public override string ServerName { get { return "US Server"; } }
-        public override string IPAddress { get { return "70.42.74.31"; } }
-        public override int Port { get { return 27015; } }
     }
 }
