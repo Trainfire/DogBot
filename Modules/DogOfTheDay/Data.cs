@@ -97,7 +97,7 @@ namespace Modules.DogOfTheDay
         /// <returns></returns>
         public async Task Sync()
         {
-            if (string.IsNullOrEmpty(dotd.SpreadsheetID))
+            if (string.IsNullOrEmpty(dotd.SpreadsheetID) || !dotd.SyncEnabled)
                 return;
 
             var spreadSheet = new Spreadsheet(dotd.SpreadsheetID);

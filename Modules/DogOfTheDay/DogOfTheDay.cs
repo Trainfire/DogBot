@@ -11,6 +11,7 @@ namespace Modules.DogOfTheDay
         CommandListener commandListener;
 
         public Data Data { get; private set; }
+        public bool SyncEnabled { get { return Config.Data.SyncEnabled; } }
         public string SpreadsheetID { get { return Config.Data.SpreadsheetID; } }
 
         public bool Muted
