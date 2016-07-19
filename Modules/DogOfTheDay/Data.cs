@@ -2,17 +2,21 @@ using System;
 using SteamKit2;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Core;
+using Extensions.GoogleSpreadsheets;
 
 namespace Modules.DogOfTheDay
 {
     /// <summary>
     /// Information about the current state of the Bot.
     /// </summary>
-    public class BotData
+    public class Data
     {
         public event EventHandler<DogData> DogSubmitted;
 
         readonly History history;
+        readonly DogOfTheDay dotd;
 
         DogData dog;
         Queue queue;
@@ -29,29 +33,34 @@ namespace Modules.DogOfTheDay
         /// </summary>
         public List<DogData> Queue { get { return queue.Data.Queue.ToList(); } }
 
-        public BotData()
+        public Data(DogOfTheDay dotd)
         {
+            this.dotd = dotd;
+
             history = new History();
             queue = new Queue();
         }
 
-        public void EnqueueDog(DogData dog)
+        public async void EnqueueDog(DogData dog)
         {
             queue.Controller.Enqueue(dog);
 
             if (DogSubmitted != null)
                 DogSubmitted(this, dog);
+
+            await Sync();
         }
 
         /// <summary>
         /// Gets the next Dog in the queue, if there is one, and removes it from the queue file.
         /// </summary>
-        public void MoveToNextDog()
+        public async void MoveToNextDog()
         {
             if (queue.Data.Queue.Count != 0)
             {
                 dog = queue.Controller.Dequeue();
                 WriteToHistory(dog);
+                await Sync();
             }
         }
 
@@ -82,12 +91,60 @@ namespace Modules.DogOfTheDay
             }
         }
 
+        /// <summary>
+        /// Syncs the data to Google.
+        /// </summary>
+        /// <returns></returns>
+        public async Task Sync()
+        {
+            if (string.IsNullOrEmpty(dotd.SpreadsheetID) || !dotd.SyncEnabled)
+                return;
+
+            var spreadSheet = new Spreadsheet(dotd.SpreadsheetID);
+            await spreadSheet.Get();
+
+            var dogSheet = await spreadSheet.GetOrAddSheet("Dogs");
+
+            Queue.ForEach(x =>
+            {
+                dogSheet.AddRow(new List<object>()
+                {
+                    dotd.Bot.GetFriendName(x.Setter),
+                    x.Setter.ToString(),
+                    TimestampToDate(x.TimeStamp),
+                    x.URL,
+                });
+            });
+
+            var historySheet = await spreadSheet.GetOrAddSheet("History");
+
+            history.Data.History.ForEach(x =>
+            {
+                historySheet.AddRow(new List<object>()
+                {
+                    dotd.Bot.GetFriendName(x.Dog.Setter),
+                    x.Dog.Setter.ToString(),
+                    TimestampToDate(x.Dog.TimeStamp),
+                    x.Dog.URL,
+                });
+            });
+
+            await dogSheet.PushAsync();
+            await historySheet.PushAsync();
+        }
+
         void WriteToHistory(DogData dog)
         {
             history.Write(new HistoryRecord()
             {
                 Dog = dog,
             });
+        }
+
+        string TimestampToDate(string timestamp)
+        {
+            var dt = DateTime.FromBinary(long.Parse(timestamp));
+            return dt.ToShortDateString() + " " + dt.ToShortTimeString();
         }
     }
 }
