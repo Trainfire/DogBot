@@ -15,7 +15,7 @@ namespace Modules.DogOfTheDay
             if (dotdParser.IsValid)
             {
                 if (dotdParser.Dog != null)
-                    DogOfTheDay.Data.EnqueueDog(dotdParser.Dog);
+                    DogOfTheDay.Data.Queue.Enqueue(dotdParser.Dog);
                 return new CommandResult(DogOfTheDay.Strings.SubmitDogOfTheDay);
             }
             else

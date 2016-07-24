@@ -42,6 +42,7 @@ namespace Modules.DogOfTheDay
         const string UNMUTE = "dotdunmute";
         const string ADDUSER = "dotdadduser";
         const string SYNC = "dotdsync";
+        const string QUEUE = "dotdqueue";
         #endregion
 
         protected override void OnInitialize()
@@ -76,6 +77,7 @@ namespace Modules.DogOfTheDay
             commandListener.AddCommand<Mute>(MUTE, this);
             commandListener.AddCommand<Unmute>(UNMUTE, this);
             commandListener.AddCommand<Sync>(SYNC, this);
+            commandListener.AddCommand<QueueInfo>(QUEUE, this);
         }
 
         void ICommandHandler.OnCommandTriggered(CommandEvent commandEvent)

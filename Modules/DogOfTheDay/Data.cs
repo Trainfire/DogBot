@@ -19,35 +19,27 @@ namespace Modules.DogOfTheDay
         readonly DogOfTheDay dotd;
 
         DogData dog;
-        Queue queue;
 
+        public Queue Queue { get; private set; }
         public HistoryStats HistoryStats { get { return history.Stats; } }
-        public DogData CurrentDog { get { return queue.Controller.Peek(); } }
+        public DogData CurrentDog { get { return Queue.Peek(); } }
         public bool HasDog { get { return CurrentDog != null; } }
         public int QueueCount { get { return Queue.Count; } }
         public int TotalDogsShown { get { return HistoryStats.Dogs.Count; } }
         public int TotalDogsAdded { get { return HistoryStats.Dogs.Count + QueueCount; } }
-
-        /// <summary>
-        /// Returns a copy of the Queue.
-        /// </summary>
-        public List<DogData> Queue { get { return queue.Data.Queue.ToList(); } }
 
         public Data(DogOfTheDay dotd)
         {
             this.dotd = dotd;
 
             history = new History();
-            queue = new Queue();
+            Queue = new Queue();
+
+            Queue.DataChanged += (sender, queue) => PerformSync();
         }
 
-        public async void EnqueueDog(DogData dog)
+        public async void PerformSync()
         {
-            queue.Controller.Enqueue(dog);
-
-            if (DogSubmitted != null)
-                DogSubmitted(this, dog);
-
             await Sync();
         }
 
@@ -56,9 +48,9 @@ namespace Modules.DogOfTheDay
         /// </summary>
         public async void MoveToNextDog()
         {
-            if (queue.Data.Queue.Count != 0)
+            if (Queue.Data.Queue.Count != 0)
             {
-                dog = queue.Controller.Dequeue();
+                dog = Queue.Dequeue();
                 WriteToHistory(dog);
                 await Sync();
             }
@@ -67,7 +59,7 @@ namespace Modules.DogOfTheDay
         public List<DogData> GetUserContributions(SteamKit2.SteamID steamID)
         {
             var fromHistory = history.Stats.GetUserContributions(steamID);
-            var fromQueue = queue.Controller.GetUserContributions(steamID);
+            var fromQueue = Queue.GetUserContributions(steamID);
 
             return fromHistory.Concat(fromQueue).ToList();
         }
@@ -77,9 +69,9 @@ namespace Modules.DogOfTheDay
             get
             {
                 var fromHistory = history.Stats.Dogs;
-                var fromQueue = queue.Data.Queue;
+                var fromQueue = Queue.Data.Queue;
 
-                var list = fromHistory.Concat(queue.Data.Queue).ToList();
+                var list = fromHistory.Concat(Queue.Data.Queue).ToList();
 
                 var highest = list
                     .GroupBy(x => x.Setter)
@@ -105,7 +97,7 @@ namespace Modules.DogOfTheDay
 
             var dogSheet = await spreadSheet.GetOrAddSheet("Dogs");
 
-            Queue.ForEach(x =>
+            Queue.Data.Queue.ForEach(x =>
             {
                 dogSheet.AddRow(new List<object>()
                 {
