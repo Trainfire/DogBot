@@ -24,9 +24,8 @@ namespace Modules.DogOfTheDay
         public HistoryStats HistoryStats { get { return history.Stats; } }
         public DogData CurrentDog { get { return Queue.Peek(); } }
         public bool HasDog { get { return CurrentDog != null; } }
-        public int QueueCount { get { return Queue.Count; } }
         public int TotalDogsShown { get { return HistoryStats.Dogs.Count; } }
-        public int TotalDogsAdded { get { return HistoryStats.Dogs.Count + QueueCount; } }
+        public int TotalDogsAdded { get { return HistoryStats.Dogs.Count + Queue.Count; } }
 
         public Data(DogOfTheDay dotd)
         {

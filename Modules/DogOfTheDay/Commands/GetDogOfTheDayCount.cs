@@ -8,7 +8,7 @@ namespace Modules.DogOfTheDay
     {
         public override CommandResult Execute(CommandSource source)
         {
-            return new CommandResult(DogOfTheDay.Strings.TotalMessages + DogOfTheDay.Data.QueueCount);
+            return new CommandResult(DogOfTheDay.Strings.TotalMessages + DogOfTheDay.Data.Queue.Count);
         }
     }
 }
