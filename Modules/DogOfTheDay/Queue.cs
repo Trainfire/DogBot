@@ -21,6 +21,8 @@ namespace Modules.DogOfTheDay
         {
             Data.Queue.Add(dog);
 
+            Sort();
+
             Save();
 
             if (DataChanged != null)
@@ -57,13 +59,8 @@ namespace Modules.DogOfTheDay
         {
             if (Data.Queue.Count != 0)
             {
-                Sort();
-
-                // Get the first dog in the queue.
-                var dog = Data.Queue[0];
-
-                // Remove the dog from the queue.
-                Data.Queue.Remove(dog);
+                // Remove the current dog from the queue.
+                Data.Queue.Remove(Data.Queue[0]);
 
                 if (save)
                     Save();
@@ -71,7 +68,7 @@ namespace Modules.DogOfTheDay
                 if (DataChanged != null)
                     DataChanged(this, this);
 
-                return dog;
+                return Data.Queue[0];
             }
             return null;
         }
