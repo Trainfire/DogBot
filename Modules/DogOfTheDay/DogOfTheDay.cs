@@ -43,6 +43,8 @@ namespace Modules.DogOfTheDay
         const string ADDUSER = "dotdadduser";
         const string SYNC = "dotdsync";
         const string QUEUE = "dotdqueue";
+        const string PEEK = "dotdpeek";
+        const string SORT = "dotdsort";
         #endregion
 
         protected override void OnInitialize()
@@ -78,6 +80,8 @@ namespace Modules.DogOfTheDay
             commandListener.AddCommand<Unmute>(UNMUTE, this);
             commandListener.AddCommand<Sync>(SYNC, this);
             commandListener.AddCommand<QueueInfo>(QUEUE, this);
+            commandListener.AddCommand<PeekAhead>(PEEK, this);
+            commandListener.AddCommand<Sort>(SORT, this);
         }
 
         void ICommandHandler.OnCommandTriggered(CommandEvent commandEvent)

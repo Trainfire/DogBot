@@ -50,6 +50,11 @@ namespace Modules.DogOfTheDay
             Data.Queue = distinct;
         }
 
+        public DogData PeekAhead()
+        {
+            return Data.Queue.Count > 1 ? Data.Queue[1] : null;
+        }
+
         public DogData Peek()
         {
             return Data.Queue.Count != 0 ? Data.Queue[0] : null;
