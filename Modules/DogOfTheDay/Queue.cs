@@ -10,61 +10,63 @@ namespace Modules.DogOfTheDay
     {
         public event EventHandler<Queue> DataChanged;
 
-        List<DogData> data;
-
-        public int Count { get { return data.Count; } }
-             
-        public Queue() : base()
-        {
-            data = Data.Queue;
-        }
+        public int Count { get { return Data.Queue.Count; } }
 
         public bool HasURL(string url)
         {
-            return data.Any(x => x.URL == url);
+            return Data.Queue.Any(x => x.URL == url);
         }
 
         public void Enqueue(DogData dog)
         {
-            data.Add(dog);
+            Data.Queue.Add(dog);
+
             Save();
 
             if (DataChanged != null)
                 DataChanged(this, this);
         }
 
-        public DogData Peek()
+        public void Sort()
         {
-            return data.Count != 0 ? data[0] : null;
+            // Reorder submissions so the queue prioritises unique authors
+            // This is to prevent a series of submissions from the same person blocking the queue
+            // for potentially several days!
+            var distinct = Data.Queue
+                .GroupBy(x => x.Setter)
+                .Select(x => x.First())
+                .OrderBy(x => x.TimeStamp)
+                .ToList();
+
+            // Find and remove duplicate values
+            var duplicates = Data.Queue.Intersect(distinct).ToList();
+            duplicates.ForEach(x => Data.Queue.Remove(x));
+
+            // Update queue
+            distinct.AddRange(Data.Queue);
+
+            Data.Queue = distinct;
         }
 
-        public DogData Dequeue()
+        public DogData Peek()
         {
-            if (data.Count != 0)
+            return Data.Queue.Count != 0 ? Data.Queue[0] : null;
+        }
+
+        public DogData Dequeue(bool save = true)
+        {
+            if (Data.Queue.Count != 0)
             {
-                // Reorder submissions so the queue prioritises unique authors
-                // This is to prevent a series of submissions from the same person blocking the queue
-                // for potentially several days!
-                var distinct = data
-                    .GroupBy(x => x.Setter)
-                    .Select(x => x.First())
-                    .OrderBy(x => x.TimeStamp)
-                    .ToList();
-
-                // Find and remove duplicate values
-                var duplicates = data.Intersect(distinct).ToList();
-                duplicates.ForEach(x => distinct.Remove(x));
-
-                // Update queue
-                data = distinct.Concat(data).ToList();
+                Sort();
 
                 // Get the first dog in the queue.
-                var dog = data[0];
+                var dog = Data.Queue[0];
 
                 // Remove the dog from the queue.
-                data.Remove(dog);
+                Data.Queue.Remove(dog);
 
-                Save();
+                if (save)
+                    Save();
 
                 if (DataChanged != null)
                     DataChanged(this, this);
@@ -76,12 +78,12 @@ namespace Modules.DogOfTheDay
 
         public List<DogData> GetUserContributions(SteamID steamID)
         {
-            return data.Where(x => x.Setter == steamID).ToList();
+            return Data.Queue.Where(x => x.Setter == steamID).ToList();
         }
 
         public List<SteamID> GetUsers()
         {
-            return data
+            return Data.Queue
                 .Select(x => x.Setter)
                 .Distinct()
                 .ToList();
