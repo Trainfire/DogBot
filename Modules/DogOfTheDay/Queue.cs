@@ -21,8 +21,6 @@ namespace Modules.DogOfTheDay
         {
             Data.Queue.Add(dog);
 
-            Sort();
-
             Save();
 
             if (DataChanged != null)
@@ -44,6 +42,16 @@ namespace Modules.DogOfTheDay
             var duplicates = Data.Queue.Intersect(distinct).ToList();
             duplicates.ForEach(x => Data.Queue.Remove(x));
 
+            foreach (var entry in distinct)
+            {
+                Console.WriteLine("Distinct: {0} (Time: {1})", entry.Setter, entry.TimeStamp);
+            }
+
+            foreach (var item in Data.Queue)
+            {
+                Console.WriteLine("Others: {0}", item.Setter);
+            }
+
             // Update queue
             distinct.AddRange(Data.Queue);
 
@@ -64,8 +72,12 @@ namespace Modules.DogOfTheDay
         {
             if (Data.Queue.Count != 0)
             {
+                var current = Data.Queue[0];
+
+                Sort();
+
                 // Remove the current dog from the queue.
-                Data.Queue.Remove(Data.Queue[0]);
+                Data.Queue.Remove(current);
 
                 if (save)
                     Save();
