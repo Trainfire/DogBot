@@ -120,6 +120,7 @@ namespace Modules.DogOfTheDay
         {
             public const string DogOfTheDay = "Dog of the Day";
             public const string SubmitDogOfTheDay = "Dog added to the queue!";
+            public const string SubmitURLExists = "* whines * Cannot accept that URL as it's already in the queue...";
             public const string NoDog = " * whines * There is no Dog of the Day... If you have permission, use !dotdsubmit <URL> <Comment (Optional)> to submit a message.";
             public const string UrlInvalid = "*whines* That URL is invalid...";
             public const string Setter = "Dog of the Day was set by";

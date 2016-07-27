@@ -19,6 +19,11 @@ namespace Modules.DogOfTheDay
             data = Data.Queue;
         }
 
+        public bool HasURL(string url)
+        {
+            return data.Any(x => x.URL == url);
+        }
+
         public void Enqueue(DogData dog)
         {
             data.Add(dog);
