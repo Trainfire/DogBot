@@ -61,5 +61,10 @@ namespace Core
         {
             Message = message;
         }
+
+        public CommandResult(string message, params object[] args)
+        {
+            Message = string.Format(message, args);
+        }
     }
 }

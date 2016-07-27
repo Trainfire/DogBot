@@ -42,6 +42,9 @@ namespace Modules.DogOfTheDay
         const string UNMUTE = "dotdunmute";
         const string ADDUSER = "dotdadduser";
         const string SYNC = "dotdsync";
+        const string QUEUE = "dotdqueue";
+        const string PEEK = "dotdpeek";
+        const string SORT = "dotdsort";
         #endregion
 
         protected override void OnInitialize()
@@ -76,6 +79,9 @@ namespace Modules.DogOfTheDay
             commandListener.AddCommand<Mute>(MUTE, this);
             commandListener.AddCommand<Unmute>(UNMUTE, this);
             commandListener.AddCommand<Sync>(SYNC, this);
+            commandListener.AddCommand<QueueInfo>(QUEUE, this);
+            commandListener.AddCommand<PeekAhead>(PEEK, this);
+            commandListener.AddCommand<Sort>(SORT, this);
         }
 
         void ICommandHandler.OnCommandTriggered(CommandEvent commandEvent)
@@ -118,6 +124,7 @@ namespace Modules.DogOfTheDay
         {
             public const string DogOfTheDay = "Dog of the Day";
             public const string SubmitDogOfTheDay = "Dog added to the queue!";
+            public const string SubmitURLExists = "* whines * Cannot accept that URL as it's already in the queue...";
             public const string NoDog = " * whines * There is no Dog of the Day... If you have permission, use !dotdsubmit <URL> <Comment (Optional)> to submit a message.";
             public const string UrlInvalid = "*whines* That URL is invalid...";
             public const string Setter = "Dog of the Day was set by";

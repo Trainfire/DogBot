@@ -135,6 +135,9 @@
     <Compile Include="Extensions\GoogleSpreadsheet\Spreedsheet.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\MoveNext.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\Mute.cs" />
+    <Compile Include="Modules\DogOfTheDay\Commands\Sort.cs" />
+    <Compile Include="Modules\DogOfTheDay\Commands\QueueInfo.cs" />
+    <Compile Include="Modules\DogOfTheDay\Commands\Peek.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\Sync.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\Unmute.cs" />
     <Compile Include="Core\Config.cs" />
@@ -164,7 +167,6 @@
     <Compile Include="Modules\DogOfTheDay\History.cs" />
     <Compile Include="Modules\DogOfTheDay\Parsers\DogSetParser.cs" />
     <Compile Include="Modules\DogOfTheDay\Queue.cs" />
-    <Compile Include="Modules\DogOfTheDay\QueueController.cs" />
     <Compile Include="Extensions\SteamQuery\MasterServer.cs" />
     <Compile Include="Extensions\SteamQuery\MasterServerFilter.cs" />
     <Compile Include="Extensions\SteamQuery\MasterServerRegion.cs" />
