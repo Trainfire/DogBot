@@ -25,17 +25,20 @@ namespace Core
 
         public void Save()
         {
-            var sw = File.CreateText(Path + Filename);
-            sw.Write(JsonConvert.SerializeObject(Data, Formatting.Indented));
-            sw.Close();
+            using (var sw = File.CreateText(Path + Filename))
+            {
+                sw.Write(JsonConvert.SerializeObject(Data, Formatting.Indented));
+            }
         }
 
         public void Load()
         {
             if (File.Exists(Path + Filename))
             {
-                var file = File.ReadAllText(Path + Filename);
-                Data = JsonConvert.DeserializeObject<T>(file);
+                using (var file = File.OpenText(Path + Filename))
+                {
+                    Data = JsonConvert.DeserializeObject<T>(file.ReadToEnd());
+                }
             }
             else
             {
