@@ -3,44 +3,66 @@ using SteamKit2.Internal;
 using System;
 using System.IO;
 using System.Net;
+using System.Collections.Generic;
 
 namespace Core
 {
     class ServerCache
     {
+        readonly Logger logger;
+
         const string PATH = "servers.bin";
 
         public bool CacheExists { get; private set; }
+
+        public ServerCache(Logger logger)
+        {
+            this.logger = logger;
+        }
 
         public void Load()
         {
             if (File.Exists(PATH))
             {
-                var file = File.ReadAllText(PATH);
-                var data = JsonConvert.DeserializeObject<ServerCacheData>(file);
-
-                CMClient.Servers.Clear();
-                data.EndPoints.ForEach(x =>
+                using (var fr = new StreamReader(PATH))
                 {
-                    CMClient.Servers.TryAdd(new IPEndPoint(x.Address, x.Port));
-                });
+                    var data = JsonConvert.DeserializeObject<ServerCacheData>(fr.ReadToEnd());
 
-                Console.WriteLine("Loaded {0} servers from server list cache.", CMClient.Servers.GetAllEndPoints().Length);
+                    CMClient.Servers.Clear();
+                    data.EndPoints.ForEach(x =>
+                    {
+                        CMClient.Servers.TryAdd(new IPEndPoint(x.Address, x.Port));
+                    });
 
-                CacheExists = true;
+                    logger.Info("Loaded {0} servers from server list cache.", CMClient.Servers.GetAllEndPoints().Length);
+
+                    CacheExists = true;
+                }
             }
             else
             {
-                // since we don't have a list of servers saved, load the latest list of Steam servers
-                // from the Steam Directory.
-                var loadServersTask = SteamKit2.SteamDirectory.Initialize(0u);
-                loadServersTask.Wait();
-
-                if (loadServersTask.IsFaulted)
-                {
-                    Console.WriteLine("Error loading server list from directory: {0}", loadServersTask.Exception.Message);
-                }
+                logger.Error("Failed to find the server cache! Forcing a refresh...");
+                Refresh();
             }
+        }
+
+        public void Refresh()
+        {
+            // since we don't have a list of servers saved, load the latest list of Steam servers
+            // from the Steam Directory.
+            var loadServersTask = SteamKit2.SteamDirectory.Initialize(0u);
+            loadServersTask.Wait();
+
+            if (loadServersTask.IsFaulted)
+            {
+                Console.WriteLine("Error loading server list from directory: {0}", loadServersTask.Exception.Message);
+            }
+            else
+            {
+                Console.WriteLine("Successfully loaded server list.");
+            }
+
+            Save();
         }
 
         public void Save()
@@ -50,7 +72,11 @@ namespace Core
             {
                 serverData.EndPoints.Add(new ServerCacheData.EndPoint(endPoint.Address, endPoint.Port));
             }
-            File.WriteAllText(PATH, JsonConvert.SerializeObject(serverData, Formatting.Indented));
+
+            using (var fw = File.CreateText(PATH))
+            {
+                fw.Write(JsonConvert.SerializeObject(serverData, Formatting.Indented));
+            }
         }
     }
 }

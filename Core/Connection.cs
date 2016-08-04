@@ -83,7 +83,7 @@ namespace Core
 
             // Create then load cached server data.
             // NOTE: Currently, a server cache must be included in the bin directory because it's not possible to force SteamKit to refresh it's internal server list when running on Mono because reasons?
-            serverCache = new ServerCache();
+            serverCache = new ServerCache(logger);
             serverCache.Load();
         }
 
@@ -94,12 +94,6 @@ namespace Core
             if (string.IsNullOrEmpty(connectionInfo.User) || string.IsNullOrEmpty(connectionInfo.Pass))
             {
                 logger.Error("Will not connect to Steam as User or Password is null or empty.");
-                return;
-            }
-
-            if (!serverCache.CacheExists)
-            {
-                logger.Error("Cannot connect as the server cache failed to load! Make sure servers.bin exists in the root directory.");
                 return;
             }
 
@@ -276,6 +270,11 @@ namespace Core
             });
 
             logger.Info("Done!");
+        }
+
+        public void RepopulateServerCache()
+        {
+            serverCache.Refresh();
         }
     }
 }

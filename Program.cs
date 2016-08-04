@@ -27,6 +27,9 @@ namespace DogBot
                 if (input == "restart")
                     bot.Restart();
 
+                if (input == "refreshservers")
+                    bot.RefreshServers();
+
                 if (input == "quit")
                     isRunning = false;
             }

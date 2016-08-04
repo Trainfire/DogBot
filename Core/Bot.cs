@@ -121,6 +121,11 @@ namespace Core
             return module;
         }
 
+        public void RefreshServers()
+        {
+            connection.RepopulateServerCache();
+        }
+
         public void Restart()
         {
             RestartAsync();
