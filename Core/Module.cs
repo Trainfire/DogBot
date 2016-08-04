@@ -11,7 +11,7 @@ namespace Core
         public void Initialize(Bot bot)
         {
             Bot = bot;
-            Logger = new Logger(GetType().Name.ToLower() + ".log", GetType().Name);
+            Logger = new Logger(bot.LogPath, GetType().Name);
             OnInitialize();
         }
 
