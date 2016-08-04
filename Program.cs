@@ -13,8 +13,6 @@ namespace DogBot
             var bot = new Bot();
             bot.Start();
 
-            //new TestSpreadsheet();
-
             bool isRunning = true;
             while (isRunning)
             {
@@ -26,10 +24,11 @@ namespace DogBot
                 if (input == "start")
                     bot.Start();
 
+                if (input == "restart")
+                    bot.Restart();
+
                 if (input == "quit")
-                {
                     isRunning = false;
-                }
             }
         }
     }

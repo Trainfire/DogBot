@@ -1,9 +1,9 @@
 using System;
 using System.IO;
 using SteamKit2;
-using System.Threading;
+using System.Threading.Tasks;
+using System.Timers;
 using System.Security.Cryptography;
-using System.Collections.Generic;
 
 namespace Core
 {
@@ -29,6 +29,7 @@ namespace Core
         string authCode, twoFactorAuth;
 
         readonly Logger logger;
+        readonly System.Timers.Timer timer;
 
         public SteamUser User { get; private set; }
         public SteamFriends Friends { get; private set; }
@@ -56,6 +57,11 @@ namespace Core
             logger = new Logger(logPath, "SteamKit");
 
             steamClient = new SteamClient();
+
+            // Create the tick timer that will handle any callbacks from Steam.
+            timer = new System.Timers.Timer(100);
+            timer.Elapsed += Tick;
+            timer.Start();
 
             // create the callback manager which will route callbacks to function calls
             Manager = new CallbackManager(steamClient);
@@ -103,15 +109,12 @@ namespace Core
 
             // initiate the connection
             steamClient.Connect();
+        }
 
-            // create our callback handling loop
-            while (isRunning)
-            {
-                // in order for the callbacks to get routed, they need to be handled by the Manager
-                Manager.RunWaitCallbacks(TimeSpan.FromSeconds(1));
-            }
-
-            logger.Info("Connection terminated.");
+        void Tick(object sender, ElapsedEventArgs e)
+        {
+            if (isRunning)
+                Manager.RunCallbacks();
         }
 
         public void Disconnect()
@@ -123,14 +126,11 @@ namespace Core
             }
         }
 
-        void Reconnect()
+        async void ReconnectAsync()
         {
             isRunning = false;
-
             logger.Info("Reconnecting in " + connectionInfo.ReconnectInterval + " seconds...");
-
-            Thread.Sleep(TimeSpan.FromSeconds(connectionInfo.ReconnectInterval));
-
+            await Task.Delay(TimeSpan.FromSeconds(connectionInfo.ReconnectInterval));
             Connect(connectionInfo);
         }
 
@@ -139,7 +139,7 @@ namespace Core
             if (callback.Result != EResult.OK)
             {
                 logger.Warning("Unable to connect to Steam: {0}", callback.Result);
-                Reconnect();
+                ReconnectAsync();
                 return;
             }
 
@@ -176,12 +176,18 @@ namespace Core
         {
             // after recieving an AccountLogonDenied, we'll be disconnected from steam
             // so after we read an authcode from the user, we need to reconnect to begin the logon flow again
-            logger.Warning("Disconnected from Steam...");
 
             isRunning = false;
 
-            if (!callback.UserInitiated)
-                Reconnect();
+            if (callback.UserInitiated)
+            {
+                logger.Warning("Disconnected from Steam by the user.");
+            }
+            else
+            {
+                logger.Warning("Disconnected from Steam...");
+                ReconnectAsync();
+            }
         }
 
         void OnLoggedOn(SteamUser.LoggedOnCallback callback)
@@ -210,7 +216,7 @@ namespace Core
             if (callback.Result != EResult.OK)
             {
                 logger.Error("Unable to logon to Steam: {0} / {1}", callback.Result, callback.ExtendedResult);
-                Reconnect();
+                ReconnectAsync();
                 return;
             }
 

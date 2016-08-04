@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SteamKit2;
 using System.Threading;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Core
 {
@@ -16,7 +17,7 @@ namespace Core
         List<Module> modules;
         List<ILogOnCallbackHandler> logOnListeners;
         List<ILogOffCallbackHandler> logOffListeners;
-        Thread connectionThread;
+        //Thread connectionThread;
 
         public Logger Logger { get; private set; }
         public SteamID SID { get { return connection.User.SteamID; } }
@@ -80,8 +81,7 @@ namespace Core
             Logger.Info("Starting...");
 
             // Start the connection in a seperate thread to prevent thread blocking.
-            connectionThread = new Thread(() => connection.Connect(config.Data.ConnectionInfo));
-            connectionThread.Start();
+            connection.Connect(config.Data.ConnectionInfo);
         }
 
         public T AddModule<T>() where T : Module
@@ -119,6 +119,18 @@ namespace Core
             if (module == null)
                 module = AddModule<T>();
             return module;
+        }
+
+        public void Restart()
+        {
+            RestartAsync();
+        }
+
+        async void RestartAsync()
+        {
+            connection.Disconnect();
+            await Task.Delay(1000);
+            connection.Connect(config.Data.ConnectionInfo);
         }
 
         public void Stop()
