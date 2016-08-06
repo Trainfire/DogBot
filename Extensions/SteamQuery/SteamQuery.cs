@@ -42,13 +42,27 @@ namespace Extensions.SteamQuery
             return info;
         }
 
-        async Task<Exception> TestConnection(IPEndPoint endPoint)
+        async Task<Exception> TestConnection(IPEndPoint endPoint, int timeOut = 5000)
         {
             var s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
             try
             {
-                await Task.Run(() => s.Connect(endPoint));
+                await Task.Run(() =>
+                {
+                    var result = s.BeginConnect(endPoint, null, null);
+
+                    bool success = result.AsyncWaitHandle.WaitOne(timeOut, true);
+                    if (success)
+                    {
+                        s.EndConnect(result);
+                    }
+                    else
+                    {
+                        s.Close();
+                        throw new SocketException(10060); // Connection timed out.
+                    }
+                });
             }
 
             catch (Exception ex)
