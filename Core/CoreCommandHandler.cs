@@ -27,7 +27,7 @@ namespace Core
             listener.AddCommand<ServerQuery>(FormatCommand(EUSERVER), this, (command) =>
             {
                 command.ServerName = "EU Server";
-                command.IPAddress = "91.121.155.109";
+                command.Hostname = "geit.uk";
                 command.Port = 27015;
             });
             listener.AddCommand<ServerQuery>(FormatCommand(USSERVER), this, (command) =>
