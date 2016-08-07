@@ -22,7 +22,7 @@ namespace Core
             // Lazy hack, but w/e.
             if (!string.IsNullOrEmpty(Hostname))
             {
-                IPAddress = GetIPFromHostname(Hostname).AddressList[0].MapToIPv4().ToString();
+                IPAddress = GetIPFromHostname(Hostname).AddressList[0].ToString();
             }
 
             var result = await new SteamQuery().GetServerInfo(IPAddress, Port);
