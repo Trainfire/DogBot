@@ -13,10 +13,19 @@ namespace Modules.MapModule
         public SteamID Setter { get; set; }
     }
 
-    class MapList
+    class MapListData
     {
-        private List<Map> maps;
+        public List<Map> Maps { get; set; }
 
+        public MapListData()
+        {
+            if (Maps == null)
+                Maps = new List<Map>();
+        }
+    }
+
+    class MapList : FileStorage<MapListData>
+    {
         public enum AddResult
         {
             Okay,
@@ -37,46 +46,50 @@ namespace Modules.MapModule
             NoPermission,
         }
 
+        private MapModule mapModule;
+
         /// <summary>
         /// Returns a copy of the map list.
         /// </summary>
         public List<Map> Maps
         {
-            get { return maps.ToList(); }
+            get { return Data.Maps.ToList(); }
         }
 
-        public MapList()
+        public MapList(MapModule mapModule)
         {
-            maps = new List<Map>();
+            this.mapModule = mapModule;
         }
 
         public AddResult Add(Map map)
         {
-            if (maps.Any(x => x.Name.ToLower() == map.Name.ToLower()))
+            if (Data.Maps.Any(x => x.Name.ToLower() == map.Name.ToLower()))
             {
                 return AddResult.MapExists;
             }
             else
             {
-                maps.Add(map);
+                Data.Maps.Add(map);
+                Save();
                 return AddResult.Okay;
             }
         }
 
         public RemoveResult Remove(SteamID caller, string mapName)
         {
-            var map = maps.FirstOrDefault(x => x.Name.ToLower() == mapName);
+            var map = Data.Maps.FirstOrDefault(x => x.Name.ToLower() == mapName);
             if (map == null)
             {
                 return RemoveResult.MapDoesNotExist;
             }
-            else if (map.Setter != caller)
+            else if (map.Setter != caller && !mapModule.IsAdmin(caller))
             {
                 return RemoveResult.NoPermission;
             }
             else
             {
-                maps.Remove(map);
+                Data.Maps.Remove(map);
+                Save();
                 return RemoveResult.Okay;
             }
         }
@@ -88,29 +101,30 @@ namespace Modules.MapModule
             {
                 return UpdateResult.MapDoesNotExist;
             }
-            else if (caller != map.Setter)
+            else if (caller != map.Setter && !mapModule.IsAdmin(caller))
             {
                 return UpdateResult.NoPermission;
             }
             else
             {
                 map.URL = URL;
+                Save();
                 return UpdateResult.Okay;
             }
         }
 
         public Map GetMap(string mapName)
         {
-            return maps.FirstOrDefault(x => x.Name.ToLower() == mapName);
+            return Data.Maps.FirstOrDefault(x => x.Name.ToLower() == mapName);
         }
     }
 
-    /// <summary>
-    /// TODO: Serialize into JSON.
-    /// </summary>
-    class MapModuleConfig
+    class MapModuleConfig : FileStorage<MapModuleData> { }
+
+    class MapModuleData
     {
         public int MaxMaps { get; set; }
+        public List<string> Admins { get; set; }
     }
 
     class MapModule : Module, ICommandHandler
@@ -132,21 +146,17 @@ namespace Modules.MapModule
             get { return mapList; }
         }
 
-        public MapModuleConfig Config
+        public MapModuleData Config
         {
-            get { return config; }
+            get { return config.Data; }
         }
 
         protected override void OnInitialize()
         {
             base.OnInitialize();
 
-            mapList = new MapList(); // TODO: Load from file.
-
-            config = new MapModuleConfig()
-            {
-                MaxMaps = 1,
-            };
+            mapList = new MapList(this);
+            config = new MapModuleConfig();
 
             commandProcessor = new ChatCommandProcessor(Bot);
 
@@ -164,14 +174,19 @@ namespace Modules.MapModule
 
         public int MapOverflow()
         {
-            if (MapList.Maps.Count > config.MaxMaps)
+            if (MapList.Maps.Count > Config.MaxMaps)
             {
-                return MapList.Maps.Count - config.MaxMaps;
+                return MapList.Maps.Count - Config.MaxMaps;
             }
             else
             {
                 return 0;
             }
+        }
+
+        public bool IsAdmin(SteamID id)
+        {
+            return config.Data.Admins != null ? config.Data.Admins.Contains(id.ToString()) : false;
         }
     }
 
