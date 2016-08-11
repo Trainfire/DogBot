@@ -135,10 +135,10 @@ namespace Modules.MapModule
         private CommandListener commandListener;
 
         #region Commands
-        private const string ADD = "addmap";
-        private const string DELETE = "deletemap";
-        private const string GET = "fetchmaps";
-        private const string UPDATE = "updatemap";
+        private const string ADD = "~addmap";
+        private const string DELETE = "~deletemap";
+        private const string GET = "~fetchmaps";
+        private const string UPDATE = "~updatemap";
         #endregion
 
         public MapList MapList
