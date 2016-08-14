@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SteamKit2;
@@ -207,7 +207,7 @@ namespace Modules.MapModule
         {
             if (source.Parser.Args.Count == 0)
             {
-                return new CommandResult("*bark!* Invalid arguments. Use: !addmap <name> (URL)");
+                return new CommandResult("Invalid arguments. Use: !addmap <name> (URL)");
             }
             else
             {
@@ -220,16 +220,12 @@ namespace Modules.MapModule
 
                 switch (result)
                 {
-                    case MapList.AddResult.Okay:
-                        return new CommandResult("Map '{0}' was added.", map.Name);
                     case MapList.AddResult.MapExists:
-                        return new CommandResult("*whines* The map '{0}' already exists.", map.Name);
+                        return new CommandResult("The map '{0}' already exists.", map.Name);
                     default:
-                        break;
+                        return new CommandResult("Map '{0}' was added.", map.Name);
                 }
             }
-
-            return new CommandResult("*whines* This shouldn't happen!");
         }
     }
 
@@ -238,16 +234,16 @@ namespace Modules.MapModule
         public override CommandResult Execute(CommandSource source)
         {
             if (source.Parser.Args.Count == 0)
-                return new CommandResult("*bark!* Invalid arguments. Use: !removemap <name>");
+                return new CommandResult("Invalid arguments. Use: !removemap <name>");
 
             var result = MapModule.MapList.Remove(source.Caller, source.Parser.Args[0]);
 
             switch (result)
             {
                 case MapList.RemoveResult.MapDoesNotExist:
-                    return new CommandResult("*whines* The map '{0}' cannot be DELETED as it does not exist.", source.Parser.Args[0]);
+                    return new CommandResult("The map '{0}' cannot be DELETED as it does not exist.", source.Parser.Args[0]);
                 case MapList.RemoveResult.NoPermission:
-                    return new CommandResult("*bark!* You do not have permission to remove the map '{0}'!", source.Parser.Args[0]);
+                    return new CommandResult("You do not have permission to remove the map '{0}'!", source.Parser.Args[0]);
                 default:
                     return new CommandResult("Map '{0}' was DELETED.", source.Parser.Args[0]);
             }
@@ -259,16 +255,16 @@ namespace Modules.MapModule
         public override CommandResult Execute(CommandSource source)
         {
             if (source.Parser.Args.Count < 2)
-                return new CommandResult("*bark!* Invalid arguments. Use: !updatemap <name> <url>");
+                return new CommandResult("Invalid arguments. Use: !updatemap <name> <url>");
 
             var result = MapModule.MapList.Update(source.Caller, source.Parser.Args[0], source.Parser.Args[1]);
 
             switch (result)
             {
                 case MapList.UpdateResult.MapDoesNotExist:
-                    return new CommandResult("*whines* The map '{0}' cannot be updated as it does not exist.", source.Parser.Args[0]);
+                    return new CommandResult("The map '{0}' cannot be updated as it does not exist.", source.Parser.Args[0]);
                 case MapList.UpdateResult.NoPermission:
-                    return new CommandResult("*bark!* You do not have permission to update the map '{0}'!", source.Parser.Args[0]);
+                    return new CommandResult("*You do not have permission to update the map '{0}'!", source.Parser.Args[0]);
                 default:
                     return new CommandResult("Map '{0}' was updated.", source.Parser.Args[0]);
             }
@@ -307,7 +303,7 @@ namespace Modules.MapModule
         string GetShortMapList()
         {
             if (MapModule.MapList.Maps.Count == 0)
-                return "*whines* The map list is empty.";
+                return "The map list is empty.";
 
             var mapList = MapModule
                 .MapList
