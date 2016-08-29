@@ -6,10 +6,10 @@ namespace Modules.DogOfTheDay
     {
         public override bool AdminOnly { get { return true; } }
 
-        public override CommandResult Execute(CommandSource source)
+        public override string Execute(CommandSource source)
         {
             Bot.GetModule<DogOfTheDay>().Muted = false;
-            return new CommandResult();
+            return string.Empty;
         }
     }
 }

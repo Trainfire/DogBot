@@ -6,7 +6,7 @@ namespace Modules.DogOfTheDay
 {
     class Stats : DogOfTheDayCommand
     {
-        public override CommandResult Execute(CommandSource source)
+        public override string Execute(CommandSource source)
         {
             var stats = new List<string>();
 
@@ -32,7 +32,7 @@ namespace Modules.DogOfTheDay
                 stats.Add(string.Format("{0}'s total submissions: {1}", callerName, callerContributions.Count));
             }
 
-            return new CommandResult(string.Join(" // ", stats.ToArray()));
+            return string.Join(" // ", stats.ToArray());
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Modules.BotManager
     {
         public override bool AdminOnly { get { return true; } }
 
-        public override CommandResult Execute(CommandSource source)
+        public override string Execute(CommandSource source)
         {
             var str = "";
 
@@ -40,7 +40,7 @@ namespace Modules.BotManager
                 str = "Invalid number of arguments.";
             }
 
-            return new CommandResult(str);
+            return str;
         }
     }
 
@@ -48,7 +48,7 @@ namespace Modules.BotManager
     {
         public override bool AdminOnly { get { return true; } }
 
-        public override CommandResult Execute(CommandSource source)
+        public override string Execute(CommandSource source)
         {
             var str = "";
 
@@ -70,7 +70,7 @@ namespace Modules.BotManager
                 str = "Invalid number of arguments.";
             }
 
-            return new CommandResult(str);
+            return str;
         }
     }
 
@@ -78,12 +78,12 @@ namespace Modules.BotManager
     {
         public override bool AdminOnly { get { return true; } }
 
-        public override CommandResult Execute(CommandSource source)
+        public override string Execute(CommandSource source)
         {
             if (source.Parser.Args.Count > 0)
                 Bot.Friends.SetPersonaName(source.Parser.Args[0]);
 
-            return new CommandResult();
+            return string.Empty;
         }
     }
 }

@@ -38,7 +38,7 @@ namespace Modules.Server
         public int Port { get; set; }
         public string ServerName { get; set; }
 
-        public override async Task<CommandResult> ExecuteAsync(CommandSource source)
+        public override async Task<string> ExecuteAsync(CommandSource source)
         {
             // Lazy hack, but w/e.
             if (!string.IsNullOrEmpty(Hostname))
@@ -50,11 +50,11 @@ namespace Modules.Server
 
             if (result == null)
             {
-                return new CommandResult("Failed to query the server.");
+                return "Failed to query the server.";
             }
             else
             {
-                return new CommandResult(Format(result, IPAddress, Port));
+                return Format(result, IPAddress, Port);
             }
         }
 

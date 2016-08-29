@@ -36,7 +36,7 @@ namespace Core
             }
             else
             {
-                CommandResult result = null;
+                string result = null;
                 if (commandEvent.Command.IsAsync)
                 {
                     result = await commandEvent.Command.ExecuteAsync(commandEvent.Source);
@@ -46,15 +46,15 @@ namespace Core
                     result = commandEvent.Command.Execute(commandEvent.Source);
                 }
 
-                if (!string.IsNullOrEmpty(result.Message) && !Muted)
+                if (!string.IsNullOrEmpty(result) && !Muted)
                 {
                     if (commandEvent.Source.Context == MessageContext.Chat)
                     {
-                        Bot.SayToChat(Bot.CurrentChatRoomID, result.Message);
+                        Bot.SayToChat(Bot.CurrentChatRoomID, result);
                     }
                     else
                     {
-                        Bot.SayToFriend(commandEvent.Source.Caller, result.Message);
+                        Bot.SayToFriend(commandEvent.Source.Caller, result);
                     }
                 }
             }

@@ -24,7 +24,7 @@ namespace Modules.DogOfTheDay
             }
         }
 
-        public override async Task<CommandResult> ExecuteAsync(CommandSource source)
+        public override async Task<string> ExecuteAsync(CommandSource source)
         {
             try
             {
@@ -32,10 +32,10 @@ namespace Modules.DogOfTheDay
             }
             catch(Exception ex)
             {
-                return new CommandResult("Failed to sync. Reason: " + ex.Message);
+                return string.Format("Failed to sync. Reason: " + ex.Message);
             }
 
-            return new CommandResult("Synced successfully!");
+            return "Synced successfully!";
         }
     }
 }

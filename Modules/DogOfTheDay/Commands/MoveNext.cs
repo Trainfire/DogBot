@@ -8,17 +8,17 @@ namespace Modules.DogOfTheDay
     {
         public override bool AdminOnly { get { return true; } }
 
-        public override CommandResult Execute(CommandSource source)
+        public override string Execute(CommandSource source)
         {
             DogOfTheDay.Data.MoveToNextDog();
 
             if (DogOfTheDay.Data.CurrentDog != null )
             {
-                return new CommandResult(string.Format("Dog of the Day is now: {0}", DogOfTheDay.Data.CurrentDog.URL));
+                return string.Format("Dog of the Day is now: {0}", DogOfTheDay.Data.CurrentDog.URL);
             }
             else
             {
-                return new CommandResult(string.Format("Queue is now empty."));
+                return string.Format("Queue is now empty.");
             }
         }
     }

@@ -6,9 +6,9 @@ namespace Modules.DogOfTheDay
 {
     class GetDogOfTheDayCount : DogOfTheDayCommand
     {
-        public override CommandResult Execute(CommandSource source)
+        public override string Execute(CommandSource source)
         {
-            return new CommandResult(DogOfTheDay.Strings.TotalMessages + DogOfTheDay.Data.Queue.Count);
+            return DogOfTheDay.Strings.TotalMessages + DogOfTheDay.Data.Queue.Count;
         }
     }
 }

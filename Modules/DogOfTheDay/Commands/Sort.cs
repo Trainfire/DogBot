@@ -16,10 +16,10 @@ namespace Modules.DogOfTheDay
             }
         }
 
-        public override CommandResult Execute(CommandSource source)
+        public override string Execute(CommandSource source)
         {
             DogOfTheDay.Data.Queue.Sort();
-            return new CommandResult("Queue has been sorted.");
+            return "Queue has been sorted.";
         }
     }
 }

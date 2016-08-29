@@ -9,21 +9,21 @@ namespace Core
     public abstract class ChatCommand : Command
     {
         public Bot Bot { get; private set; }
-        public CommandResult Result { get; private set; }
+        public string Result { get; private set; }
 
         public virtual void Initialize(Bot bot)
         {
             Bot = bot;
         }
 
-        public virtual CommandResult Execute(CommandSource source)
+        public virtual string Execute(CommandSource source)
         {
-            return new CommandResult();
+            return string.Empty;
         }
 
-        public virtual async Task<CommandResult> ExecuteAsync(CommandSource source)
+        public virtual async Task<string> ExecuteAsync(CommandSource source)
         {
-            return await Task.FromResult<CommandResult>(null);
+            return await Task.FromResult<string>(string.Empty);
         }
     }
 }

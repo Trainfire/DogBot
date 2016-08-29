@@ -6,22 +6,22 @@ namespace Modules.DogOfTheDay
 {
     class GetDogOfTheDay : DogOfTheDayCommand
     {
-        public override CommandResult Execute(CommandSource source)
+        public override string Execute(CommandSource source)
         {
             if (DogOfTheDay.Data.HasDog)
             {
                 if (!string.IsNullOrEmpty(DogOfTheDay.Data.CurrentDog.Message))
                 {
-                    return new CommandResult(string.Format("{0} // {1} said: '{2}'", GetDoTDInfo(DogOfTheDay.Data.CurrentDog), Bot.GetFriendName(DogOfTheDay.Data.CurrentDog.Setter), DogOfTheDay.Data.CurrentDog.Message));
+                    return string.Format("{0} // {1} said: '{2}'", GetDoTDInfo(DogOfTheDay.Data.CurrentDog), Bot.GetFriendName(DogOfTheDay.Data.CurrentDog.Setter), DogOfTheDay.Data.CurrentDog.Message);
                 }
                 else
                 {
-                    return new CommandResult(string.Format("{0} // Courtesy of {1}", GetDoTDInfo(DogOfTheDay.Data.CurrentDog), Bot.GetFriendName(DogOfTheDay.Data.CurrentDog.Setter)));
+                    return string.Format("{0} // Courtesy of {1}", GetDoTDInfo(DogOfTheDay.Data.CurrentDog), Bot.GetFriendName(DogOfTheDay.Data.CurrentDog.Setter));
                 }
             }
             else
             {
-                return new CommandResult(DogOfTheDay.Strings.NoDog);
+                return DogOfTheDay.Strings.NoDog;
             }
         }
 

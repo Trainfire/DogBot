@@ -41,33 +41,33 @@ namespace Core
             HelpArgs = args.ToList();
         }
 
-        public virtual CommandResult Execute(string message) { return new CommandResult(); }
-        public virtual async Task<CommandResult> ExecuteAsync(string message) { return await Task.FromResult<CommandResult>(null); }
+        public virtual string Execute(string message) { return string.Empty; }
+        public virtual async Task<string> ExecuteAsync(string message) { return await Task.FromResult<string>(string.Empty); }
     }
 
     /// <summary>
     /// The result of an executed command, containing a message to be displayed.
     /// </summary>
-    public class CommandResult
-    {
-        /// <summary>
-        /// The message to be displayed in chat.
-        /// </summary>
-        public string Message { get; set; }
+    //public class CommandResult
+    //{
+    //    /// <summary>
+    //    /// The message to be displayed in chat.
+    //    /// </summary>
+    //    public string Message { get; set; }
 
-        public CommandResult()
-        {
+    //    public CommandResult()
+    //    {
 
-        }
+    //    }
 
-        public CommandResult(string message)
-        {
-            Message = message;
-        }
+    //    public CommandResult(string message)
+    //    {
+    //        Message = message;
+    //    }
 
-        public CommandResult(string message, params object[] args)
-        {
-            Message = string.Format(message, args);
-        }
-    }
+    //    public CommandResult(string message, params object[] args)
+    //    {
+    //        Message = string.Format(message, args);
+    //    }
+    //}
 }

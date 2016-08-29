@@ -203,11 +203,11 @@ namespace Modules.MapModule
 
     class MapAdd : MapCommand
     {
-        public override CommandResult Execute(CommandSource source)
+        public override string Execute(CommandSource source)
         {
             if (source.Parser.Args.Count == 0)
             {
-                return new CommandResult("Invalid arguments. Use: !addmap <name> (URL)");
+                return "Invalid arguments. Use: !addmap <name> (URL)";
             }
             else
             {
@@ -221,9 +221,9 @@ namespace Modules.MapModule
                 switch (result)
                 {
                     case MapList.AddResult.MapExists:
-                        return new CommandResult("The map '{0}' already exists.", map.Name);
+                        return string.Format("The map '{0}' already exists.", map.Name);
                     default:
-                        return new CommandResult("Map '{0}' was added.", map.Name);
+                        return string.Format("Map '{0}' was added.", map.Name);
                 }
             }
         }
@@ -231,54 +231,54 @@ namespace Modules.MapModule
 
     class MapRemove : MapCommand
     {
-        public override CommandResult Execute(CommandSource source)
+        public override string Execute(CommandSource source)
         {
             if (source.Parser.Args.Count == 0)
-                return new CommandResult("Invalid arguments. Use: !removemap <name>");
+                return "Invalid arguments. Use: !removemap <name>";
 
             var result = MapModule.MapList.Remove(source.Caller, source.Parser.Args[0]);
 
             switch (result)
             {
                 case MapList.RemoveResult.MapDoesNotExist:
-                    return new CommandResult("The map '{0}' cannot be DELETED as it does not exist.", source.Parser.Args[0]);
+                    return string.Format("The map '{0}' cannot be DELETED as it does not exist.", source.Parser.Args[0]);
                 case MapList.RemoveResult.NoPermission:
-                    return new CommandResult("You do not have permission to remove the map '{0}'!", source.Parser.Args[0]);
+                    return string.Format("You do not have permission to remove the map '{0}'!", source.Parser.Args[0]);
                 default:
-                    return new CommandResult("Map '{0}' was DELETED.", source.Parser.Args[0]);
+                    return string.Format("Map '{0}' was DELETED.", source.Parser.Args[0]);
             }
         }
     }
 
     class MapUpdate : MapCommand
     {
-        public override CommandResult Execute(CommandSource source)
+        public override string Execute(CommandSource source)
         {
             if (source.Parser.Args.Count < 2)
-                return new CommandResult("Invalid arguments. Use: !updatemap <name> <url>");
+                return string.Format("Invalid arguments. Use: !updatemap <name> <url>");
 
             var result = MapModule.MapList.Update(source.Caller, source.Parser.Args[0], source.Parser.Args[1]);
 
             switch (result)
             {
                 case MapList.UpdateResult.MapDoesNotExist:
-                    return new CommandResult("The map '{0}' cannot be updated as it does not exist.", source.Parser.Args[0]);
+                    return string.Format("The map '{0}' cannot be updated as it does not exist.", source.Parser.Args[0]);
                 case MapList.UpdateResult.NoPermission:
-                    return new CommandResult("*You do not have permission to update the map '{0}'!", source.Parser.Args[0]);
+                    return string.Format("*You do not have permission to update the map '{0}'!", source.Parser.Args[0]);
                 default:
-                    return new CommandResult("Map '{0}' was updated.", source.Parser.Args[0]);
+                    return string.Format("Map '{0}' was updated.", source.Parser.Args[0]);
             }
         }
     }
 
     class MapGet : MapCommand
     {
-        public override CommandResult Execute(CommandSource source)
+        public override string Execute(CommandSource source)
         {
             if (MapModule.MapList.Maps.Count != 0)
                 Bot.SayToFriend(source.Caller, GetFullMapList());
 
-            return new CommandResult(GetShortMapList());
+            return GetShortMapList();
         }
 
         string GetFullMapList()

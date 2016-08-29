@@ -123,12 +123,8 @@
     <Compile Include="Core\Bot.cs" />
     <Compile Include="Core\Command.cs" />
     <Compile Include="Core\CommandRegistry.cs" />
-    <Compile Include="Core\Commands\RemoveUser.cs" />
-    <Compile Include="Core\Commands\SetName.cs" />
-    <Compile Include="Core\Commands\ServerQuery.cs" />
     <Compile Include="Core\ChatCommand.cs" />
     <Compile Include="Core\CommandParser.cs" />
-    <Compile Include="Core\Commands\AddUser.cs" />
     <Compile Include="Extensions\GoogleSpreadsheet\BatchRequestHelpers.cs" />
     <Compile Include="Extensions\GoogleSpreadsheet\Extensions.cs" />
     <Compile Include="Extensions\GoogleSpreadsheet\Spreedsheet.cs" />

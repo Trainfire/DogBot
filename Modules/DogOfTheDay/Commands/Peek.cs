@@ -16,16 +16,16 @@ namespace Modules.DogOfTheDay
             }
         }
 
-        public override CommandResult Execute(CommandSource source)
+        public override string Execute(CommandSource source)
         {
             var peek = DogOfTheDay.Data.Queue.PeekAhead();
             if (peek != null)
             {
-                return new CommandResult("Tomorrow's dog will be brought to you by {0}.", Bot.GetFriendName(peek.Setter));
+                return string.Format("Tomorrow's dog will be brought to you by {0}.", Bot.GetFriendName(peek.Setter));
             }
             else
             {
-                return new CommandResult("There are no more dogs!");
+                return "There are no more dogs!";
             }
         }
     }

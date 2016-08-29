@@ -7,12 +7,12 @@ namespace Modules.DogOfTheDay
 {
     class QueueInfo : DogOfTheDayCommand
     {
-        public override CommandResult Execute(CommandSource source)
+        public override string Execute(CommandSource source)
         {
             var users = DogOfTheDay.Data.Queue.GetUsers();
             var usersInfo = users.Select(x => GetInfo(x)).ToList();
 
-            return new CommandResult("Users in queue: " + string.Join(", ", usersInfo));
+            return string.Format("Users in queue: " + string.Join(", ", usersInfo));
         }
 
         string GetInfo(SteamID steamID)

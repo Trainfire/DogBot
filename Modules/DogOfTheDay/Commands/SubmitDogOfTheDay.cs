@@ -8,21 +8,21 @@ namespace Modules.DogOfTheDay
     {
         public override bool UsersOnly { get { return true; } }
 
-        public override CommandResult Execute(CommandSource source)
+        public override string Execute(CommandSource source)
         {
             var dotdParser = new DotdSetParser(source.Caller, source.Parser.Token, source.Parser.OriginalMessage);
 
             if (dotdParser.IsValid)
             {
                 if (DogOfTheDay.Data.Queue.HasURL(dotdParser.Dog.URL))
-                    return new CommandResult(DogOfTheDay.Strings.SubmitURLExists);
+                    return DogOfTheDay.Strings.SubmitURLExists;
 
                 DogOfTheDay.Data.Queue.Enqueue(dotdParser.Dog);
-                return new CommandResult(DogOfTheDay.Strings.SubmitDogOfTheDay);
+                return DogOfTheDay.Strings.SubmitDogOfTheDay;
             }
             else
             {
-                return new CommandResult(dotdParser.WhyInvalid);
+                return dotdParser.WhyInvalid;
             }
         }
     }
