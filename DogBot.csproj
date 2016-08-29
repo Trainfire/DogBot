@@ -122,9 +122,11 @@
     <Compile Include="Core\Announcer.cs" />
     <Compile Include="Core\Bot.cs" />
     <Compile Include="Core\AnonCommand.cs" />
+    <Compile Include="Core\BotController.cs" />
     <Compile Include="Core\Command.cs" />
     <Compile Include="Core\ChatCommand.cs" />
     <Compile Include="Core\CommandParser.cs" />
+    <Compile Include="Core\LoginStateHandler.cs" />
     <Compile Include="Core\ModuleManager.cs" />
     <Compile Include="Core\Utils.cs" />
     <Compile Include="Extensions\GoogleSpreadsheet\BatchRequestHelpers.cs" />

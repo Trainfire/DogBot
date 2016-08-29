@@ -25,7 +25,7 @@ namespace Modules.ChatJoiner
 
             Bot.Connection.CallbackManager.Subscribe<SteamFriends.ChatEnterCallback>(OnJoinChat);
             Bot.Connection.CallbackManager.Subscribe<SteamFriends.ChatMsgCallback>(OnReceiveChatMessage);
-            Bot.RegisterLogOnListener(this);
+            Bot.LogStateHandler.RegisterLogOnListener(this);
         }
 
         void OnJoinChat(SteamFriends.ChatEnterCallback callback)

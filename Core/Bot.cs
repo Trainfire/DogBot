@@ -11,8 +11,6 @@ namespace Core
     public sealed class Bot
     {
         readonly Config config;
-        readonly List<ILogOnCallbackHandler> logOnListeners;
-        readonly List<ILogOffCallbackHandler> logOffListeners;
 
         #region Utils
         public Names Names { get; private set; }
@@ -21,6 +19,7 @@ namespace Core
         public ModuleManager Modules { get; private set; }
         public ConnectionUtils Connection { get; private set; }
         public UserUtils Users { get; private set; }
+        public LoginStateHandler LogStateHandler { get; private set; }
         #endregion
 
         public SteamID CurrentChatRoomID { get; private set; }
@@ -36,13 +35,8 @@ namespace Core
             Connection = new ConnectionUtils(this, connection);
             Modules = new ModuleManager(this);
             CommandListener = new CommandListener(this);
+            LogStateHandler = new LoginStateHandler(connection.Manager);
             Logger = logger;
-
-            logOnListeners = new List<ILogOnCallbackHandler>();
-            logOffListeners = new List<ILogOffCallbackHandler>();
-
-            // Subscribe to callbacks here.
-            connection.Manager.Subscribe<SteamUser.LoggedOnCallback>(OnLoggedOn);
 
             // Add base module(s).
             Modules.Add<BotManager>();
@@ -68,86 +62,6 @@ namespace Core
                     Modules.Add(instance);
                 }
             });
-        }
-
-        public void RegisterLogOnListener(ILogOnCallbackHandler handler)
-        {
-            logOnListeners.Add(handler);
-        }
-
-        public void UnregisterLogOnListener(ILogOnCallbackHandler handler)
-        {
-            if (logOnListeners.Contains(handler))
-                logOnListeners.Remove(handler);
-        }
-
-        public void RegisterLogOffListener(ILogOffCallbackHandler handler)
-        {
-            logOffListeners.Add(handler);
-        }
-
-        public void UnregisterLogOffListener(ILogOffCallbackHandler handler)
-        {
-            if (logOffListeners.Contains(handler))
-                logOffListeners.Remove(handler);
-        }
-
-        void OnLoggedOn(SteamUser.LoggedOnCallback callback)
-        {
-            if (callback.Result == EResult.OK)
-                logOnListeners.ForEach(x => x.OnLoggedOn());
-        }
-    }
-
-    public class BotController
-    {
-        readonly Config config;
-        readonly Connection connection;
-        readonly Logger logger;
-
-        public BotController()
-        {
-            config = new Config();
-
-            string logPath = config.Data.ConnectionInfo.DisplayName + ".bin";
-
-            connection = new Connection(logPath);
-
-            logger = new Logger(logPath, config.Data.ConnectionInfo.DisplayName);
-            logger.Info("Started");
-
-            var bot = new Bot(config, connection, logger);
-        }
-
-        public void Start()
-        {
-            logger.Info("Starting...");
-
-            // Start the connection in a seperate thread to prevent thread blocking.
-            connection.Connect(config.Data.ConnectionInfo);
-        }
-
-        public void RefreshServers()
-        {
-            connection.RepopulateServerCache();
-        }
-
-        public void Restart()
-        {
-            RestartAsync();
-        }
-
-        async void RestartAsync()
-        {
-            connection.Disconnect();
-            await Task.Delay(1000);
-            connection.Connect(config.Data.ConnectionInfo);
-        }
-
-        public void Stop()
-        {
-            logger.Info("Stopping...");
-            connection.Disconnect();
         }
     }
 }
