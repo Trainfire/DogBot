@@ -7,25 +7,49 @@ using System.Collections.Generic;
 
 namespace Modules.Server
 {
+    class ServerInfo
+    {
+        public string Alias { get; set; }
+        public string Name { get; set; }
+        public string Host { get; set; }
+        public int Port { get; set; }
+    }
+
+    class ServerList
+    {
+        public List<ServerInfo> Servers { get; set; }
+    }
+
+    class Config : FileStorage<ServerList>
+    {
+
+    }
+
     class Server : Module
     {
         protected override void OnInitialize()
         {
             base.OnInitialize();
 
-            CommandListener.AddCommand<ServerQuery>("!~euserver", (command) =>
-            {
-                command.ServerName = "EU Server";
-                command.Hostname = "geit.uk";
-                command.Port = 27015;
-            });
+            // Get Servers.
+            var config = new Config();
 
-            CommandListener.AddCommand<ServerQuery>("!~usserver", (command) =>
+            if (config.Data.Servers == null)
             {
-                command.ServerName = "US Server";
-                command.IPAddress = "70.42.74.31";
-                command.Port = 27015;
-            });
+                Logger.Warning("No Servers found in config...");
+            }
+            else
+            {
+                foreach (var server in config.Data.Servers)
+                {
+                    CommandListener.AddCommand<ServerQuery>(server.Alias, (command) =>
+                    {
+                        command.ServerName = server.Name;
+                        command.Hostname = server.Host;
+                        command.Port = server.Port;
+                    });
+                }
+            }
         }
     }
 
