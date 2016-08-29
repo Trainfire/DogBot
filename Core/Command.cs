@@ -14,6 +14,8 @@ namespace Core
         public virtual bool AdminOnly { get { return false; } }
         public string Alias { get; set; }
         public List<string> HelpArgs { get; set; }
+        public virtual string NoPermissionMessage { get { return "You do not have permission to do that."; } }
+
         public string Help
         {
             get

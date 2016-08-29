@@ -8,7 +8,6 @@ namespace Core
         public Bot Bot { get; private set; }
         public Logger Logger { get; private set; }
 
-        protected CommandParser CommandParser { get; private set; }
         protected CommandListener CommandListener
         {
             get { return Bot.Listener; }
@@ -18,8 +17,6 @@ namespace Core
         {
             Bot = bot;
             Logger = new Logger(bot.LogPath, GetType().Name);
-            CommandParser = new CommandParser(Bot);
-            //CommandListener = new CommandListener(Bot, this);
             OnInitialize();
         }
 
@@ -30,10 +27,5 @@ namespace Core
 
         protected virtual void OnInitialize() { }
         protected virtual void OnStop() { }
-
-        //void ICommandHandler.OnCommandTriggered(CommandEvent commandEvent)
-        //{
-        //    CommandParser.ProcessCommand(commandEvent);
-        //}
     }
 }

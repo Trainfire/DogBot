@@ -150,7 +150,7 @@ namespace Core
             {
                 // Process the command.
                 var parser = new CommandParser(bot);
-                parser.NoPermissionMessage = "You do not have permission to do that.";
+                parser.NoPermissionMessage = commandEvent.Command.NoPermissionMessage;
                 parser.ProcessCommand(commandEvent);
             }
         }
