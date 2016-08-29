@@ -7,26 +7,32 @@ namespace Core
     /// <summary>
     /// Base class for an anonymous command executed via a Chat or Friend message.
     /// </summary>
-    public class AnonCommand : Command
+    public class AnonCommand : ChatCommand
     {
-        public Bot Bot { get; private set; }
-        public string Result { get; private set; }
-        public Func<CommandSource, string> Func { get; private set; }
+        bool adminOnly;
 
-        public AnonCommand(string alias, Func<CommandSource, string> func)
+        public Func<CommandSource, string> Func { get; private set; }
+        public override bool AdminOnly
         {
+            get { return adminOnly; }
+        }
+
+        public AnonCommand(string alias, Func<CommandSource, string> func, bool adminOnly)
+        {
+            this.adminOnly = adminOnly;
+
             Alias = alias;
             Func = func;
         }
 
-        public virtual string Execute(CommandSource source)
+        public override string Execute(CommandSource source)
         {
             return Func(source);
         }
 
-        public virtual async Task<string> ExecuteAsync(CommandSource source)
+        public override async Task<string> ExecuteAsync(CommandSource source)
         {
-            return await Task.FromResult<string>(string.Empty);
+            return await Task.FromResult(Func(source));
         }
     }
 }

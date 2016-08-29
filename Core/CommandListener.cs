@@ -101,9 +101,9 @@ namespace Core
             }
         }
 
-        public void AddCommand(string alias, Func<CommandSource, string> func)
+        public void AddCommand(string alias, Func<CommandSource, string> func, bool adminOnly = false)
         {
-            var command = new AnonCommand(alias, func);
+            var command = new AnonCommand(alias, func, adminOnly);
             commands.Add(command);
         }
 

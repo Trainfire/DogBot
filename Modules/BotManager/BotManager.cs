@@ -8,21 +8,13 @@ namespace Modules.BotManager
         {
             base.OnInitialize();
 
-            AddCommand<AddUser>("!~adduser");
-            AddCommand<RemoveUser>("!~removeuser");
-            AddCommand<SetName>("!~setname");
-            CommandListener.AddCommand("/hi", (source) =>
-            {
-                return "Hi!";
-            });
+            CommandHandler.NoPermissionMessage = "You do not have permission to use that command.";
+            CommandListener.AddCommand("!~adduser", AddUser, true);
+            CommandListener.AddCommand("!~removeuser", RemoveUser, true);
+            CommandListener.AddCommand("!~setname", SetName, true);
         }
-    }
 
-    class AddUser : ChatCommand
-    {
-        public override bool AdminOnly { get { return true; } }
-
-        public override string Execute(CommandSource source)
+        string AddUser(CommandSource source)
         {
             var str = "";
 
@@ -46,13 +38,8 @@ namespace Modules.BotManager
 
             return str;
         }
-    }
 
-    class RemoveUser : ChatCommand
-    {
-        public override bool AdminOnly { get { return true; } }
-
-        public override string Execute(CommandSource source)
+        string RemoveUser(CommandSource source)
         {
             var str = "";
 
@@ -76,13 +63,8 @@ namespace Modules.BotManager
 
             return str;
         }
-    }
 
-    class SetName : ChatCommand
-    {
-        public override bool AdminOnly { get { return true; } }
-
-        public override string Execute(CommandSource source)
+        string SetName(CommandSource source)
         {
             if (source.Parser.Args.Count > 0)
                 Bot.Friends.SetPersonaName(source.Parser.Args[0]);
