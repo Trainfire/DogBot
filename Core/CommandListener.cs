@@ -81,7 +81,7 @@ namespace Core
             bot.CallbackManager.Subscribe<SteamFriends.FriendMsgCallback>(OnReceiveFriendMessage);
         }
 
-        public void AddCommand<TCommand>(string alias, ICommandHandler listener, Action<TCommand> onAdd = null) where TCommand : ChatCommand
+        public void AddCommand<TCommand>(string alias, Action<TCommand> onAdd = null) where TCommand : ChatCommand
         {
             var command = Activator.CreateInstance<TCommand>();
 
@@ -91,19 +91,20 @@ namespace Core
             if (!commands.Contains(command))
             {
                 commands.Add(command);
+
+                if (onAdd != null)
+                    onAdd(command);
             }
             else
             {
                 bot.Logger.Error("Cannot add command '{0}' as that has already been registered.", command.GetType().Name);
             }
-
-            if (onAdd != null)
-                onAdd(command);
         }
 
-        public void AddCommand(Func<CommandSource, string> func)
+        public void AddCommand(string alias, Func<CommandSource, string> func)
         {
-
+            var command = new AnonCommand(alias, func);
+            commands.Add(command);
         }
 
         /// <summary>

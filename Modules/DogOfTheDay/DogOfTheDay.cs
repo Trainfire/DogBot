@@ -66,18 +66,18 @@ namespace Modules.DogOfTheDay
 
             Logger.Info("Announcements remaining for {0}: {1}", DateTime.Now.DayOfWeek.ToString(), announcer.AnnouncementsRemaining);
 
-            CommandListener.AddCommand<GetDogOfTheDay>(DOTD, this);
-            CommandListener.AddCommand<GetDogOfTheDayCount>(COUNT, this);
-            CommandListener.AddCommand<GetRandomDog>(RND, this);
-            CommandListener.AddCommand<MoveNext>(MOVENEXT, this);
-            CommandListener.AddCommand<Stats>(STATS, this);
-            CommandListener.AddCommand<SubmitDogOfTheDay>(DOTDSUBMIT, this);
-            CommandListener.AddCommand<Mute>(MUTE, this);
-            CommandListener.AddCommand<Unmute>(UNMUTE, this);
-            CommandListener.AddCommand<Sync>(SYNC, this);
-            CommandListener.AddCommand<QueueInfo>(QUEUE, this);
-            CommandListener.AddCommand<PeekAhead>(PEEK, this);
-            CommandListener.AddCommand<Sort>(SORT, this);
+            CommandListener.AddCommand<GetDogOfTheDay>(DOTD);
+            CommandListener.AddCommand<GetDogOfTheDayCount>(COUNT);
+            CommandListener.AddCommand<GetRandomDog>(RND);
+            CommandListener.AddCommand<MoveNext>(MOVENEXT);
+            CommandListener.AddCommand<Stats>(STATS);
+            CommandListener.AddCommand<SubmitDogOfTheDay>(DOTDSUBMIT);
+            CommandListener.AddCommand<Mute>(MUTE);
+            CommandListener.AddCommand<Unmute>(UNMUTE);
+            CommandListener.AddCommand<Sync>(SYNC);
+            CommandListener.AddCommand<QueueInfo>(QUEUE);
+            CommandListener.AddCommand<PeekAhead>(PEEK);
+            CommandListener.AddCommand<Sort>(SORT);
         }
 
         void OnAnnounce(object sender, EventArgs e)

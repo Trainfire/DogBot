@@ -30,7 +30,7 @@ namespace Core
 
         protected void AddCommand<TCommand>(string alias) where TCommand : ChatCommand
         {
-            CommandListener.AddCommand<TCommand>(alias, this);
+            CommandListener.AddCommand<TCommand>(alias);
         }
 
         void ICommandHandler.OnCommandTriggered(CommandEvent commandEvent)

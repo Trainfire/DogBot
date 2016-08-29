@@ -121,6 +121,7 @@
   <ItemGroup>
     <Compile Include="Core\Announcer.cs" />
     <Compile Include="Core\Bot.cs" />
+    <Compile Include="Core\AnonCommand.cs" />
     <Compile Include="Core\Command.cs" />
     <Compile Include="Core\ChatCommand.cs" />
     <Compile Include="Core\CommandParser.cs" />

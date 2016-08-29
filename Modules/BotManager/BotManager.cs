@@ -11,9 +11,9 @@ namespace Modules.BotManager
             AddCommand<AddUser>("!~adduser");
             AddCommand<RemoveUser>("!~removeuser");
             AddCommand<SetName>("!~setname");
-            CommandListener.AddCommand((source) =>
+            CommandListener.AddCommand("/hi", (source) =>
             {
-                return "";
+                return "Hi!";
             });
         }
     }

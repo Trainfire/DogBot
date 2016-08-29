@@ -13,11 +13,11 @@ namespace Core
         readonly Config config;
         readonly NameCache nameCache;
         readonly Connection connection;
+        readonly CommandListener listener;
 
         List<Module> modules;
         List<ILogOnCallbackHandler> logOnListeners;
         List<ILogOffCallbackHandler> logOffListeners;
-        //Thread connectionThread;
 
         public Logger Logger { get; private set; }
         public SteamID SID { get { return connection.User.SteamID; } }

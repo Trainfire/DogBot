@@ -158,13 +158,10 @@ namespace Modules.MapModule
             mapList = new MapList(this);
             config = new MapModuleConfig();
 
-            commandProcessor = new CommandParser(Bot);
-
-            commandListener = new CommandListener(Bot, this);
-            commandListener.AddCommand<MapAdd>(ADD, this);
-            commandListener.AddCommand<MapRemove>(DELETE, this);
-            commandListener.AddCommand<MapGet>(GET, this);
-            commandListener.AddCommand<MapUpdate>(UPDATE, this);
+            CommandListener.AddCommand<MapAdd>(ADD);
+            CommandListener.AddCommand<MapRemove>(DELETE);
+            CommandListener.AddCommand<MapGet>(GET);
+            CommandListener.AddCommand<MapUpdate>(UPDATE);
         }
 
         void ICommandHandler.OnCommandTriggered(CommandEvent commandEvent)
