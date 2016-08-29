@@ -8,7 +8,7 @@ namespace Modules.BotManager
         {
             base.OnInitialize();
 
-            CommandHandler.NoPermissionMessage = "You do not have permission to use that command.";
+            CommandParser.NoPermissionMessage = "You do not have permission to use that command.";
             CommandListener.AddCommand("!~adduser", AddUser, true);
             CommandListener.AddCommand("!~removeuser", RemoveUser, true);
             CommandListener.AddCommand("!~setname", SetName, true);

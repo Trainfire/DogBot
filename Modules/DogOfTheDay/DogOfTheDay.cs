@@ -16,8 +16,8 @@ namespace Modules.DogOfTheDay
         {
             set
             {
-                CommandHandler.Muted = value;
-                if (CommandHandler.Muted)
+                CommandParser.Muted = value;
+                if (CommandParser.Muted)
                 {
                     Bot.SayToChat(Bot.CurrentChatRoomID, Strings.Muted);
                 }
@@ -48,7 +48,7 @@ namespace Modules.DogOfTheDay
         protected override void OnInitialize()
         {
             Config = new Config();
-            CommandHandler.NoPermissionMessage = Strings.NoPermission;
+            CommandParser.NoPermissionMessage = Strings.NoPermission;
             Data = new Data(this);
 
             // Create the announcer
