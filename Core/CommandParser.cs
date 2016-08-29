@@ -6,14 +6,14 @@ namespace Core
     /// <summary>
     /// Process a chat command and relays it to the caller.
     /// </summary>
-    public class ChatCommandProcessor
+    public class CommandParser
     {
         readonly Bot Bot;
 
         public string NoPermissionMessage { get; set; }
         public bool Muted { get; set; }
 
-        public ChatCommandProcessor(Bot bot)
+        public CommandParser(Bot bot)
         {
             this.Bot = bot;
         }

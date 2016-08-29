@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace Core
 {
     /// <summary>
-    /// A command executed via a Chat or Friend message.
+    /// Base class for a command executed via a Chat or Friend message.
     /// </summary>
     public abstract class ChatCommand : Command
     {

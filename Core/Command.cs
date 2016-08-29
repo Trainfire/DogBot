@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace Core
 {
+    /// <summary>
+    /// Base class for a Command.
+    /// </summary>
     public abstract class Command
     {
         public virtual bool IsAsync { get { return false; } }

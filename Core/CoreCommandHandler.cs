@@ -5,7 +5,7 @@ namespace Core
     /// </summary>
     public class CoreCommandHandler : ICommandHandler
     {
-        readonly ChatCommandProcessor commandProcessor;
+        readonly CommandParser commandProcessor;
 
         #region Commands
         const string PREFIX = "~";
@@ -18,7 +18,7 @@ namespace Core
 
         public CoreCommandHandler(Bot bot)
         {
-            commandProcessor = new ChatCommandProcessor(bot);
+            commandProcessor = new CommandParser(bot);
 
             var listener = new CommandListener(bot);
             listener.AddCommand<AddUser>(FormatCommand(ADDUSER), this);

@@ -131,7 +131,7 @@ namespace Modules.MapModule
     {
         private MapList mapList;
         private MapModuleConfig config;
-        private ChatCommandProcessor commandProcessor;
+        private CommandParser commandProcessor;
         private CommandListener commandListener;
 
         #region Commands
@@ -158,7 +158,7 @@ namespace Modules.MapModule
             mapList = new MapList(this);
             config = new MapModuleConfig();
 
-            commandProcessor = new ChatCommandProcessor(Bot);
+            commandProcessor = new CommandParser(Bot);
 
             commandListener = new CommandListener(Bot);
             commandListener.AddCommand<MapAdd>(ADD, this);

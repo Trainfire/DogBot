@@ -3,12 +3,10 @@ using Core;
 
 namespace Modules.DogOfTheDay
 {
-    public class DogOfTheDay : Module, ICommandHandler
+    public class DogOfTheDay : Module
     {
         Announcer announcer;
         Config Config;
-        ChatCommandProcessor commandProcessor;
-        CommandListener commandListener;
 
         public Data Data { get; private set; }
         public bool SyncEnabled { get { return Config.Data.SyncEnabled; } }
@@ -18,8 +16,8 @@ namespace Modules.DogOfTheDay
         {
             set
             {
-                commandProcessor.Muted = value;
-                if (commandProcessor.Muted)
+                CommandHandler.Muted = value;
+                if (CommandHandler.Muted)
                 {
                     Bot.SayToChat(Bot.CurrentChatRoomID, Strings.Muted);
                 }
@@ -50,8 +48,7 @@ namespace Modules.DogOfTheDay
         protected override void OnInitialize()
         {
             Config = new Config();
-            commandProcessor = new ChatCommandProcessor(Bot);
-            commandProcessor.NoPermissionMessage = Strings.NoPermission;
+            CommandHandler.NoPermissionMessage = Strings.NoPermission;
             Data = new Data(this);
 
             // Create the announcer
@@ -69,24 +66,18 @@ namespace Modules.DogOfTheDay
 
             Logger.Info("Announcements remaining for {0}: {1}", DateTime.Now.DayOfWeek.ToString(), announcer.AnnouncementsRemaining);
 
-            commandListener = new CommandListener(Bot);
-            commandListener.AddCommand<GetDogOfTheDay>(DOTD, this);
-            commandListener.AddCommand<GetDogOfTheDayCount>(COUNT, this);
-            commandListener.AddCommand<GetRandomDog>(RND, this);
-            commandListener.AddCommand<MoveNext>(MOVENEXT, this);
-            commandListener.AddCommand<Stats>(STATS, this);
-            commandListener.AddCommand<SubmitDogOfTheDay>(DOTDSUBMIT, this);
-            commandListener.AddCommand<Mute>(MUTE, this);
-            commandListener.AddCommand<Unmute>(UNMUTE, this);
-            commandListener.AddCommand<Sync>(SYNC, this);
-            commandListener.AddCommand<QueueInfo>(QUEUE, this);
-            commandListener.AddCommand<PeekAhead>(PEEK, this);
-            commandListener.AddCommand<Sort>(SORT, this);
-        }
-
-        void ICommandHandler.OnCommandTriggered(CommandEvent commandEvent)
-        {
-            commandProcessor.ProcessCommand(commandEvent);
+            CommandListener.AddCommand<GetDogOfTheDay>(DOTD, this);
+            CommandListener.AddCommand<GetDogOfTheDayCount>(COUNT, this);
+            CommandListener.AddCommand<GetRandomDog>(RND, this);
+            CommandListener.AddCommand<MoveNext>(MOVENEXT, this);
+            CommandListener.AddCommand<Stats>(STATS, this);
+            CommandListener.AddCommand<SubmitDogOfTheDay>(DOTDSUBMIT, this);
+            CommandListener.AddCommand<Mute>(MUTE, this);
+            CommandListener.AddCommand<Unmute>(UNMUTE, this);
+            CommandListener.AddCommand<Sync>(SYNC, this);
+            CommandListener.AddCommand<QueueInfo>(QUEUE, this);
+            CommandListener.AddCommand<PeekAhead>(PEEK, this);
+            CommandListener.AddCommand<Sort>(SORT, this);
         }
 
         void OnAnnounce(object sender, EventArgs e)
@@ -101,7 +92,7 @@ namespace Modules.DogOfTheDay
             if (Data.HasDog)
             {
                 Logger.Info("Posting announcement...");
-                commandListener.FireCommand(DOTD);
+                CommandListener.FireCommand(DOTD);
             }
         }
 
