@@ -100,7 +100,7 @@ namespace Modules.DogOfTheDay
             {
                 dogSheet.AddRow(new List<object>()
                 {
-                    dotd.Bot.GetFriendName(x.Setter),
+                    dotd.Bot.Names.GetFriendName(x.Setter),
                     x.Setter.ToString(),
                     TimestampToDate(x.TimeStamp),
                     x.URL,
@@ -113,7 +113,7 @@ namespace Modules.DogOfTheDay
             {
                 historySheet.AddRow(new List<object>()
                 {
-                    dotd.Bot.GetFriendName(x.Dog.Setter),
+                    dotd.Bot.Names.GetFriendName(x.Dog.Setter),
                     x.Dog.Setter.ToString(),
                     TimestampToDate(x.Dog.TimeStamp),
                     x.Dog.URL,

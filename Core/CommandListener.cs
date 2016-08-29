@@ -130,7 +130,7 @@ namespace Core
                 if (command != null)
                 {
                     // Cache the name of the caller.
-                    bot.CacheName(caller);
+                    bot.Names.Cache(caller);
 
                     var requiresPermission = command.UsersOnly || command.AdminOnly;
                     var hasPermission = command.UsersOnly && (bot.Users.IsAdmin(caller) || bot.Users.IsUser(caller)) || command.AdminOnly && bot.Users.IsAdmin(caller);
@@ -143,7 +143,7 @@ namespace Core
 
         void FireCallbacks(CommandEvent commandEvent)
         {
-            bot.Logger.Info("Executing command '{0}'. Called by '{1}' from '{2}'.", commandEvent.Command.Alias, bot.GetFriendName(commandEvent.Source.Caller), commandEvent.Source.Context);
+            bot.Logger.Info("Executing command '{0}'. Called by '{1}' from '{2}'.", commandEvent.Command.Alias, bot.Names.GetFriendName(commandEvent.Source.Caller), commandEvent.Source.Context);
 
             var alias = commandEvent.Command.Alias;
             if (commands.ContainsKey(alias))

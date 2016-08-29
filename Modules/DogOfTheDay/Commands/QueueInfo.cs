@@ -17,7 +17,7 @@ namespace Modules.DogOfTheDay
 
         string GetInfo(SteamID steamID)
         {
-            string name = Bot.GetFriendName(steamID);
+            string name = Bot.Names.GetFriendName(steamID);
             int contributions = DogOfTheDay.Data.Queue.GetUserContributions(steamID).Count;
             return string.Format("{0} ({1})", name, contributions);
         }

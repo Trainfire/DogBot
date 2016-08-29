@@ -11,11 +11,11 @@ namespace Core
     public sealed class Bot
     {
         readonly Config config;
-        readonly NameCache nameCache;
         readonly List<ILogOnCallbackHandler> logOnListeners;
         readonly List<ILogOffCallbackHandler> logOffListeners;
 
         #region Utils
+        public Names Names { get; private set; }
         public Logger Logger { get; private set; }
         public CommandListener CommandListener { get; private set; }
         public ModuleManager Modules { get; private set; }
@@ -29,7 +29,8 @@ namespace Core
         {
             this.config = config;
 
-            nameCache = new NameCache();
+            var nameStorage = new NameCache();
+            Names = new Names(connection.Friends, nameStorage);
 
             Users = new UserUtils(config);
             Connection = new ConnectionUtils(this, connection);
@@ -67,30 +68,6 @@ namespace Core
                     Modules.Add(instance);
                 }
             });
-        }
-
-        public string GetFriendName(string steamID3)
-        {
-            return GetFriendName(new SteamID(steamID3));
-        }
-
-        public string GetFriendName(SteamID id)
-        {
-            CacheName(id);
-            return nameCache.Retrieve(id);
-        }
-
-        public void CacheName(SteamID id)
-        {
-            var name = Connection.Friends.GetFriendPersonaName(id);
-
-            if (name != "[unknown]")
-                nameCache.Store(id, name);
-        }
-
-        public void CacheNames(List<SteamID> names)
-        {
-            names.ForEach(x => CacheName(x));
         }
 
         public void RegisterLogOnListener(ILogOnCallbackHandler handler)

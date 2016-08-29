@@ -20,7 +20,7 @@ namespace Modules.DogOfTheDay
             var highestContributor = DogOfTheDay.Data.HighestContributor;
             if (highestContributor != null)
             {
-                var name = Bot.GetFriendName(highestContributor);
+                var name = Bot.Names.GetFriendName(highestContributor);
                 stats.Add(string.Format("{0}{1} ({2})", DogOfTheDay.Strings.StatsHighestContributer, name, DogOfTheDay.Data.GetUserContributions(highestContributor).Count));
             }
 
@@ -28,7 +28,7 @@ namespace Modules.DogOfTheDay
             var callerContributions = DogOfTheDay.Data.GetUserContributions(source.Caller);
             if (callerContributions.Count != 0)
             {
-                var callerName = Bot.GetFriendName(source.Caller);
+                var callerName = Bot.Names.GetFriendName(source.Caller);
                 stats.Add(string.Format("{0}'s total submissions: {1}", callerName, callerContributions.Count));
             }
 

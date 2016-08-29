@@ -12,11 +12,11 @@ namespace Modules.DogOfTheDay
             {
                 if (!string.IsNullOrEmpty(DogOfTheDay.Data.CurrentDog.Message))
                 {
-                    return string.Format("{0} // {1} said: '{2}'", GetDoTDInfo(DogOfTheDay.Data.CurrentDog), Bot.GetFriendName(DogOfTheDay.Data.CurrentDog.Setter), DogOfTheDay.Data.CurrentDog.Message);
+                    return string.Format("{0} // {1} said: '{2}'", GetDoTDInfo(DogOfTheDay.Data.CurrentDog), Bot.Names.GetFriendName(DogOfTheDay.Data.CurrentDog.Setter), DogOfTheDay.Data.CurrentDog.Message);
                 }
                 else
                 {
-                    return string.Format("{0} // Courtesy of {1}", GetDoTDInfo(DogOfTheDay.Data.CurrentDog), Bot.GetFriendName(DogOfTheDay.Data.CurrentDog.Setter));
+                    return string.Format("{0} // Courtesy of {1}", GetDoTDInfo(DogOfTheDay.Data.CurrentDog), Bot.Names.GetFriendName(DogOfTheDay.Data.CurrentDog.Setter));
                 }
             }
             else

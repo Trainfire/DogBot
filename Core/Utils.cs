@@ -57,7 +57,7 @@ namespace Core
             }
 
             Friends.SendChatMessage(friend, EChatEntryType.ChatMsg, message);
-            bot.Logger.Info("@{0}: {1}", bot.GetFriendName(friend), message);
+            bot.Logger.Info("@{0}: {1}", bot.Names.GetFriendName(friend), message);
         }
     }
 

@@ -23,11 +23,11 @@ namespace Modules.BotManager
 
                 if (Bot.Users.Add(source.Parser.Args[0]))
                 {
-                    str = string.Format("'{0}' is now a User", Bot.GetFriendName(arg));
+                    str = string.Format("'{0}' is now a User", Bot.Names.GetFriendName(arg));
                 }
                 else
                 {
-                    str = string.Format("Failed to add '{0}' as a User.", Bot.GetFriendName(arg));
+                    str = string.Format("Failed to add '{0}' as a User.", Bot.Names.GetFriendName(arg));
                 }
             }
             else
@@ -48,11 +48,11 @@ namespace Modules.BotManager
 
                 if (Bot.Users.Remove(source.Parser.Args[0]))
                 {
-                    str = string.Format("'{0}' is no longer a User.", Bot.GetFriendName(arg));
+                    str = string.Format("'{0}' is no longer a User.", Bot.Names.GetFriendName(arg));
                 }
                 else
                 {
-                    str = string.Format("Failed to remove '{0}' from users.", Bot.GetFriendName(arg));
+                    str = string.Format("Failed to remove '{0}' from users.", Bot.Names.GetFriendName(arg));
                 }
             }
             else

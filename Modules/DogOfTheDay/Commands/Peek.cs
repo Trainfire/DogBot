@@ -21,7 +21,7 @@ namespace Modules.DogOfTheDay
             var peek = DogOfTheDay.Data.Queue.PeekAhead();
             if (peek != null)
             {
-                return string.Format("Tomorrow's dog will be brought to you by {0}.", Bot.GetFriendName(peek.Setter));
+                return string.Format("Tomorrow's dog will be brought to you by {0}.", Bot.Names.GetFriendName(peek.Setter));
             }
             else
             {
