@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Core;
+using System.Linq;
 using SteamKit2;
 
 /// <summary>
@@ -64,18 +64,18 @@ namespace Core
     /// </summary>
     public class CommandListener
     {
-        Dictionary<Command, List<ICommandHandler>> listeners;
-        CommandRegistry commands;
+        HashSet<Command> commands;
+        ICommandHandler handler;
         Bot bot;
 
         public bool Muted { get; set; }
 
-        public CommandListener(Bot bot)
+        public CommandListener(Bot bot, ICommandHandler handler)
         {
             this.bot = bot;
+            this.handler = handler;
 
-            listeners = new Dictionary<Command, List<ICommandHandler>>();
-            commands = new CommandRegistry("!", "");
+            commands = new HashSet<Command>();
 
             bot.CallbackManager.Subscribe<SteamFriends.ChatMsgCallback>(OnReceiveChatMessage);
             bot.CallbackManager.Subscribe<SteamFriends.FriendMsgCallback>(OnReceiveFriendMessage);
@@ -88,14 +88,9 @@ namespace Core
             command.Initialize(bot);
             command.Alias = alias;
 
-            commands.AddCommand(command);
-
-            if (!listeners.ContainsKey(command))
+            if (!commands.Contains(command))
             {
-                listeners.Add(command, new List<ICommandHandler>());
-
-                if (listener != null)
-                    Subscribe(alias, listener);
+                commands.Add(command);
             }
             else
             {
@@ -106,13 +101,9 @@ namespace Core
                 onAdd(command);
         }
 
-        public void Subscribe(string alias, ICommandHandler listener)
+        public void AddCommand(Func<CommandSource, string> func)
         {
-            var command = commands.GetCommand(alias);
-            if (command != null)
-            {
-                listeners[command].Add(listener);
-            }
+
         }
 
         /// <summary>
@@ -121,9 +112,9 @@ namespace Core
         /// <typeparam name="TCommand"></typeparam>
         public void FireCommand(string alias)
         {
-            var command = commands.GetCommand(alias);
+            var command = GetCommand(alias);
             if (command != null)
-                HandleMessage(MessageContext.Chat, bot.SID, commands.Format(command.Alias));
+                HandleMessage(MessageContext.Chat, bot.SID, alias);
         }
 
         void OnReceiveChatMessage(SteamFriends.ChatMsgCallback callback)
@@ -138,12 +129,12 @@ namespace Core
 
         void HandleMessage(MessageContext context, SteamID caller, string message)
         {
-            var parser = new MessageParser(commands.Token, message);
+            var parser = new MessageParser(message);
 
             if (parser.IsValid)
             {
                 // Find a matching command using the parsed alias   
-                var command = commands.GetCommand(parser.Command) as ChatCommand;
+                var command = GetCommand(parser.Command) as ChatCommand;
 
                 if (command != null)
                 {
@@ -162,7 +153,13 @@ namespace Core
         void FireCallbacks(CommandEvent commandEvent)
         {
             bot.Logger.Info("Executing command '{0}'. Called by '{1}' from '{2}'.", commandEvent.Command.Alias, bot.GetFriendName(commandEvent.Source.Caller), commandEvent.Source.Context);
-            listeners[commandEvent.Command].ForEach(x => x.OnCommandTriggered(commandEvent));
+            //listeners[commandEvent.Command].ForEach(x => x.OnCommandTriggered(commandEvent));
+            handler.OnCommandTriggered(commandEvent);
+        }
+
+        Command GetCommand(string alias)
+        {
+            return commands.FirstOrDefault(x => x.Alias == alias);
         }
     }
 }

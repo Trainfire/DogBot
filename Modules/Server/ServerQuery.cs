@@ -13,14 +13,14 @@ namespace Modules.Server
         {
             base.OnInitialize();
 
-            CommandListener.AddCommand<ServerQuery>("~euserver", this, (command) =>
+            CommandListener.AddCommand<ServerQuery>("!~euserver", this, (command) =>
             {
                 command.ServerName = "EU Server";
                 command.Hostname = "geit.uk";
                 command.Port = 27015;
             });
 
-            CommandListener.AddCommand<ServerQuery>("~usserver", this, (command) =>
+            CommandListener.AddCommand<ServerQuery>("!~usserver", this, (command) =>
             {
                 command.ServerName = "US Server";
                 command.IPAddress = "70.42.74.31";

@@ -10,7 +10,7 @@ namespace Modules.DogOfTheDay
 
         public override string Execute(CommandSource source)
         {
-            var dotdParser = new DotdSetParser(source.Caller, source.Parser.Token, source.Parser.OriginalMessage);
+            var dotdParser = new DotdSetParser(source.Caller, source.Parser.OriginalMessage);
 
             if (dotdParser.IsValid)
             {

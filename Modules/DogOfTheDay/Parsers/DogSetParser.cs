@@ -9,7 +9,7 @@ namespace Modules.DogOfTheDay
     {
         public DogData Dog { get; private set; }
 
-        public DotdSetParser(SteamID setter, string token, string message) : base(token, message)
+        public DotdSetParser(SteamID setter, string message) : base(message)
         {
             var url = "";
             var comment = "";

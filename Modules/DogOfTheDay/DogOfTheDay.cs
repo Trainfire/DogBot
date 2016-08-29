@@ -29,20 +29,20 @@ namespace Modules.DogOfTheDay
         }
 
         #region Commands
-        const string RND = "dotdrnd";
-        const string REPO = "dotdrepo";
-        const string COUNT = "dotdcount";
-        const string DOTD = "dotd";
-        const string DOTDSUBMIT = "dotdsubmit";
-        const string MOVENEXT = "dotdmovenext";
-        const string STATS = "dotdstats";
-        const string MUTE = "dotdmute";
-        const string UNMUTE = "dotdunmute";
-        const string ADDUSER = "dotdadduser";
-        const string SYNC = "dotdsync";
-        const string QUEUE = "dotdqueue";
-        const string PEEK = "dotdpeek";
-        const string SORT = "dotdsort";
+        const string RND = "!dotdrnd";
+        const string REPO = "!dotdrepo";
+        const string COUNT = "!dotdcount";
+        const string DOTD = "!dotd";
+        const string DOTDSUBMIT = "!dotdsubmit";
+        const string MOVENEXT = "!dotdmovenext";
+        const string STATS = "!dotdstats";
+        const string MUTE = "!dotdmute";
+        const string UNMUTE = "!dotdunmute";
+        const string ADDUSER = "!dotdadduser";
+        const string SYNC = "!dotdsync";
+        const string QUEUE = "!dotdqueue";
+        const string PEEK = "!dotdpeek";
+        const string SORT = "!dotdsort";
         #endregion
 
         protected override void OnInitialize()

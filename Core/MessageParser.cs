@@ -10,16 +10,14 @@ namespace Core
     public class MessageParser
     {
         public string OriginalMessage { get; private set; }
-        public string Token { get; private set; }
         public string Command { get; private set; }
         public List<string> Args { get; private set; }
         public bool IsValid { get; private set; }
         public string WhyInvalid { get; private set; }
 
-        public MessageParser(string token, string message)
+        public MessageParser(string message)
         {
             OriginalMessage = message;
-            Token = token;
             IsValid = true;
             Args = new List<string>();
 
@@ -29,20 +27,9 @@ namespace Core
             // Split input using space as delimiter
             var args = message.Split(' ').ToList();
 
-            if (args[0].StartsWith(token) && args[0].Length > 1)
-            {
-                // Remove the initial "!" character token
-                Command = args[0].Substring(1);
-                args.RemoveAt(0);
-            }
-            else
-            {
-                Invalidate("Command does not start with '" + token + "' token");
-                return;
-            }
+            Command = args[0];
 
-            // Process arguments
-            for (int i = 0; i < args.Count; i++)
+            for (int i = 1; i < args.Count; i++)
             {
                 Args.Add(args[i]);
             }

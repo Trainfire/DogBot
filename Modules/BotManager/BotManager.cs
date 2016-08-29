@@ -8,9 +8,13 @@ namespace Modules.BotManager
         {
             base.OnInitialize();
 
-            AddCommand<AddUser>("~adduser");
-            AddCommand<RemoveUser>("~removeuser");
-            AddCommand<SetName>("~setname");
+            AddCommand<AddUser>("!~adduser");
+            AddCommand<RemoveUser>("!~removeuser");
+            AddCommand<SetName>("!~setname");
+            CommandListener.AddCommand((source) =>
+            {
+                return "";
+            });
         }
     }
 

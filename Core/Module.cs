@@ -16,7 +16,7 @@ namespace Core
             Bot = bot;
             Logger = new Logger(bot.LogPath, GetType().Name);
             CommandHandler = new CommandParser(Bot);
-            CommandListener = new CommandListener(Bot);
+            CommandListener = new CommandListener(Bot, this);
             OnInitialize();
         }
 

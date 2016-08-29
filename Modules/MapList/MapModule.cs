@@ -135,10 +135,10 @@ namespace Modules.MapModule
         private CommandListener commandListener;
 
         #region Commands
-        private const string ADD = "~addmap";
-        private const string DELETE = "~deletemap";
-        private const string GET = "~fetchmaps";
-        private const string UPDATE = "~updatemap";
+        private const string ADD = "!~addmap";
+        private const string DELETE = "!~deletemap";
+        private const string GET = "!~fetchmaps";
+        private const string UPDATE = "!~updatemap";
         #endregion
 
         public MapList MapList
@@ -160,7 +160,7 @@ namespace Modules.MapModule
 
             commandProcessor = new CommandParser(Bot);
 
-            commandListener = new CommandListener(Bot);
+            commandListener = new CommandListener(Bot, this);
             commandListener.AddCommand<MapAdd>(ADD, this);
             commandListener.AddCommand<MapRemove>(DELETE, this);
             commandListener.AddCommand<MapGet>(GET, this);
