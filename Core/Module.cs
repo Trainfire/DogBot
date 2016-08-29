@@ -28,6 +28,11 @@ namespace Core
         protected virtual void OnInitialize() { }
         protected virtual void OnStop() { }
 
+        protected void AddCommand<TCommand>(string alias) where TCommand : ChatCommand
+        {
+            CommandListener.AddCommand<TCommand>(alias, this);
+        }
+
         void ICommandHandler.OnCommandTriggered(CommandEvent commandEvent)
         {
             CommandHandler.ProcessCommand(commandEvent);

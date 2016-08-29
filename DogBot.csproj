@@ -126,13 +126,13 @@
     <Compile Include="Core\Commands\RemoveUser.cs" />
     <Compile Include="Core\Commands\SetName.cs" />
     <Compile Include="Core\Commands\ServerQuery.cs" />
-    <Compile Include="Core\CoreCommandHandler.cs" />
-    <Compile Include="Core\CommandListener\ChatCommand.cs" />
-    <Compile Include="Core\CommandListener\ChatCommandProcessor.cs" />
+    <Compile Include="Core\ChatCommand.cs" />
+    <Compile Include="Core\CommandParser.cs" />
     <Compile Include="Core\Commands\AddUser.cs" />
     <Compile Include="Extensions\GoogleSpreadsheet\BatchRequestHelpers.cs" />
     <Compile Include="Extensions\GoogleSpreadsheet\Extensions.cs" />
     <Compile Include="Extensions\GoogleSpreadsheet\Spreedsheet.cs" />
+    <Compile Include="Modules\BotManager\BotManager.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\MoveNext.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\Mute.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\Sort.cs" />
@@ -153,7 +153,7 @@
     <Compile Include="Core\ServerData.cs" />
     <Compile Include="Modules\ChatJoiner\ChatJoiner.cs" />
     <Compile Include="Modules\ChatJoiner\Config.cs" />
-    <Compile Include="Core\CommandListener\CommandListener.cs" />
+    <Compile Include="Core\CommandListener.cs" />
     <Compile Include="Modules\DogOfTheDay\Data.cs" />
     <Compile Include="Modules\DogOfTheDay\Command.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\GetDogOfTheDay.cs" />
@@ -177,6 +177,7 @@
     <Compile Include="Extensions\SteamQuery\SteamQuery.cs" />
     <Compile Include="Extensions\SteamQuery\SteamQueryEx.cs" />
     <Compile Include="Modules\MapList\MapModule.cs" />
+    <Compile Include="Modules\Server\ServerQuery.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -196,7 +197,9 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Core\CommandListener\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -4,6 +4,7 @@ using SteamKit2;
 using System.Threading;
 using System.Linq;
 using System.Threading.Tasks;
+using Modules.BotManager;
 
 namespace Core
 {
@@ -12,7 +13,6 @@ namespace Core
         readonly Config config;
         readonly NameCache nameCache;
         readonly Connection connection;
-        readonly CoreCommandHandler commandHandler;
 
         List<Module> modules;
         List<ILogOnCallbackHandler> logOnListeners;
@@ -47,9 +47,11 @@ namespace Core
             Logger = new Logger(LogPath, config.Data.ConnectionInfo.DisplayName);
             Logger.Info("Started");
 
-            // Move into Module?
             nameCache = new NameCache();
             modules = new List<Module>();
+
+            // Add base module(s).
+            AddModule<BotManager>();
 
             // Load modules dynamically.
             config.Data.Modules.ForEach(moduleName =>
@@ -72,8 +74,6 @@ namespace Core
                     AddModule(instance);
                 }
             });
-
-            commandHandler = new CoreCommandHandler(this);
         }
 
         public void Start()
