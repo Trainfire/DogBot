@@ -189,7 +189,7 @@ namespace Modules.MapModule
         public override void Initialize(Bot bot)
         {
             base.Initialize(bot);
-            MapModule = bot.GetModule<MapModule>();
+            MapModule = bot.Modules.Get<MapModule>();
         }
     }
 
@@ -268,7 +268,7 @@ namespace Modules.MapModule
         public override string Execute(CommandSource source)
         {
             if (MapModule.MapList.Maps.Count != 0)
-                Bot.SayToFriend(source.Caller, GetFullMapList());
+                Bot.Connection.SayToFriend(source.Caller, GetFullMapList());
 
             return GetShortMapList();
         }

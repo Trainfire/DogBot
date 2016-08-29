@@ -7,6 +7,11 @@ namespace Core
     {
         readonly string path;
         readonly string prefix;
+        
+        public string Path
+        {
+            get { return path; }
+        }
 
         public Logger(string path, string prefix = "")
         {

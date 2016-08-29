@@ -10,13 +10,13 @@ namespace Core
 
         protected CommandListener CommandListener
         {
-            get { return Bot.Listener; }
+            get { return Bot.CommandListener; }
         }
 
         public void Initialize(Bot bot)
         {
             Bot = bot;
-            Logger = new Logger(bot.LogPath, GetType().Name);
+            Logger = new Logger(bot.Logger.Path, GetType().Name);
             OnInitialize();
         }
 

@@ -10,7 +10,7 @@ namespace DogBot
     {
         static void Main(string[] args)
         {
-            var bot = new Bot();
+            var bot = new BotController();
             bot.Start();
 
             bool isRunning = true;

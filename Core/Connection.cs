@@ -35,6 +35,7 @@ namespace Core
         public SteamFriends Friends { get; private set; }
         public CallbackManager Manager { get; private set; }
         public bool Connected { get { return isRunning; } }
+        public SteamID ChatRoomID { get; private set; }
 
         public class ConnectionInfo
         {
@@ -75,6 +76,7 @@ namespace Core
             // to the functions specified
             Manager.Subscribe<SteamClient.ConnectedCallback>(OnConnected);
             Manager.Subscribe<SteamClient.DisconnectedCallback>(OnDisconnected);
+            Manager.Subscribe<SteamFriends.ChatEnterCallback>(OnJoinChat);
             Manager.Subscribe<SteamUser.LoggedOnCallback>(OnLoggedOn);
             Manager.Subscribe<SteamUser.LoggedOffCallback>(OnLoggedOff);
 
@@ -270,6 +272,11 @@ namespace Core
             });
 
             logger.Info("Done!");
+        }
+
+        void OnJoinChat(SteamFriends.ChatEnterCallback callback)
+        {
+            ChatRoomID = callback.ChatID;
         }
 
         public void RepopulateServerCache()

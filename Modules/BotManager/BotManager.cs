@@ -21,7 +21,7 @@ namespace Modules.BotManager
             {
                 var arg = source.Parser.Args[0];
 
-                if (Bot.AddUser(source.Parser.Args[0]))
+                if (Bot.Users.Add(source.Parser.Args[0]))
                 {
                     str = string.Format("'{0}' is now a User", Bot.GetFriendName(arg));
                 }
@@ -46,7 +46,7 @@ namespace Modules.BotManager
             {
                 var arg = source.Parser.Args[0];
 
-                if (Bot.RemoveUser(source.Parser.Args[0]))
+                if (Bot.Users.Remove(source.Parser.Args[0]))
                 {
                     str = string.Format("'{0}' is no longer a User.", Bot.GetFriendName(arg));
                 }
@@ -66,7 +66,7 @@ namespace Modules.BotManager
         string SetName(CommandSource source)
         {
             if (source.Parser.Args.Count > 0)
-                Bot.Friends.SetPersonaName(source.Parser.Args[0]);
+                Bot.Connection.Friends.SetPersonaName(source.Parser.Args[0]);
 
             return string.Empty;
         }

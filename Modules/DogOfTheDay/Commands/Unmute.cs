@@ -8,7 +8,7 @@ namespace Modules.DogOfTheDay
 
         public override string Execute(CommandSource source)
         {
-            Bot.GetModule<DogOfTheDay>().Muted = false;
+            Bot.Modules.Get<DogOfTheDay>().Muted = false;
             return string.Empty;
         }
     }

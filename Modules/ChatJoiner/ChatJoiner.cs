@@ -23,8 +23,8 @@ namespace Modules.ChatJoiner
             inactivityTimer.Interval = 1000 * config.Data.RejoinInterval;
             inactivityTimer.Elapsed += OnNoActivity;
 
-            Bot.CallbackManager.Subscribe<SteamFriends.ChatEnterCallback>(OnJoinChat);
-            Bot.CallbackManager.Subscribe<SteamFriends.ChatMsgCallback>(OnReceiveChatMessage);
+            Bot.Connection.CallbackManager.Subscribe<SteamFriends.ChatEnterCallback>(OnJoinChat);
+            Bot.Connection.CallbackManager.Subscribe<SteamFriends.ChatMsgCallback>(OnReceiveChatMessage);
             Bot.RegisterLogOnListener(this);
         }
 
@@ -51,7 +51,7 @@ namespace Modules.ChatJoiner
 
         void OnNoActivity(object sender, ElapsedEventArgs e)
         {
-            if (Bot.Connected)
+            if (Bot.Connection.Connected)
                 Rejoin();
         }
 
@@ -62,7 +62,7 @@ namespace Modules.ChatJoiner
             Logger.Info("Rejoining chat due to inactivity");
 
             Logger.Info("Leaving...");
-            Bot.Friends.LeaveChat(chatRoomId);
+            Bot.Connection.Friends.LeaveChat(chatRoomId);
 
             var waitTime = TimeSpan.FromSeconds(config.Data.RejoinIntermission);
             Logger.Info("Waiting {0} seconds before rejoin...", waitTime.TotalSeconds);
@@ -70,7 +70,7 @@ namespace Modules.ChatJoiner
             await Task.Delay(waitTime);
 
             Logger.Info("Joining...");
-            Bot.Friends.JoinChat(chatRoomId);
+            Bot.Connection.Friends.JoinChat(chatRoomId);
         }
 
         void ILogOnCallbackHandler.OnLoggedOn()
@@ -83,7 +83,7 @@ namespace Modules.ChatJoiner
             else
             {
                 Logger.Info("Joining chat...");
-                Bot.Friends.JoinChat(chatRoomId);
+                Bot.Connection.Friends.JoinChat(chatRoomId);
             }
         }
 

@@ -12,52 +12,39 @@ namespace Core
     {
         readonly Config config;
         readonly NameCache nameCache;
-        readonly Connection connection;
-        readonly CommandListener listener;
+        readonly List<ILogOnCallbackHandler> logOnListeners;
+        readonly List<ILogOffCallbackHandler> logOffListeners;
 
-        List<Module> modules;
-        List<ILogOnCallbackHandler> logOnListeners;
-        List<ILogOffCallbackHandler> logOffListeners;
-
+        #region Utils
         public Logger Logger { get; private set; }
-        public SteamID SID { get { return connection.User.SteamID; } }
-        public string LogPath { get { return config.Data.ConnectionInfo.DisplayName + ".bin"; } }
-
-        #region Connection Wrappers
-        public bool Connected { get { return connection.Connected; } }
-        public CallbackManager CallbackManager { get { return connection.Manager; } }
-        public SteamFriends Friends { get { return connection.Friends; } }
+        public CommandListener CommandListener { get; private set; }
+        public ModuleManager Modules { get; private set; }
+        public ConnectionUtils Connection { get; private set; }
+        public UserUtils Users { get; private set; }
         #endregion
 
         public SteamID CurrentChatRoomID { get; private set; }
-        public CommandListener Listener
-        {
-            get { return listener; }
-        }
 
-        public Bot()
+        public Bot(Config config, Connection connection, Logger logger)
         {
-            config = new Config();
+            this.config = config;
 
-            logOffListeners = new List<ILogOffCallbackHandler>();
+            nameCache = new NameCache();
+
+            Users = new UserUtils(config);
+            Connection = new ConnectionUtils(this, connection);
+            Modules = new ModuleManager(this);
+            CommandListener = new CommandListener(this);
+            Logger = logger;
+
             logOnListeners = new List<ILogOnCallbackHandler>();
-
-            connection = new Connection(LogPath);
+            logOffListeners = new List<ILogOffCallbackHandler>();
 
             // Subscribe to callbacks here.
             connection.Manager.Subscribe<SteamUser.LoggedOnCallback>(OnLoggedOn);
-            connection.Manager.Subscribe<SteamFriends.ChatEnterCallback>(OnJoinChat);
-
-            Logger = new Logger(LogPath, config.Data.ConnectionInfo.DisplayName);
-            Logger.Info("Started");
-
-            nameCache = new NameCache();
-            modules = new List<Module>();
-
-            listener = new CommandListener(this);
 
             // Add base module(s).
-            AddModule<BotManager>();
+            Modules.Add<BotManager>();
 
             // Load modules dynamically.
             config.Data.Modules.ForEach(moduleName =>
@@ -72,82 +59,38 @@ namespace Core
                 var type = Type.GetType(moduleClassName);
                 if (type == null)
                 {
-                    Logger.Error("Failed to load module '{0}'. Either the path is invalid or the module does not exist.", moduleName);
+                    logger.Error("Failed to load module '{0}'. Either the path is invalid or the module does not exist.", moduleName);
                 }
                 else
                 {
                     var instance = Activator.CreateInstance(type) as Module;
-                    AddModule(instance);
+                    Modules.Add(instance);
                 }
             });
         }
 
-        public void Start()
+        public string GetFriendName(string steamID3)
         {
-            Logger.Info("Starting...");
-
-            // Start the connection in a seperate thread to prevent thread blocking.
-            connection.Connect(config.Data.ConnectionInfo);
+            return GetFriendName(new SteamID(steamID3));
         }
 
-        public T AddModule<T>() where T : Module
+        public string GetFriendName(SteamID id)
         {
-            var instance = Activator.CreateInstance<T>();
-            AddModule(instance);
-            return instance;
+            CacheName(id);
+            return nameCache.Retrieve(id);
         }
 
-        void AddModule(Module module)
+        public void CacheName(SteamID id)
         {
-            if (modules.Any(x => x.GetType() == module.GetType()))
-            {
-                Logger.Error("Module of type '{0}' has already been added. Only one module of each type is allowed.", module.GetType());
-            }
-            else
-            {
-                Logger.Info("Registering module '{0}'", module.GetType().Name);
-                modules.Add(module);
-                module.Initialize(this);
-            }
+            var name = Connection.Friends.GetFriendPersonaName(id);
+
+            if (name != "[unknown]")
+                nameCache.Store(id, name);
         }
 
-        public T GetModule<T>() where T : Module
+        public void CacheNames(List<SteamID> names)
         {
-            var module = modules.Find(x => x.GetType() == typeof(T));
-            if (module != null)
-                return module as T;
-            return null;
-        }
-
-        public T GetOrAddModule<T>() where T : Module
-        {
-            var module = GetModule<T>();
-            if (module == null)
-                module = AddModule<T>();
-            return module;
-        }
-
-        public void RefreshServers()
-        {
-            connection.RepopulateServerCache();
-        }
-
-        public void Restart()
-        {
-            RestartAsync();
-        }
-
-        async void RestartAsync()
-        {
-            connection.Disconnect();
-            await Task.Delay(1000);
-            connection.Connect(config.Data.ConnectionInfo);
-        }
-
-        public void Stop()
-        {
-            Logger.Info("Stopping...");
-            connection.Disconnect();
+            names.ForEach(x => CacheName(x));
         }
 
         public void RegisterLogOnListener(ILogOnCallbackHandler handler)
@@ -172,125 +115,62 @@ namespace Core
                 logOffListeners.Remove(handler);
         }
 
-        #region Callbacks
         void OnLoggedOn(SteamUser.LoggedOnCallback callback)
         {
             if (callback.Result == EResult.OK)
                 logOnListeners.ForEach(x => x.OnLoggedOn());
         }
+    }
 
-        void OnJoinChat(SteamFriends.ChatEnterCallback callback)
+    public class BotController
+    {
+        readonly Config config;
+        readonly Connection connection;
+        readonly Logger logger;
+
+        public BotController()
         {
-            CurrentChatRoomID = callback.ChatID;
-        }
-        #endregion
+            config = new Config();
 
-        #region Helpers
-        public bool AddUser(string steamID)
-        {
-            var parsedSID = new SteamID(steamID);
+            string logPath = config.Data.ConnectionInfo.DisplayName + ".bin";
 
-            if (!parsedSID.IsValid)
-                return false;
+            connection = new Connection(logPath);
 
-            if (config.Data.Users.Contains(parsedSID.Render()))
-            {
-                return false;
-            }
-            else
-            {
-                config.Data.Users.Add(steamID);
-                config.Save();
-            }
+            logger = new Logger(logPath, config.Data.ConnectionInfo.DisplayName);
+            logger.Info("Started");
 
-            return true;
+            var bot = new Bot(config, connection, logger);
         }
 
-        public bool RemoveUser(string steamID)
+        public void Start()
         {
-            if (config.Data.Users.Contains(steamID))
-            {
-                config.Data.Users.Remove(steamID);
-                config.Save();
-                return true;
-            }
-            return false;
+            logger.Info("Starting...");
+
+            // Start the connection in a seperate thread to prevent thread blocking.
+            connection.Connect(config.Data.ConnectionInfo);
         }
 
-        public string GetChatRoomName(SteamID id)
+        public void RefreshServers()
         {
-            return connection.Friends.GetClanName(id);
+            connection.RepopulateServerCache();
         }
 
-        public string GetFriendName(string steamID3)
+        public void Restart()
         {
-            return GetFriendName(new SteamID(steamID3));
+            RestartAsync();
         }
 
-        public string GetFriendName(SteamID id)
+        async void RestartAsync()
         {
-            CacheName(id);
-            return nameCache.Retrieve(id);
+            connection.Disconnect();
+            await Task.Delay(1000);
+            connection.Connect(config.Data.ConnectionInfo);
         }
 
-        public void CacheName(SteamID id)
+        public void Stop()
         {
-            var name = connection.Friends.GetFriendPersonaName(id);
-
-            if (name != "[unknown]")
-                nameCache.Store(id, name);
+            logger.Info("Stopping...");
+            connection.Disconnect();
         }
-
-        public void CacheNames(List<SteamID> names)
-        {
-            names.ForEach(x => CacheName(x));
-        }
-
-        public bool IsAdmin(SteamID id)
-        {
-            return config.Data.Admins != null ? config.Data.Admins.Contains(id.ToString()) : false;
-        }
-
-        public bool IsUser(SteamID id)
-        {
-            return config.Data.Users != null ? config.Data.Users.Contains(id.ToString()) : false;
-        }
-
-        public void SayToChat(SteamID chatId, string message)
-        {
-            if (chatId == null)
-            {
-                Logger.Warning("Cannot send message to chat as the provided SteamID is either null or invalid");
-                return;
-            }
-
-            if (string.IsNullOrEmpty(message))
-            {
-                Logger.Warning("Cannot send message to chat as the message is null or empty");
-                return;
-            }
-
-            Friends.SendChatRoomMessage(chatId, EChatEntryType.ChatMsg, message);
-            Logger.Info("@Chat: {0}", message);
-        }
-
-        public void SayToFriend(SteamID friend, string message)
-        {
-            if (friend == null)
-            {
-                Logger.Warning("Cannot send message to friend as the provided SteamID is either null or invalid");
-                return;
-            }
-
-            if (string.IsNullOrEmpty(message))
-            {
-                Logger.Warning("Cannot send message to friend as the message is null or empty");
-                return;
-            }
-
-            Friends.SendChatMessage(friend, EChatEntryType.ChatMsg, message);
-            Logger.Info("@{0}: {1}", GetFriendName(friend), message);
-        }
-        #endregion
     }
 }

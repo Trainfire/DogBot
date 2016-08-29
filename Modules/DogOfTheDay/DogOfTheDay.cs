@@ -82,7 +82,7 @@ namespace Modules.DogOfTheDay
 
         void OnAnnounce(object sender, EventArgs e)
         {
-            if (!Bot.Connected)
+            if (!Bot.Connection.Connected)
             {
                 Logger.Warning("Bot is not connected. Announcement cancelled...");
                 return;

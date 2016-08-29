@@ -27,11 +27,11 @@ namespace Core
 
                 if (commandEvent.Source.Context == MessageContext.Chat)
                 {
-                    Bot.SayToChat(Bot.CurrentChatRoomID, NoPermissionMessage);
+                    Bot.Connection.SayToChat(Bot.CurrentChatRoomID, NoPermissionMessage);
                 }
                 else
                 {
-                    Bot.SayToFriend(commandEvent.Source.Caller, NoPermissionMessage);
+                    Bot.Connection.SayToFriend(commandEvent.Source.Caller, NoPermissionMessage);
                 }
             }
             else
@@ -50,11 +50,11 @@ namespace Core
                 {
                     if (commandEvent.Source.Context == MessageContext.Chat)
                     {
-                        Bot.SayToChat(Bot.CurrentChatRoomID, result);
+                        Bot.Connection.SayToChat(Bot.CurrentChatRoomID, result);
                     }
                     else
                     {
-                        Bot.SayToFriend(commandEvent.Source.Caller, result);
+                        Bot.Connection.SayToFriend(commandEvent.Source.Caller, result);
                     }
                 }
             }

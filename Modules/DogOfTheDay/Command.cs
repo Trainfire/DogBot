@@ -14,7 +14,7 @@ namespace Modules.DogOfTheDay
         public override void Initialize(Bot bot)
         {
             base.Initialize(bot);
-            DogOfTheDay = bot.GetModule<DogOfTheDay>();
+            DogOfTheDay = bot.Modules.Get<DogOfTheDay>();
         }
     }
 }

@@ -67,8 +67,8 @@ namespace Core
 
             commands = new Dictionary<string, ChatCommand>();
 
-            bot.CallbackManager.Subscribe<SteamFriends.ChatMsgCallback>(OnReceiveChatMessage);
-            bot.CallbackManager.Subscribe<SteamFriends.FriendMsgCallback>(OnReceiveFriendMessage);
+            bot.Connection.CallbackManager.Subscribe<SteamFriends.ChatMsgCallback>(OnReceiveChatMessage);
+            bot.Connection.CallbackManager.Subscribe<SteamFriends.FriendMsgCallback>(OnReceiveFriendMessage);
         }
 
         public void AddCommand<TCommand>(string alias, Action<TCommand> onAdd = null) where TCommand : ChatCommand
@@ -105,7 +105,7 @@ namespace Core
         {
             var command = GetCommand(alias);
             if (command != null)
-                HandleMessage(MessageContext.Chat, bot.SID, alias);
+                HandleMessage(MessageContext.Chat, bot.Connection.SID, alias);
         }
 
         void OnReceiveChatMessage(SteamFriends.ChatMsgCallback callback)
@@ -133,7 +133,7 @@ namespace Core
                     bot.CacheName(caller);
 
                     var requiresPermission = command.UsersOnly || command.AdminOnly;
-                    var hasPermission = command.UsersOnly && (bot.IsAdmin(caller) || bot.IsUser(caller)) || command.AdminOnly && bot.IsAdmin(caller);
+                    var hasPermission = command.UsersOnly && (bot.Users.IsAdmin(caller) || bot.Users.IsUser(caller)) || command.AdminOnly && bot.Users.IsAdmin(caller);
                     var commandEvent = new CommandEvent(context, caller, parser, command, requiresPermission ? hasPermission : true);
 
                     FireCallbacks(commandEvent);
