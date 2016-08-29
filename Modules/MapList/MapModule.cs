@@ -127,7 +127,7 @@ namespace Modules.MapModule
         public List<string> Admins { get; set; }
     }
 
-    class MapModule : Module, ICommandHandler
+    class MapModule : Module
     {
         private MapList mapList;
         private MapModuleConfig config;
@@ -162,11 +162,6 @@ namespace Modules.MapModule
             CommandListener.AddCommand<MapRemove>(DELETE);
             CommandListener.AddCommand<MapGet>(GET);
             CommandListener.AddCommand<MapUpdate>(UPDATE);
-        }
-
-        void ICommandHandler.OnCommandTriggered(CommandEvent commandEvent)
-        {
-            commandProcessor.ProcessCommand(commandEvent);
         }
 
         public int MapOverflow()

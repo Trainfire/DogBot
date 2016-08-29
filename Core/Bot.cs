@@ -30,6 +30,10 @@ namespace Core
         #endregion
 
         public SteamID CurrentChatRoomID { get; private set; }
+        public CommandListener Listener
+        {
+            get { return listener; }
+        }
 
         public Bot()
         {
@@ -49,6 +53,8 @@ namespace Core
 
             nameCache = new NameCache();
             modules = new List<Module>();
+
+            listener = new CommandListener(this);
 
             // Add base module(s).
             AddModule<BotManager>();

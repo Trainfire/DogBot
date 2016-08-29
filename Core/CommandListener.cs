@@ -52,30 +52,20 @@ namespace Core
     }
 
     /// <summary>
-    /// Receives a callback when a command is triggered.
-    /// </summary>
-    public interface ICommandHandler
-    {
-        void OnCommandTriggered(CommandEvent commandEvent);
-    }
-
-    /// <summary>
     /// Listens for commands sent via Chat or Private Messaging and relays a callback to any listeners.
     /// </summary>
     public class CommandListener
     {
-        HashSet<Command> commands;
-        ICommandHandler handler;
+        Dictionary<string, ChatCommand> commands;
         Bot bot;
 
         public bool Muted { get; set; }
 
-        public CommandListener(Bot bot, ICommandHandler handler)
+        public CommandListener(Bot bot)
         {
             this.bot = bot;
-            this.handler = handler;
 
-            commands = new HashSet<Command>();
+            commands = new Dictionary<string, ChatCommand>();
 
             bot.CallbackManager.Subscribe<SteamFriends.ChatMsgCallback>(OnReceiveChatMessage);
             bot.CallbackManager.Subscribe<SteamFriends.FriendMsgCallback>(OnReceiveFriendMessage);
@@ -88,9 +78,9 @@ namespace Core
             command.Initialize(bot);
             command.Alias = alias;
 
-            if (!commands.Contains(command))
+            if (!commands.ContainsKey(alias))
             {
-                commands.Add(command);
+                commands.Add(alias, command);
 
                 if (onAdd != null)
                     onAdd(command);
@@ -104,7 +94,7 @@ namespace Core
         public void AddCommand(string alias, Func<CommandSource, string> func, bool adminOnly = false)
         {
             var command = new AnonCommand(alias, func, adminOnly);
-            commands.Add(command);
+            commands.Add(alias, command);
         }
 
         /// <summary>
@@ -154,13 +144,22 @@ namespace Core
         void FireCallbacks(CommandEvent commandEvent)
         {
             bot.Logger.Info("Executing command '{0}'. Called by '{1}' from '{2}'.", commandEvent.Command.Alias, bot.GetFriendName(commandEvent.Source.Caller), commandEvent.Source.Context);
-            //listeners[commandEvent.Command].ForEach(x => x.OnCommandTriggered(commandEvent));
-            handler.OnCommandTriggered(commandEvent);
+
+            var alias = commandEvent.Command.Alias;
+            if (commands.ContainsKey(alias))
+            {
+                // Process the command.
+                var parser = new CommandParser(bot);
+                parser.NoPermissionMessage = "You do not have permission to do that.";
+                parser.ProcessCommand(commandEvent);
+            }
         }
 
         Command GetCommand(string alias)
         {
-            return commands.FirstOrDefault(x => x.Alias == alias);
+            if (commands.ContainsKey(alias))
+                return commands[alias];
+            return null;
         }
     }
 }
