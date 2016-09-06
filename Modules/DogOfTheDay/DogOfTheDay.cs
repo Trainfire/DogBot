@@ -72,6 +72,7 @@ namespace Modules.DogOfTheDay
             CommandListener.AddCommand<SubmitDogOfTheDay>("!dotdsubmit");
             CommandListener.AddCommand("!dogrnd", GetRandomDog);
 
+            CommandListener.AddCommand("!dogpost", Post, true);
             CommandListener.AddCommand("!dogmovenext", MoveNext, true);
             CommandListener.AddCommand("!dogmute", Mute, true);
             CommandListener.AddCommand("!dogunmute", Unmute, true);
@@ -191,6 +192,12 @@ namespace Modules.DogOfTheDay
             var rnd = new Random().Next(0, Data.HistoryStats.Dogs.Count);
             var dog = Data.HistoryStats.Dogs[rnd];
             return dog.URL;
+        }
+
+        string Post(CommandSource source)
+        {
+            CommandListener.FireCommand(DOTD);
+            return string.Empty;
         }
         #endregion
     }

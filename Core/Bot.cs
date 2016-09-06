@@ -22,7 +22,7 @@ namespace Core
         public LoginStateHandler LogStateHandler { get; private set; }
         #endregion
 
-        public SteamID CurrentChatRoomID { get; private set; }
+        public SteamID CurrentChatRoomID { get { return Connection.CurrentChatRoomID; } }
 
         public Bot(Config config, Connection connection, Logger logger)
         {
