@@ -133,13 +133,7 @@
     <Compile Include="Extensions\GoogleSpreadsheet\Extensions.cs" />
     <Compile Include="Extensions\GoogleSpreadsheet\Spreedsheet.cs" />
     <Compile Include="Modules\BotManager\BotManager.cs" />
-    <Compile Include="Modules\DogOfTheDay\Commands\MoveNext.cs" />
-    <Compile Include="Modules\DogOfTheDay\Commands\Mute.cs" />
-    <Compile Include="Modules\DogOfTheDay\Commands\Sort.cs" />
-    <Compile Include="Modules\DogOfTheDay\Commands\QueueInfo.cs" />
-    <Compile Include="Modules\DogOfTheDay\Commands\Peek.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\Sync.cs" />
-    <Compile Include="Modules\DogOfTheDay\Commands\Unmute.cs" />
     <Compile Include="Core\Config.cs" />
     <Compile Include="Core\Connection.cs" />
     <Compile Include="Core\Converters\IPAddressConverter.cs" />

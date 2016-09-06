@@ -1,5 +1,8 @@
 using System;
+using System.Linq;
 using Core;
+using SteamKit2;
+using System.Collections.Generic;
 
 namespace Modules.DogOfTheDay
 {
@@ -37,22 +40,7 @@ namespace Modules.DogOfTheDay
             }
         }
 
-        #region Commands
-        const string RND = "!dotdrnd";
-        const string REPO = "!dotdrepo";
-        const string COUNT = "!dotdcount";
         const string DOTD = "!dotd";
-        const string DOTDSUBMIT = "!dotdsubmit";
-        const string MOVENEXT = "!dotdmovenext";
-        const string STATS = "!dotdstats";
-        const string MUTE = "!dotdmute";
-        const string UNMUTE = "!dotdunmute";
-        const string ADDUSER = "!dotdadduser";
-        const string SYNC = "!dotdsync";
-        const string QUEUE = "!dotdqueue";
-        const string PEEK = "!dotdpeek";
-        const string SORT = "!dotdsort";
-        #endregion
 
         protected override void OnInitialize()
         {
@@ -79,17 +67,17 @@ namespace Modules.DogOfTheDay
             Logger.Info("Announcements remaining for {0}: {1}", DateTime.Now.DayOfWeek.ToString(), announcer.AnnouncementsRemaining);
 
             CommandListener.AddCommand<GetDogOfTheDay>(DOTD);
-            CommandListener.AddCommand<GetDogOfTheDayCount>(COUNT);
-            CommandListener.AddCommand<GetRandomDog>(RND);
-            CommandListener.AddCommand<MoveNext>(MOVENEXT);
-            CommandListener.AddCommand<Stats>(STATS);
-            CommandListener.AddCommand<SubmitDogOfTheDay>(DOTDSUBMIT);
-            CommandListener.AddCommand<Mute>(MUTE);
-            CommandListener.AddCommand<Unmute>(UNMUTE);
-            CommandListener.AddCommand<Sync>(SYNC);
-            CommandListener.AddCommand<QueueInfo>(QUEUE);
-            CommandListener.AddCommand<PeekAhead>(PEEK);
-            CommandListener.AddCommand<Sort>(SORT);
+            CommandListener.AddCommand<GetDogOfTheDayCount>("!dotdcount");
+            CommandListener.AddCommand<Stats>("!dotdstats");
+            CommandListener.AddCommand<SubmitDogOfTheDay>("!dotdsubmit");
+            CommandListener.AddCommand("!dogrnd", GetRandomDog);
+
+            CommandListener.AddCommand("!dogmovenext", MoveNext, true);
+            CommandListener.AddCommand("!dogmute", Mute, true);
+            CommandListener.AddCommand("!dogunmute", Unmute, true);
+            CommandListener.AddCommand("!dogsort", Sort, true);
+            CommandListener.AddCommand("!dogqueue", QueueInfo, true);
+            CommandListener.AddCommand("!dogpeek", Peek, true);
             CommandListener.AddCommand("!dogtoggle", ToggleAnnouncementMode, true);
         }
 
@@ -136,6 +124,73 @@ namespace Modules.DogOfTheDay
         {
             AnnouncementMode = AnnouncementMode == AnnouncementMode.Daily ? AnnouncementMode.Hourly : AnnouncementMode.Daily;
             return "Dogs will now change " + AnnouncementMode.ToString().ToLower() + ".";
+        }
+
+        string Mute(CommandSource source)
+        {
+            Muted = true;
+            return string.Empty;
+        }
+
+        string Unmute(CommandSource source)
+        {
+            Muted = false;
+            return string.Empty;
+        }
+
+        string Peek(CommandSource source)
+        {
+            var peek = Data.Queue.PeekAhead();
+            if (peek != null)
+            {
+                return string.Format("The next dog will be brought to you by {0}.", Bot.Names.GetFriendName(peek.Setter));
+            }
+            else
+            {
+                return "There are no more dogs! :(";
+            }
+        }
+
+        string Sort(CommandSource source)
+        {
+            Data.Queue.Sort();
+            return "Queue has been sorted.";
+        }
+
+        string QueueInfo(CommandSource source)
+        {
+            var users = Data.Queue.GetUsers();
+
+            List<string> usersInfo = new List<string>();
+            foreach (var user in users)
+            {
+                string name = Bot.Names.GetFriendName(user);
+                int contributions = Data.Queue.GetUserContributions(user).Count;
+                usersInfo.Add(string.Format("{0} ({1})", name, contributions));
+            }
+
+            return string.Format("Users in queue: " + string.Join(", ", usersInfo));
+        }
+
+        string MoveNext(CommandSource source)
+        {
+            Data.MoveToNextDog();
+
+            if (Data.CurrentDog != null)
+            {
+                return string.Format("Dog of the Day is now: {0}", Data.CurrentDog.URL);
+            }
+            else
+            {
+                return string.Format("Queue is now empty.");
+            }
+        }
+
+        string GetRandomDog(CommandSource source)
+        {
+            var rnd = new Random().Next(0, Data.HistoryStats.Dogs.Count);
+            var dog = Data.HistoryStats.Dogs[rnd];
+            return dog.URL;
         }
         #endregion
     }
