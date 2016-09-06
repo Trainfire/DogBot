@@ -90,7 +90,7 @@ namespace Modules.DogOfTheDay
                 return;
             }
 
-            if (Config.Data.AnnouncementMode == AnnouncementMode.Hourly)
+            if (AnnouncementMode == AnnouncementMode.Hourly)
             {
                 Logger.Info("Moving to next dog in queue...");
                 Data.MoveToNextDog();
