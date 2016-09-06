@@ -42,16 +42,6 @@ namespace Modules.DogOfTheDay
             var duplicates = Data.Queue.Intersect(distinct).ToList();
             duplicates.ForEach(x => Data.Queue.Remove(x));
 
-            foreach (var entry in distinct)
-            {
-                Console.WriteLine("Distinct: {0} (Time: {1})", entry.Setter, entry.TimeStamp);
-            }
-
-            foreach (var item in Data.Queue)
-            {
-                Console.WriteLine("Others: {0}", item.Setter);
-            }
-
             // Update queue
             distinct.AddRange(Data.Queue);
 

@@ -7,6 +7,8 @@ namespace Modules.DogOfTheDay
 
     public class ConfigData
     {
+        public AnnouncementMode AnnouncementMode { get; set; }
+
         /// <summary>
         /// Set to true to sync data with a Google Spreadsheet.
         /// </summary>

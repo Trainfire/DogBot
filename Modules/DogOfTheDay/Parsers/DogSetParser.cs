@@ -25,7 +25,7 @@ namespace Modules.DogOfTheDay
             }
             else
             {
-                Invalidate(DogOfTheDay.Strings.UrlInvalid);
+                Invalidate("*whines * That URL is invalid...");
             }
 
             if (IsValid)

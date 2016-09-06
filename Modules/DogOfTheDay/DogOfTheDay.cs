@@ -3,14 +3,22 @@ using Core;
 
 namespace Modules.DogOfTheDay
 {
+    public enum AnnouncementMode
+    {
+        Hourly,
+        Daily,
+    }
+
     public class DogOfTheDay : Module
     {
         Announcer announcer;
         Config Config;
 
+        public Strings Strings { get; private set; }
         public Data Data { get; private set; }
         public bool SyncEnabled { get { return Config.Data.SyncEnabled; } }
         public string SpreadsheetID { get { return Config.Data.SpreadsheetID; } }
+        public AnnouncementMode AnnouncementMode { get; private set; }
 
         public bool Muted
         {
@@ -50,6 +58,10 @@ namespace Modules.DogOfTheDay
         {
             Config = new Config();
             Data = new Data(this);
+            Strings = new Strings(this);
+
+            // Set announcement mode
+            AnnouncementMode = Config.Data.AnnouncementMode;
 
             // Create the announcer
             announcer = new Announcer();
@@ -78,6 +90,7 @@ namespace Modules.DogOfTheDay
             CommandListener.AddCommand<QueueInfo>(QUEUE);
             CommandListener.AddCommand<PeekAhead>(PEEK);
             CommandListener.AddCommand<Sort>(SORT);
+            CommandListener.AddCommand("!dogtoggle", ToggleAnnouncementMode, true);
         }
 
         void OnAnnounce(object sender, EventArgs e)
@@ -86,6 +99,12 @@ namespace Modules.DogOfTheDay
             {
                 Logger.Warning("Bot is not connected. Announcement cancelled...");
                 return;
+            }
+
+            if (Config.Data.AnnouncementMode == AnnouncementMode.Hourly)
+            {
+                Logger.Info("Moving to next dog in queue...");
+                Data.MoveToNextDog();
             }
 
             // Post DoTD
@@ -112,27 +131,52 @@ namespace Modules.DogOfTheDay
             }
         }
 
-        public string GetDogOfTheDay()
+        #region Commands
+        string ToggleAnnouncementMode(CommandSource source)
         {
-            return string.Format("{0}'s {1} // {2}", DateTime.Now.DayOfWeek.ToString(), Strings.DogOfTheDay, Data.CurrentDog.URL);
+            AnnouncementMode = AnnouncementMode == AnnouncementMode.Daily ? AnnouncementMode.Hourly : AnnouncementMode.Daily;
+            return "Dogs will now change " + AnnouncementMode.ToString().ToLower() + ".";
+        }
+        #endregion
+    }
+
+    public class Strings
+    {
+        DogOfTheDay dotd;
+
+        public Strings(DogOfTheDay dotd)
+        {
+            this.dotd = dotd;
         }
 
-        public static class Strings
+        public readonly string DogOfTheDay = "Dog of the Day";
+        public readonly string DogOfTheHour = "Dog of the Hour";
+
+        public string Setter
         {
-            public const string DogOfTheDay = "Dog of the Day";
-            public const string SubmitDogOfTheDay = "Dog added to the queue!";
-            public const string SubmitURLExists = "* whines * Cannot accept that URL as it's already in the queue...";
-            public const string NoDog = " * whines * There is no Dog of the Day... If you have permission, use !dotdsubmit <URL> <Comment (Optional)> to submit a message.";
-            public const string UrlInvalid = "*whines* That URL is invalid...";
-            public const string Setter = "Dog of the Day was set by";
-            public const string StatsTotalAdded = "Dogs added to this day: ";
-            public const string StatsTotalShown = "Dogs shown: ";
-            public const string StatsHighestContributer = "Highest contributor: ";
-            public const string Repo = "https://github.com/Trainfire/DogBot";
-            public const string TotalMessages = "Dog of the Day // Messages remaining: ";
-            public const string Muted = "*muted*";
-            public const string Unmuted = "*bark!*";
-            public const string NoPermission = "*bark* You don't have permission to do that!";
+            get
+            {
+                return dotd.AnnouncementMode == AnnouncementMode.Daily ? "Dog of the Day was set by" : "Dog of the Hour was set by";
+            }
         }
+
+        public string TotalMessages
+        {
+            get
+            {
+                return dotd.AnnouncementMode == AnnouncementMode.Daily ? "Dog of the Day // Messages remaining: " : "Dog of the Hour // Messages remaining: ";
+            }
+        }
+
+        public readonly string SubmitDogOfTheDay = "Dog added to the queue!";
+        public readonly string SubmitURLExists = "* whines * Cannot accept that URL as it's already in the queue...";
+        public readonly string NoDog = " * whines * There is no Dog of the Day... If you have permission, use !dotdsubmit <URL> <Comment (Optional)> to submit a message.";
+        public readonly string StatsTotalAdded = "Dogs added to this day: ";
+        public readonly string StatsTotalShown = "Dogs shown: ";
+        public readonly string StatsHighestContributer = "Highest contributor: ";
+        public readonly string Repo = "https://github.com/Trainfire/DogBot";
+        public readonly string Muted = "*muted*";
+        public readonly string Unmuted = "*bark!*";
+        public readonly string NoPermission = "*bark* You don't have permission to do that!";
     }
 }
