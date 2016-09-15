@@ -47,12 +47,9 @@ namespace Modules.DogOfTheDay
         /// </summary>
         public async void MoveToNextDog()
         {
-            if (Queue.Data.Queue.Count != 0)
-            {
-                dog = Queue.Dequeue();
-                WriteToHistory(dog);
-                await Sync();
-            }
+            dog = Queue.Dequeue();
+            WriteToHistory(dog);
+            await Sync();
         }
 
         public List<DogData> GetUserContributions(SteamKit2.SteamID steamID)
@@ -126,6 +123,9 @@ namespace Modules.DogOfTheDay
 
         void WriteToHistory(DogData dog)
         {
+            if (dog == null)
+                return;
+
             history.Write(new HistoryRecord()
             {
                 Dog = dog,

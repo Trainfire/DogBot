@@ -77,8 +77,8 @@ namespace Modules.DogOfTheDay
             CommandListener.AddCommand("!dogmovenext", MoveNext, true);
             CommandListener.AddCommand("!dogmute", Mute, true);
             CommandListener.AddCommand("!dogunmute", Unmute, true);
-            CommandListener.AddCommand("!dogsort", Sort, true);
             CommandListener.AddCommand("!dogqueue", QueueInfo, true);
+            CommandListener.AddCommand("!dogsort", Sort, true);
             CommandListener.AddCommand("!dogpeek", Peek, true);
             CommandListener.AddCommand("!dogtoggle", ToggleAnnouncementMode, true);
         }
@@ -153,25 +153,16 @@ namespace Modules.DogOfTheDay
             }
         }
 
+        string QueueInfo(CommandSource source)
+        {
+            var activeUsers = Data.Queue.Active.Select(x => Bot.Names.GetFriendName(x.Setter));
+            return "Users in Active queue: " + string.Join(", ", activeUsers);
+        }
+
         string Sort(CommandSource source)
         {
             Data.Queue.Sort();
             return "Queue has been sorted.";
-        }
-
-        string QueueInfo(CommandSource source)
-        {
-            var users = Data.Queue.GetUsers();
-
-            List<string> usersInfo = new List<string>();
-            foreach (var user in users)
-            {
-                string name = Bot.Names.GetFriendName(user);
-                int contributions = Data.Queue.GetUserContributions(user).Count;
-                usersInfo.Add(string.Format("{0} ({1})", name, contributions));
-            }
-
-            return string.Format("Users in queue: " + string.Join(", ", usersInfo));
         }
 
         string MoveNext(CommandSource source)
@@ -180,7 +171,7 @@ namespace Modules.DogOfTheDay
 
             if (Data.CurrentDog != null)
             {
-                return string.Format("Dog of the Day is now: {0}", Data.CurrentDog.URL);
+                return string.Format("Dog of the Day is now: {0} // Courtesy of {1}", Data.CurrentDog.URL, Bot.Names.GetFriendName(Data.CurrentDog.Setter));
             }
             else
             {

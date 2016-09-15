@@ -29,23 +29,23 @@ namespace Modules.DogOfTheDay
 
         public void Sort()
         {
-            // Reorder submissions so the queue prioritises unique authors
-            // This is to prevent a series of submissions from the same person blocking the queue
-            // for potentially several days!
+            // Get one submission per author.
             var distinct = Data.Queue
                 .GroupBy(x => x.Setter)
                 .Select(x => x.First())
                 .OrderBy(x => x.TimeStamp)
                 .ToList();
 
-            // Find and remove duplicate values
-            var duplicates = Data.Queue.Intersect(distinct).ToList();
-            duplicates.ForEach(x => Data.Queue.Remove(x));
+            Data.Active.Clear();
+            Data.Active.AddRange(distinct);
 
-            // Update queue
-            distinct.AddRange(Data.Queue);
+            // Find and remove duplicate values from the backlog.
+            distinct.ForEach(x => Data.Queue.Remove(x));
+        }
 
-            Data.Queue = distinct;
+        public List<DogData> Active
+        {
+            get { return Data.Active; }
         }
 
         public DogData PeekAhead()
@@ -55,27 +55,44 @@ namespace Modules.DogOfTheDay
 
         public DogData Peek()
         {
-            return Data.Queue.Count != 0 ? Data.Queue[0] : null;
+            if (Data.Active.Count != 0)
+            {
+                return Data.Active[0];
+            }
+            else if (Data.Queue.Count != 0)
+            {
+                return Data.Queue[0];
+            }
+            return null;
         }
 
         public DogData Dequeue(bool save = true)
         {
-            if (Data.Queue.Count != 0)
+            var dog = GetNextActive();
+
+            // Active queue is empty. Sort then try again.
+            if (dog == null && Data.Queue.Count != 0)
             {
-                var current = Data.Queue[0];
-
                 Sort();
+                dog = GetNextActive();
+            }
 
-                // Remove the current dog from the queue.
-                Data.Queue.Remove(current);
+            if (save)
+                Save();
 
-                if (save)
-                    Save();
+            if (DataChanged != null)
+                DataChanged(this, this);
 
-                if (DataChanged != null)
-                    DataChanged(this, this);
+            return dog;
+        }
 
-                return Data.Queue[0];
+        public DogData GetNextActive()
+        {
+            if (Data.Active.Count != 0)
+            {
+                var next = Data.Active[0];
+                Data.Active.RemoveAt(0);
+                return next;
             }
             return null;
         }
@@ -96,10 +113,14 @@ namespace Modules.DogOfTheDay
 
     public class QueueData
     {
+        public List<DogData> Active { get; set; }
         public List<DogData> Queue { get; set; }
 
         public QueueData()
         {
+            if (Active == null)
+                Active = new List<DogData>();
+
             if (Queue == null)
                 Queue = new List<DogData>();
         }
