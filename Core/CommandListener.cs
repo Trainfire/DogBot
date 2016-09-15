@@ -151,6 +151,7 @@ namespace Core
                 // Process the command.
                 var parser = new CommandParser(bot);
                 parser.NoPermissionMessage = commandEvent.Command.NoPermissionMessage;
+                parser.Silent = Muted;
                 parser.ProcessCommand(commandEvent);
             }
         }

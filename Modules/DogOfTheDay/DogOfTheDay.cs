@@ -28,15 +28,16 @@ namespace Modules.DogOfTheDay
             set
             {
                 // TODO: Fix. Probably want to move this into the Bot or CommandListener.
-                //CommandParser.Muted = value;
-                //if (CommandParser.Muted)
-                //{
-                //    Bot.SayToChat(Bot.CurrentChatRoomID, Strings.Muted);
-                //}
-                //else
-                //{
-                //    Bot.SayToChat(Bot.CurrentChatRoomID, Strings.Unmuted);
-                //}
+                CommandListener.Muted = value;
+
+                if (CommandListener.Muted)
+                {
+                    Bot.Connection.SayToChat(Bot.CurrentChatRoomID, Strings.Muted);
+                }
+                else
+                {
+                    Bot.Connection.SayToChat(Bot.CurrentChatRoomID, Strings.Unmuted);
+                }
             }
         }
 

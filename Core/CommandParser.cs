@@ -11,7 +11,7 @@ namespace Core
         readonly Bot Bot;
 
         public string NoPermissionMessage { get; set; }
-        public bool Muted { get; set; }
+        public bool Silent { get; set; }
 
         public CommandParser(Bot bot)
         {
@@ -46,7 +46,7 @@ namespace Core
                     result = commandEvent.Command.Execute(commandEvent.Source);
                 }
 
-                if (!string.IsNullOrEmpty(result) && !Muted)
+                if (!string.IsNullOrEmpty(result) && !Silent)
                 {
                     if (commandEvent.Source.Context == MessageContext.Chat)
                     {
