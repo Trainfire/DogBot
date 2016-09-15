@@ -22,7 +22,21 @@ Currently there are five modules:
 
 When the bot is loaded it will go through the list of module names as specified inside its configuration and will create an instance of each module.
 
-Modules must be in the namespace 'Modules.ModuleName' and a module must contain a class of the same name that derives from the Module base class. For example, the DogOfTheDay module has the class 'DogOfTheDay' that derives from Module that sits in the namespace 'Modules.DogOfTheDay'.
+So I my config looks like this:
+
+```
+"Modules": 
+[
+   "ChatJoiner",
+   "DogOfTheDay",
+   "MapModule",
+   "Server",
+],
+```
+
+I'll end up with those 4 modules being loaded up at startup.
+
+FYI: Modules must be in the namespace 'Modules.ModuleName' and a module must contain a class of the same name that derives from the Module base class. For example, the DogOfTheDay module has the class 'DogOfTheDay' that derives from Module that sits in the namespace 'Modules.DogOfTheDay'.
 
 **...buh?**
 
