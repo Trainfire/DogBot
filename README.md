@@ -44,9 +44,9 @@ Just create a class like 'MyModule' derived from Module. Make sure it's in the n
 
 ### Adding a Command ###
 
-There are several ways to add a command. Inside your module, you will have a reference to a CommandListener which will allow you to register a command and assign a callback. 
+There are several ways to add a command. Inside your module, you will have a reference to a CommandListener which will allow you to register a command and assign a callback.
 
-The simplest usage is to use the Func method overload:
+The simplest usage is to use the Func<CommandSource, string> method overload:
 
 ```
 protected override void OnInitialize()
@@ -78,3 +78,9 @@ public class GiveCat : ChatCommand
 	}
 }
 ```
+
+The final piece of the puzzle is **CommandSource** which returns a few useful things:
+* **Context** - Was the command triggered in a chatroom or via a private message?
+* **Caller** - The SteamID of the person who triggered the command.
+* **MessageParser** - The Parser used to parse the message. Maybe it will contain a reason why the parser failed? Who knows.
+* **HadPermission** - Returns True if the person had the correct privileges to execute the command. If they didn't perhaps you can send them an angry message.
