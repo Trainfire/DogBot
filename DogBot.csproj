@@ -129,10 +129,12 @@
     <Compile Include="Core\LoginStateHandler.cs" />
     <Compile Include="Core\ModuleManager.cs" />
     <Compile Include="Core\Utils.cs" />
+    <Compile Include="Extensions\ContentQueue.cs" />
     <Compile Include="Extensions\GoogleSpreadsheet\BatchRequestHelpers.cs" />
     <Compile Include="Extensions\GoogleSpreadsheet\Extensions.cs" />
     <Compile Include="Extensions\GoogleSpreadsheet\Spreedsheet.cs" />
     <Compile Include="Modules\BotManager\BotManager.cs" />
+    <Compile Include="Modules\ThingOfTheDay\ThingOfTheDay.cs" />
     <Compile Include="Modules\DogOfTheDay\Commands\Sync.cs" />
     <Compile Include="Core\Config.cs" />
     <Compile Include="Core\Connection.cs" />
