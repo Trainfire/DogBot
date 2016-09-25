@@ -1,65 +1,13 @@
 using System;
-using System.Linq;
 using Core;
-using DogBot.Extensions;
 using System.Collections.Generic;
-using System.IO;
-using Newtonsoft.Json;
 
-namespace Modules.CatOfTheDay
+namespace Modules.ThingOfTheDay
 {
     public enum AnnouncementMode
     {
         Hourly,
         Daily,
-    }
-
-    class Storage<T>
-    {
-        private string _fileName;
-        private T _data;
-
-        public T Data { get { return _data; } }
-
-        public Storage(string filename)
-        {
-            _fileName = filename;
-            Load();
-        }
-
-        public void Load()
-        {
-            if (File.Exists(Path))
-            {
-                using (var file = File.OpenText(Path))
-                {
-                    _data = JsonConvert.DeserializeObject<T>(file.ReadToEnd());
-                }
-            }
-            else
-            {
-                _data = default(T);
-            }
-        }
-
-        public void Save()
-        {
-            using (var sw = File.CreateText(Path))
-            {
-                sw.Write(JsonConvert.SerializeObject(_data, Formatting.Indented));
-            }
-        }
-
-        public void Save(T data)
-        {
-            _data = data;
-            Save();
-        }
-
-        string Path
-        {
-            get { return AppDomain.CurrentDomain.BaseDirectory + _fileName; }
-        }
     }
 
     abstract class ThingOfTheDay : Module
@@ -78,11 +26,13 @@ namespace Modules.CatOfTheDay
         {
             base.OnInitialize();
 
+            // Storage
             _content = new Storage<List<Content>>(ContentFileName);
             _history = new Storage<List<Content>>(ContentName.ToLower() + "s.history.json");
 
+            // Queue
             _queue = new ContentQueue(_content.Data);
-            _queue.ContentsChanged += OnContentsChanged;
+            _queue.ContentsChanged += OnContentChanged;
             _queue.ContentMoved += OnContentMoved;
 
             // Commands
@@ -91,6 +41,7 @@ namespace Modules.CatOfTheDay
             CommandListener.AddCommand(FormatCommand("rnd"), GetRandom);
             CommandListener.AddCommand(FormatCommand("sort"), Sort, true);
             CommandListener.AddCommand(FormatCommand("move"), Move, true);
+            CommandListener.AddCommand(FormatCommand("stats"), Stats);
 
             // Create the announcer
             _announcer = new Announcer();
@@ -106,7 +57,7 @@ namespace Modules.CatOfTheDay
             _announcer.Start();
         }
 
-        private void OnContentMoved(object sender, ContentMoveEvent e)
+        void OnContentMoved(object sender, ContentMoveEvent e)
         {
             if (e.Old != null)
             {
@@ -124,7 +75,7 @@ namespace Modules.CatOfTheDay
             }
         }
 
-        void OnContentsChanged(object sender, List<Content> e)
+        void OnContentChanged(object sender, List<Content> e)
         {
             Logger.Info("Contents changed.");
             _content.Save(e);
@@ -240,12 +191,41 @@ namespace Modules.CatOfTheDay
 
         string Stats(CommandSource source)
         {
-            throw new NotImplementedException();
+            var statsHelper = new StatsHelper(_queue.Contents, _history.Data);
+
+            var str = new List<string>();
+
+            // Total records
+            str.Add(ContentName + "s added to this day: " + statsHelper.TotalSubmissions);
+
+            // Dogs Shown
+            str.Add(ContentName + "s shown: " + statsHelper.TotalShown);
+
+            // Highest contributor
+            var highestContributor = statsHelper.HighestContributor;
+            if (highestContributor != null)
+            {
+                var name = Bot.Names.GetFriendName(highestContributor);
+                str.Add(string.Format("{0}{1} ({2})", "Highest contributor: ", name, statsHelper.GetUserContributions(highestContributor).Count));
+            }
+
+            // Include caller's contributions if they have any.
+            var callerContributions = statsHelper.GetUserContributions(source.Caller);
+            if (callerContributions.Count != 0)
+            {
+                var callerName = Bot.Names.GetFriendName(source.Caller);
+                str.Add(string.Format("{0}'s total submissions: {1}", callerName, callerContributions.Count));
+            }
+
+            return string.Join(" // ", str.ToArray());
         }
         #endregion
     }
+}
 
-    class CatOfTheDay : ThingOfTheDay
+namespace Modules.CatOfTheDay
+{
+    class CatOfTheDay : ThingOfTheDay.ThingOfTheDay
     {
         protected override string ContentName
         {

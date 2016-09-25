@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DogBot.Extensions
+namespace Modules.ThingOfTheDay
 {
     class Content
     {
@@ -31,6 +31,7 @@ namespace DogBot.Extensions
     {
         event EventHandler<ContentMoveEvent> ContentMoved;
         event EventHandler<List<Content>> ContentsChanged;
+        List<Content> Contents { get; }
         void Submit(Content content);
         Content Get();
         Content GetRandom();
