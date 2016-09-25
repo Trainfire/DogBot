@@ -42,12 +42,18 @@ namespace Modules.CatOfTheDay
             }
         }
 
-        public void Save(T data)
+        public void Save()
         {
             using (var sw = File.CreateText(Path))
             {
-                sw.Write(JsonConvert.SerializeObject(data, Formatting.Indented));
+                sw.Write(JsonConvert.SerializeObject(_data, Formatting.Indented));
             }
+        }
+
+        public void Save(T data)
+        {
+            _data = data;
+            Save();
         }
 
         string Path
@@ -58,8 +64,10 @@ namespace Modules.CatOfTheDay
 
     abstract class ThingOfTheDay : Module
     {
-        private Storage<List<Content>> _storage;
-        private IContentQueue _contents;
+        private Storage<List<Content>> _content;
+        private Storage<List<Content>> _history;
+
+        private IContentQueue _queue;
         private Announcer _announcer;
 
         private AnnouncementMode _announcementMode;
@@ -70,10 +78,12 @@ namespace Modules.CatOfTheDay
         {
             base.OnInitialize();
 
-            _storage = new Storage<List<Content>>(ContentFileName);
+            _content = new Storage<List<Content>>(ContentFileName);
+            _history = new Storage<List<Content>>(ContentName.ToLower() + "s.history.json");
 
-            _contents = new ContentQueue(_storage.Data);
-            _contents.ContentsChanged += OnContentsChanged;
+            _queue = new ContentQueue(_content.Data);
+            _queue.ContentsChanged += OnContentsChanged;
+            _queue.ContentMoved += OnContentMoved;
 
             // Commands
             CommandListener.AddCommand(FormatCommand("submit"), Submit);
@@ -96,10 +106,28 @@ namespace Modules.CatOfTheDay
             _announcer.Start();
         }
 
-        private void OnContentsChanged(object sender, List<Content> e)
+        private void OnContentMoved(object sender, ContentMoveEvent e)
+        {
+            if (e.Old != null)
+            {
+                if (_history.Data == null)
+                {
+                    var data = new List<Content>();
+                    data.Add(e.Old);
+                    _history.Save(data);
+                }
+                else
+                {
+                    _history.Data.Add(e.Old);
+                    _history.Save();
+                }
+            }
+        }
+
+        void OnContentsChanged(object sender, List<Content> e)
         {
             Logger.Info("Contents changed.");
-            _storage.Save(e);
+            _content.Save(e);
         }
 
         void OnAnnounce(object sender, EventArgs e)
@@ -110,10 +138,10 @@ namespace Modules.CatOfTheDay
             if (_announcementMode == AnnouncementMode.Hourly)
             {
                 Logger.Info("Moving to next content in queue...");
-                _contents.Move();
+                _queue.Move();
             }
 
-            if (_contents.Get() != null)
+            if (_queue.Get() != null)
             {
                 Logger.Info("Posting announcement...");
                 CommandListener.FireCommand(FormatCommand("get"));
@@ -124,9 +152,9 @@ namespace Modules.CatOfTheDay
         {
             Logger.Info("All announcements for current dog shown.");
 
-            _contents.Move();
+            _queue.Move();
 
-            if (_contents.Get() != null)
+            if (_queue.Get() != null)
             {
                 Logger.Info("Moving to next content in queue...");
             }
@@ -153,7 +181,7 @@ namespace Modules.CatOfTheDay
             {
                 var url = source.Parser.Args[0];
 
-                if (_contents.HasURL(url))
+                if (_queue.HasURL(url))
                 {
                     return ContentName + " could not be added as that URL already exists!";
                 }
@@ -165,7 +193,7 @@ namespace Modules.CatOfTheDay
                         URL = url,
                     };
 
-                    _contents.Submit(content);
+                    _queue.Submit(content);
 
                     return ContentName + " was added to the queue!";
                 }
@@ -176,7 +204,7 @@ namespace Modules.CatOfTheDay
 
         string Get(CommandSource source)
         {
-            var content = _contents.Get();
+            var content = _queue.Get();
 
             if (content != null)
             {
@@ -190,7 +218,7 @@ namespace Modules.CatOfTheDay
 
         string GetRandom(CommandSource source)
         {
-            var content = _contents.GetRandom();
+            var content = _queue.GetRandom();
 
             if (content != null)
                 return string.Format("*miaow* {0}", content.URL);
@@ -200,14 +228,19 @@ namespace Modules.CatOfTheDay
 
         string Move(CommandSource source)
         {
-            _contents.Move();
+            _queue.Move();
             return "Content is now: " + Get(source);
         }
 
         string Sort(CommandSource source)
         {
-            _contents.Sort();
+            _queue.Sort();
             return "Queue has been sorted.";
+        }
+
+        string Stats(CommandSource source)
+        {
+            throw new NotImplementedException();
         }
         #endregion
     }

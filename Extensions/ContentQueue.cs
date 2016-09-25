@@ -15,8 +15,21 @@ namespace DogBot.Extensions
         public long TimeStamp { get; set; }
     }
 
+    class ContentMoveEvent
+    {
+        public Content Old { get; set; }
+        public Content New { get; set; }
+
+        public ContentMoveEvent(Content oldContent, Content newContent)
+        {
+            Old = oldContent;
+            New = newContent;
+        }
+    }
+
     interface IContentQueue
     {
+        event EventHandler<ContentMoveEvent> ContentMoved;
         event EventHandler<List<Content>> ContentsChanged;
         void Submit(Content content);
         Content Get();
@@ -28,6 +41,7 @@ namespace DogBot.Extensions
 
     class ContentQueue : IContentQueue
     {
+        public event EventHandler<ContentMoveEvent> ContentMoved;
         public event EventHandler<List<Content>> ContentsChanged;
 
         List<Content> _contents;
@@ -74,9 +88,15 @@ namespace DogBot.Extensions
 
         public Content Move()
         {
+            Content oldContent = null;
+            Content newContent = null;
+
             // Remove the first item.
             if (_contents.Count != 0)
+            {
+                oldContent = _contents[0];
                 _contents.RemoveAt(0);
+            }
 
             // Get the next item from the priority queue. 
             // If nothing exists in that queue, sort to form a new queue then get the first item.
@@ -85,8 +105,10 @@ namespace DogBot.Extensions
             {
                 Sort();
                 next = _contents[0];
+                newContent = next;
             }
 
+            ContentMoved?.Invoke(this, new ContentMoveEvent(oldContent, newContent));
             ContentsChanged?.Invoke(this, _contents);
 
             return next;
