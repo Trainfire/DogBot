@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SteamKit2;
+using System.Threading.Tasks;
 
 /// <summary>
 /// This extension listens for commands sent via Chat or Private Messaging and relays a callback to any subscribed listeners.
@@ -94,6 +95,12 @@ namespace Core
         public void AddCommand(string alias, Func<CommandSource, string> func, bool adminOnly = false)
         {
             var command = new AnonCommand(alias, func, adminOnly);
+            commands.Add(alias, command);
+        }
+
+        public void AddCommandAsync(string alias, Func<CommandSource, Task<string>> func, bool adminOnly = false)
+        {
+            var command = new AnonCommandAsync(alias, func, adminOnly);
             commands.Add(alias, command);
         }
 
