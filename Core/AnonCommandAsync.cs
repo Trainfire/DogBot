@@ -2,7 +2,7 @@ using Core;
 using System;
 using System.Threading.Tasks;
 
-namespace DogBot.Core
+namespace Core
 {
     /// <summary>
     /// Base class for an anonymous command executed via a Chat or Friend message.
