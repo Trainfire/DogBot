@@ -120,6 +120,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Announcer.cs" />
+    <Compile Include="Core\AnonCommandAsync.cs" />
     <Compile Include="Core\Bot.cs" />
     <Compile Include="Core\AnonCommand.cs" />
     <Compile Include="Core\BotController.cs" />

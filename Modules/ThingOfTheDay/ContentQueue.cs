@@ -73,7 +73,7 @@ namespace Modules.ThingOfTheDay
         {
             if (_contents.Count != 0)
             {
-                return _contents[0];
+                return _contents.FirstOrDefault(x => x.Prioritised);
             }
             else
             {
@@ -92,27 +92,24 @@ namespace Modules.ThingOfTheDay
             Content oldContent = null;
             Content newContent = null;
 
-            // Remove the first item.
+            // Remove old content from queue.
             if (_contents.Count != 0)
             {
-                oldContent = _contents[0];
-                _contents.RemoveAt(0);
+                oldContent = Get();
+                if (oldContent != null)
+                    _contents.Remove(oldContent);
             }
 
-            // Get the next item from the priority queue. 
-            // If nothing exists in that queue, sort to form a new queue then get the first item.
-            var next = _contents.FirstOrDefault(x => x.Prioritised == true);
-            if (next == null && _contents.Count != 0)
-            {
+            // Perform a sort if the priortised queue is empty.
+            if (!_contents.Any(x => x.Prioritised))
                 Sort();
-                next = _contents[0];
-                newContent = next;
-            }
+
+            newContent = Get();
 
             ContentMoved?.Invoke(this, new ContentMoveEvent(oldContent, newContent));
             ContentsChanged?.Invoke(this, _contents);
 
-            return next;
+            return newContent;
         }
 
         public void Sort()
